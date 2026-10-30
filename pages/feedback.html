@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="vi" class="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduHub - Đánh giá trang web</title>
+<meta name="description" content="Gửi đánh giá và góp ý để EduHub tốt hơn.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Ctext x='50%25' y='53%25' dy='.35em' text-anchor='middle' font-family='sans-serif' font-size='36' font-weight='700' fill='%23fff'%3EE%3C/text%3E%3C/svg%3E">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script>tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Be Vietnam Pro','sans-serif']}}}}</script>
+<link rel="stylesheet" href="../assets/css/simple.css">
+<style>
+  body{font-family:'Be Vietnam Pro',sans-serif}
+  .star{color:#d1d5db;transition:transform .12s,color .12s;cursor:pointer;line-height:1}
+  .dark .star{color:#475569}
+  .star.on{color:#f59e0b}
+  .star:hover{transform:scale(1.15)}
+  .star:focus-visible{outline:2px solid #2563eb;outline-offset:2px;border-radius:6px}
+  .chip{cursor:pointer;user-select:none;transition:all .12s}
+  .chip[aria-pressed="true"]{background:#2563eb;color:#fff;border-color:#2563eb}
+</style>
+<script src="../assets/js/config.js"></script>
+<script src="../assets/js/supabase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="../assets/js/cloud.js"></script>
+</head>
+<body class="bg-gray-50 dark:bg-slate-900 text-gray-800 dark:text-gray-100 antialiased min-h-screen transition-colors">
+
+<header class="bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 h-16 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-20">
+  <a href="index.html" class="flex items-center gap-3">
+    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-500/30">E</div>
+    <span class="text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">EduHub</span>
+  </a>
+  <nav class="flex items-center gap-2 text-sm font-medium">
+    <a href="index.html" class="px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-700 transition"><i class="fa-solid fa-arrow-left sm:mr-1"></i><span class="hidden sm:inline">Về trang chính</span></a>
+    <button id="themeToggle" type="button" aria-label="Đổi giao diện Sáng/Tối" class="px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-700 transition"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
+  </nav>
+</header>
+
+<main class="max-w-3xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+
+  <div>
+    <h1 class="text-3xl font-bold mb-2">Đánh giá EduHub</h1>
+    <p class="text-sm text-gray-500 dark:text-gray-400">Bạn thấy EduHub thế nào? Chỉ mất khoảng 1 phút, góp ý của bạn giúp chúng tôi cải thiện.</p>
+  </div>
+
+  <div id="modeBanner" class="bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 text-xs rounded-xl px-4 py-3">
+    <i class="fa-solid fa-circle-info mr-1"></i>
+    EduHub chạy hoàn toàn trong trình duyệt nên đánh giá được lưu trên thiết bị của bạn.
+    Để gửi tới nhà trường, bấm <strong>“Gửi qua email”</strong> sau khi lưu.
+  </div>
+
+  <!-- FORM -->
+  <section class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700/60 p-5 sm:p-6 space-y-6" aria-labelledby="formTitle">
+    <div class="flex items-center justify-between">
+      <h2 id="formTitle" class="font-bold text-base">Đánh giá của bạn</h2>
+      <span id="editBadge" class="hidden text-[11px] font-semibold bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-2.5 py-1 rounded-full">Đang chỉnh sửa</span>
+    </div>
+
+    <!-- Tổng thể -->
+    <div class="text-center py-2">
+      <div class="text-sm font-semibold mb-3">Trải nghiệm chung của bạn với EduHub</div>
+      <div id="overallStars" role="radiogroup" aria-label="Điểm tổng thể" class="flex justify-center gap-2 text-4xl"></div>
+      <div id="overallLabel" class="text-xs text-gray-500 dark:text-gray-400 mt-3 h-4">Chọn số sao để đánh giá</div>
+    </div>
+
+    <!-- Theo tiêu chí -->
+    <div>
+      <div class="text-sm font-semibold mb-3">Đánh giá theo tiêu chí <span class="font-normal text-gray-400 text-xs">(không bắt buộc)</span></div>
+      <div id="catList" class="grid sm:grid-cols-2 gap-x-6 gap-y-3"></div>
+    </div>
+
+    <!-- Tính năng thích -->
+    <div>
+      <div class="text-sm font-semibold mb-3">Bạn dùng / thích tính năng nào nhất?</div>
+      <div id="tagList" class="flex flex-wrap gap-2"></div>
+    </div>
+
+    <!-- Nhận xét -->
+    <div>
+      <label for="comment" class="text-sm font-semibold block mb-2">Nhận xét & đề xuất</label>
+      <textarea id="comment" rows="4" maxlength="500" placeholder="Điều gì làm bạn hài lòng? Có gì cần cải thiện hoặc bị lỗi không?" class="w-full text-sm rounded-xl border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"></textarea>
+      <div class="text-right text-[11px] text-gray-400 mt-1"><span id="cnt">0</span>/500</div>
+    </div>
+
+    <div id="formErr" class="hidden text-xs text-red-600 dark:text-red-400" role="alert"></div>
+
+    <div class="flex flex-wrap gap-3">
+      <button id="submitBtn" type="button" class="flex-1 sm:flex-none px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-semibold rounded-xl transition">
+        <i class="fa-solid fa-paper-plane mr-1"></i><span id="submitText">Gửi đánh giá</span>
+      </button>
+      <button id="cancelBtn" type="button" class="hidden px-5 py-2.5 bg-gray-100 dark:bg-slate-700 text-sm font-semibold rounded-xl">Hủy sửa</button>
+    </div>
+  </section>
+
+  <!-- THỐNG KÊ + LỊCH SỬ -->
+  <section class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700/60 p-5 sm:p-6" aria-labelledby="histTitle">
+    <h2 id="histTitle" class="font-bold text-base mb-4">Đánh giá đã gửi</h2>
+
+    <div id="summary" class="hidden grid sm:grid-cols-[auto_1fr] gap-6 items-center mb-6 pb-6 border-b border-gray-100 dark:border-slate-700">
+      <div class="text-center sm:px-4">
+        <div id="avgNum" class="text-5xl font-bold text-amber-500">0</div>
+        <div id="avgStars" class="text-amber-500 text-sm mt-1" aria-hidden="true"></div>
+        <div id="avgCount" class="text-[11px] text-gray-500 dark:text-gray-400 mt-1"></div>
+      </div>
+      <div id="dist" class="space-y-1.5"></div>
+    </div>
+
+    <div id="empty" class="text-center text-sm text-gray-500 dark:text-gray-400 py-8">
+      <i class="fa-regular fa-star text-3xl text-gray-300 dark:text-slate-600 mb-3 block"></i>
+      Bạn chưa gửi đánh giá nào.
+    </div>
+    <ul id="list" class="space-y-3"></ul>
+  </section>
+
+  <footer class="pt-6 border-t border-gray-200 dark:border-slate-700 text-[11px] text-gray-500 dark:text-gray-400 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+    <p>© <span id="footerYear">2026</span> EduHub · Phòng Đào tạo – Tòa nhà A, Trường Đại học</p>
+    <p class="flex flex-wrap items-center gap-3">
+      <a href="terms.html" class="hover:text-blue-600 dark:hover:text-blue-400">Điều khoản</a>
+      <a href="privacy.html" class="hover:text-blue-600 dark:hover:text-blue-400">Bảo mật</a>
+      <a href="index.html" class="hover:text-blue-600 dark:hover:text-blue-400">Trang chính</a>
+    </p>
+  </footer>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  var KEY_BASE = 'eduhub_feedback';
+  var MAX_ITEMS = 50;
+  var LABELS = ['', 'Rất tệ', 'Chưa tốt', 'Bình thường', 'Tốt', 'Tuyệt vời'];
+  var CATS = [
+    { id: 'ui',       name: 'Giao diện',     icon: 'fa-palette' },
+    { id: 'speed',    name: 'Tốc độ',        icon: 'fa-bolt' },
+    { id: 'ease',     name: 'Dễ sử dụng',    icon: 'fa-hand-pointer' },
+    { id: 'features', name: 'Tính năng',     icon: 'fa-puzzle-piece' }
+  ];
+  var TAGS = ['Tổng quan', 'Môn học', 'Thời khóa biểu', 'Tạo TKB', 'Bài tập', 'Điểm số & GPA', 'Mục tiêu GPA', 'Lịch thi', 'Chuỗi học & huy hiệu', 'Boss môn học', 'Wrapped', 'Sao lưu dữ liệu'];
+
+  var state = { overall: 0, cats: {}, tags: [], editId: null };
+  var $ = function (id) { return document.getElementById(id); };
+
+  /* ---------- Lưu trữ ---------- */
+  function key() { return EduHub.userKey(KEY_BASE); }
+  function load() {
+    var a = EduHub.get(key(), []);
+    if (!Array.isArray(a)) return [];
+    return a.filter(function (r) { return r && typeof r.id === 'string' && r.overall >= 1 && r.overall <= 5; });
+  }
+  function save(arr) { return EduHub.set(key(), arr.slice(0, MAX_ITEMS)); }
+
+  /* ---------- Chế độ máy chủ (Supabase) hoặc cục bộ ---------- */
+  var cloud = EduCloud.enabled, cache = [];
+  function banner(html, tone) {
+    var b = $('modeBanner');
+    var tones = {
+      info: 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300',
+      error: 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300'
+    };
+    b.className = (tones[tone] || '') + ' text-xs rounded-xl px-4 py-3';
+    b.innerHTML = html;
+  }
+  async function reload() {
+    if (cloud) {
+      try { cache = await EduCloud.listMine(); }
+      catch (e) {
+        cache = [];
+        banner('<i class="fa-solid fa-circle-exclamation mr-1"></i>', 'error');
+        $('modeBanner').appendChild(document.createTextNode(e.message + ' '));
+        var a = document.createElement('a'); a.href = 'login.html'; a.className = 'underline font-semibold'; a.textContent = 'Đăng nhập lại';
+        $('modeBanner').appendChild(a);
+      }
+    } else cache = load();
+    renderList();
+  }
+  async function initMode() {
+    if (EduCloud.unavailable) {
+      banner('<i class="fa-solid fa-circle-exclamation mr-1"></i>Không tải được thư viện kết nối máy chủ (mạng có thể đang chặn). Hãy tải lại trang.', 'error');
+    } else if (cloud) {
+      banner('<i class="fa-solid fa-cloud mr-1"></i>Đánh giá của bạn được lưu trên <strong>máy chủ EduHub</strong>; quản trị viên có thể xem và phản hồi.', 'info');
+    }
+    await reload();
+  }
+
+  /* ---------- Sao ---------- */
+  function buildStars(container, value, onPick, size) {
+    container.innerHTML = '';
+    for (var i = 1; i <= 5; i++) {
+      (function (n) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'star' + (n <= value ? ' on' : '');
+        b.setAttribute('role', 'radio');
+        b.setAttribute('aria-checked', n === value ? 'true' : 'false');
+        b.setAttribute('aria-label', n + ' sao – ' + LABELS[n]);
+        b.innerHTML = '<i class="fa-solid fa-star"></i>';
+        b.addEventListener('click', function () { onPick(n === value ? 0 : n); });
+        b.addEventListener('keydown', function (e) {
+          if (e.key === 'ArrowRight' || e.key === 'ArrowUp') { e.preventDefault(); onPick(Math.min(5, (value || 0) + 1)); focusStar(container, Math.min(5, (value || 0) + 1)); }
+          if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') { e.preventDefault(); onPick(Math.max(1, (value || 2) - 1)); focusStar(container, Math.max(1, (value || 2) - 1)); }
+        });
+        container.appendChild(b);
+      })(i);
+    }
+  }
+  function focusStar(container, n) {
+    setTimeout(function () { var s = container.children[n - 1]; if (s) s.focus(); }, 0);
+  }
+  function starText(n) {
+    var s = '';
+    for (var i = 1; i <= 5; i++) s += '<i class="' + (i <= Math.round(n) ? 'fa-solid' : 'fa-regular') + ' fa-star"></i>';
+    return s;
+  }
+
+  function renderOverall() {
+    buildStars($('overallStars'), state.overall, function (n) { state.overall = n; renderOverall(); }, 'lg');
+    $('overallLabel').textContent = state.overall ? state.overall + '/5 – ' + LABELS[state.overall] : 'Chọn số sao để đánh giá';
+    Array.prototype.forEach.call($('overallStars').children, function (b) { b.style.fontSize = '2.25rem'; });
+  }
+  function renderCats() {
+    var wrap = $('catList');
+    wrap.innerHTML = '';
+    CATS.forEach(function (c) {
+      var row = document.createElement('div');
+      row.className = 'flex items-center justify-between gap-3';
+      var lab = document.createElement('div');
+      lab.className = 'text-sm text-gray-600 dark:text-gray-300 flex items-center gap-2';
+      lab.innerHTML = '<i class="fa-solid ' + c.icon + ' w-4 text-center text-gray-400"></i><span></span>';
+      lab.querySelector('span').textContent = c.name;
+      var box = document.createElement('div');
+      box.className = 'flex gap-1 text-lg';
+      box.setAttribute('role', 'radiogroup');
+      box.setAttribute('aria-label', c.name);
+      buildStars(box, state.cats[c.id] || 0, function (n) { state.cats[c.id] = n; renderCats(); });
+      row.appendChild(lab); row.appendChild(box);
+      wrap.appendChild(row);
+    });
+  }
+  function renderTags() {
+    var wrap = $('tagList');
+    wrap.innerHTML = '';
+    TAGS.forEach(function (t) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'chip text-xs font-medium px-3 py-1.5 rounded-full border border-gray-200 dark:border-slate-600 text-gray-600 dark:text-gray-300 hover:border-blue-400';
+      b.setAttribute('aria-pressed', state.tags.indexOf(t) >= 0 ? 'true' : 'false');
+      b.textContent = t;
+      b.addEventListener('click', function () {
+        var i = state.tags.indexOf(t);
+        if (i >= 0) state.tags.splice(i, 1); else state.tags.push(t);
+        renderTags();
+      });
+      wrap.appendChild(b);
+    });
+  }
+
+  /* ---------- Danh sách & thống kê ---------- */
+  function fmtDate(ts) {
+    var d = new Date(ts);
+    return d.toLocaleDateString('vi-VN') + ' ' + d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+  }
+  function mailtoFor(r) {
+    var lines = ['Đánh giá EduHub', 'Tổng thể: ' + r.overall + '/5 (' + LABELS[r.overall] + ')'];
+    CATS.forEach(function (c) { if (r.cats && r.cats[c.id]) lines.push(c.name + ': ' + r.cats[c.id] + '/5'); });
+    if (r.tags && r.tags.length) lines.push('Tính năng quan tâm: ' + r.tags.join(', '));
+    if (r.comment) lines.push('', 'Nhận xét:', r.comment);
+    var u = EduHub.session();
+    if (u && u.email) lines.push('', 'Người gửi: ' + u.email);
+    return 'mailto:' + EduHub.CFG.CONTACT_EMAIL + '?subject=' + encodeURIComponent('[EduHub] Đánh giá trang web') + '&body=' + encodeURIComponent(lines.join('\n'));
+  }
+
+  function renderList() {
+    var items = cache.slice().sort(function (a, b) { return b.ts - a.ts; });
+    var list = $('list');
+    list.innerHTML = '';
+    $('empty').classList.toggle('hidden', items.length > 0);
+    $('summary').classList.toggle('hidden', items.length === 0);
+    if (!items.length) return;
+
+    var sum = 0, dist = [0, 0, 0, 0, 0, 0];
+    items.forEach(function (r) { sum += r.overall; dist[r.overall]++; });
+    var avg = sum / items.length;
+    $('avgNum').textContent = avg.toFixed(1);
+    $('avgStars').innerHTML = starText(avg);
+    $('avgCount').textContent = items.length + ' đánh giá';
+    var d = $('dist'); d.innerHTML = '';
+    for (var s = 5; s >= 1; s--) {
+      var pct = Math.round(dist[s] / items.length * 100);
+      var row = document.createElement('div');
+      row.className = 'flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400';
+      row.innerHTML = '<span class="w-8 text-right">' + s + ' <i class="fa-solid fa-star text-amber-500 text-[10px]"></i></span>' +
+        '<div class="flex-1 h-2 rounded-full bg-gray-100 dark:bg-slate-700 overflow-hidden"><div class="h-full bg-amber-500 rounded-full" style="width:' + pct + '%"></div></div>' +
+        '<span class="w-8">' + dist[s] + '</span>';
+      d.appendChild(row);
+    }
+
+    items.forEach(function (r) {
+      var li = document.createElement('li');
+      li.className = 'rounded-xl border border-gray-100 dark:border-slate-700 p-4 text-sm';
+      var top = document.createElement('div');
+      top.className = 'flex items-center justify-between gap-3 flex-wrap';
+      top.innerHTML = '<div class="text-amber-500 text-sm">' + starText(r.overall) + ' <span class="ml-2 text-xs font-semibold text-gray-700 dark:text-gray-200"></span></div><div class="text-[11px] text-gray-400"></div>';
+      top.querySelector('span').textContent = LABELS[r.overall];
+      top.lastChild.textContent = fmtDate(r.ts);
+      li.appendChild(top);
+
+      var catBits = CATS.filter(function (c) { return r.cats && r.cats[c.id]; });
+      if (catBits.length) {
+        var cb = document.createElement('div');
+        cb.className = 'flex flex-wrap gap-x-4 gap-y-1 mt-2 text-[11px] text-gray-500 dark:text-gray-400';
+        catBits.forEach(function (c) {
+          var sp = document.createElement('span');
+          sp.textContent = c.name + ': ' + r.cats[c.id] + '/5';
+          cb.appendChild(sp);
+        });
+        li.appendChild(cb);
+      }
+      if (r.tags && r.tags.length) {
+        var tg = document.createElement('div');
+        tg.className = 'flex flex-wrap gap-1.5 mt-2';
+        r.tags.forEach(function (t) {
+          var sp = document.createElement('span');
+          sp.className = 'text-[11px] px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400';
+          sp.textContent = t;
+          tg.appendChild(sp);
+        });
+        li.appendChild(tg);
+      }
+      if (r.comment) {
+        var p = document.createElement('p');
+        p.className = 'mt-3 text-gray-600 dark:text-gray-300 whitespace-pre-wrap break-words';
+        p.textContent = r.comment;
+        li.appendChild(p);
+      }
+
+      if (r.reply) {
+        var rp = document.createElement('div');
+        rp.className = 'mt-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 px-3 py-2 text-xs';
+        var rh = document.createElement('div');
+        rh.className = 'font-semibold text-blue-600 dark:text-blue-400 mb-0.5';
+        rh.innerHTML = '<i class="fa-solid fa-reply mr-1"></i>Phản hồi từ quản trị' + (r.replyTs ? ' · ' + new Date(r.replyTs).toLocaleDateString('vi-VN') : '');
+        var rt = document.createElement('p');
+        rt.className = 'text-gray-600 dark:text-gray-300 whitespace-pre-wrap break-words';
+        rt.textContent = String(r.reply).slice(0, 300);
+        rp.appendChild(rh); rp.appendChild(rt);
+        li.appendChild(rp);
+      }
+
+      var act = document.createElement('div');
+      act.className = 'flex flex-wrap gap-2 mt-3 text-xs font-medium';
+      var mail = document.createElement('a');
+      mail.href = mailtoFor(r);
+      mail.className = 'px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:opacity-80';
+      mail.innerHTML = '<i class="fa-solid fa-envelope mr-1"></i>Gửi qua email';
+      var edit = document.createElement('button');
+      edit.type = 'button';
+      edit.className = 'px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-slate-700 hover:opacity-80';
+      edit.innerHTML = '<i class="fa-solid fa-pen mr-1"></i>Sửa';
+      edit.addEventListener('click', function () { startEdit(r); });
+      var del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'px-3 py-1.5 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:opacity-80';
+      del.innerHTML = '<i class="fa-solid fa-trash mr-1"></i>Xóa';
+      del.addEventListener('click', async function () {
+        if (!confirm('Xóa đánh giá này?')) return;
+        try {
+          if (cloud) await EduCloud.remove(r.id);
+          else save(load().filter(function (x) { return x.id !== r.id; }));
+        } catch (e) { EduHub.toast(e.message, 'error'); return; }
+        if (state.editId === r.id) resetForm();
+        await reload();
+        EduHub.toast('Đã xóa đánh giá', 'info');
+      });
+      act.appendChild(mail); act.appendChild(edit); act.appendChild(del);
+      li.appendChild(act);
+      list.appendChild(li);
+    });
+  }
+
+  /* ---------- Form ---------- */
+  function resetForm() {
+    state = { overall: 0, cats: {}, tags: [], editId: null };
+    $('comment').value = '';
+    $('cnt').textContent = '0';
+    $('formErr').classList.add('hidden');
+    $('editBadge').classList.add('hidden');
+    $('cancelBtn').classList.add('hidden');
+    $('submitText').textContent = 'Gửi đánh giá';
+    renderOverall(); renderCats(); renderTags();
+  }
+  function startEdit(r) {
+    state = { overall: r.overall, cats: Object.assign({}, r.cats || {}), tags: (r.tags || []).slice(), editId: r.id };
+    $('comment').value = r.comment || '';
+    $('cnt').textContent = String((r.comment || '').length);
+    $('formErr').classList.add('hidden');
+    $('editBadge').classList.remove('hidden');
+    $('cancelBtn').classList.remove('hidden');
+    $('submitText').textContent = 'Cập nhật đánh giá';
+    renderOverall(); renderCats(); renderTags();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  async function submit() {
+    var err = $('formErr');
+    if (EduCloud.unavailable) { EduHub.toast('Chưa kết nối được máy chủ. Hãy tải lại trang.', 'error'); return; }
+    if (!state.overall) {
+      err.textContent = 'Vui lòng chọn số sao đánh giá tổng thể.';
+      err.classList.remove('hidden');
+      $('overallStars').firstChild.focus();
+      return;
+    }
+    err.classList.add('hidden');
+    var cats = {};
+    CATS.forEach(function (c) { if (state.cats[c.id] >= 1 && state.cats[c.id] <= 5) cats[c.id] = state.cats[c.id]; });
+    var rec = {
+      id: state.editId || ('f' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)),
+      ts: Date.now(),
+      overall: state.overall,
+      cats: cats,
+      tags: state.tags.filter(function (t) { return TAGS.indexOf(t) >= 0; }),
+      comment: $('comment').value.trim().slice(0, 500)
+    };
+    var wasEdit = !!state.editId;
+    var btn = $('submitBtn');
+    if (cloud) {
+      btn.disabled = true;
+      try { await EduCloud.save(rec, state.editId); }
+      catch (e) { btn.disabled = false; EduHub.toast(e.message, 'error'); return; }
+      btn.disabled = false;
+    } else {
+      var all = load();
+      var idx = all.findIndex(function (x) { return x.id === rec.id; });
+      if (idx >= 0) {
+        var prev = all[idx];                      // giữ lại dấu vết kiểm duyệt của quản trị
+        if (prev.hidden) rec.hidden = true;
+        if (prev.reply) { rec.reply = prev.reply; rec.replyTs = prev.replyTs; }
+        all[idx] = rec;
+      } else all.unshift(rec);
+      if (!save(all)) { EduHub.toast('Không lưu được đánh giá. Trình duyệt có thể đang chặn lưu trữ.', 'error'); return; }
+    }
+    resetForm();
+    await reload();
+    EduHub.toast(wasEdit ? 'Đã cập nhật đánh giá' : 'Cảm ơn bạn đã đánh giá EduHub!', 'success');
+    $('histTitle').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  $('comment').addEventListener('input', function () { $('cnt').textContent = String(this.value.length); });
+  $('submitBtn').addEventListener('click', submit);
+  $('cancelBtn').addEventListener('click', resetForm);
+  $('footerYear').textContent = new Date().getFullYear();
+  if (EduHub.guardSession) EduHub.guardSession();
+  document.addEventListener('eduhub:theme', function () {});
+
+  resetForm();
+  initMode();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="vi" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduHub - Đăng nhập / Đăng ký</title>
+    <meta name="description" content="Đăng nhập hoặc tạo tài khoản EduHub để quản lý môn học, thời khóa biểu, điểm số, bài tập và lịch thi của bạn.">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Ctext x='50%25' y='53%25' dy='.35em' text-anchor='middle' font-family='sans-serif' font-size='36' font-weight='700' fill='%23fff'%3EE%3C/text%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/supabase-config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+    <script src="../assets/js/cloud.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { fontFamily: { sans: ['Be Vietnam Pro', 'sans-serif'] } } }
+        }
+    </script>
+    <style>
+        body { font-family: 'Be Vietnam Pro', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-slate-900 text-gray-800 dark:text-gray-100 antialiased min-h-screen transition-colors duration-200">
+
+    <div class="min-h-screen grid lg:grid-cols-2">
+
+        <!-- LEFT: BRANDING -->
+        <div class="hidden lg:flex relative bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 text-white p-12 flex-col justify-between overflow-hidden">
+            <div class="absolute -right-20 -bottom-20 w-96 h-96 rounded-full bg-white/10 blur-3xl"></div>
+            
+            <div class="relative z-10 flex items-center space-x-3">
+                <div class="w-11 h-11 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center font-bold text-xl">E</div>
+                <div>
+                    <span class="text-xl font-bold">EduHub</span>
+                    <span class="block text-[10px] uppercase tracking-wider text-blue-100 font-semibold">Student Portal</span>
+                </div>
+            </div>
+
+            <div class="relative z-10 max-w-md">
+                <h2 class="text-4xl font-bold leading-tight mb-4">Quản lý học tập<br>thông minh hơn mỗi ngày</h2>
+                <p class="text-blue-100 text-sm leading-relaxed mb-8">Theo dõi lịch học, deadline, điểm số và tiến độ các môn học của bạn trên một nền tảng duy nhất.</p>
+                <ul class="space-y-3 text-sm">
+                    <li class="flex items-center"><i class="fa-solid fa-circle-check mr-3 text-emerald-300"></i> Nhắc nhở deadline tự động</li>
+                    <li class="flex items-center"><i class="fa-solid fa-circle-check mr-3 text-emerald-300"></i> So sánh học lực giữa các học kỳ</li>
+                    <li class="flex items-center"><i class="fa-solid fa-circle-check mr-3 text-emerald-300"></i> Nộp bài tập trực tuyến nhanh chóng</li>
+                </ul>
+            </div>
+
+            <p class="relative z-10 text-xs text-blue-100">© <span id="brandYear">2026</span> EduHub. All rights reserved.</p>
+        </div>
+
+        <!-- RIGHT: FORMS -->
+        <div class="flex items-center justify-center p-6 sm:p-10 relative">
+            <button id="themeToggle" class="absolute top-4 right-4 p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white rounded-xl hover:bg-gray-100 dark:hover:bg-slate-800 transition" title="Đổi giao diện Sáng/Tối">
+                <i id="themeIcon" class="fa-solid fa-moon text-lg"></i>
+            </button>
+
+            <div class="w-full max-w-md">
+                <!-- Mobile logo -->
+                <div class="lg:hidden flex items-center space-x-3 mb-8">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-500/30">E</div>
+                    <span class="text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">EduHub</span>
+                </div>
+
+                <!-- Tabs -->
+                <div class="flex bg-gray-100 dark:bg-slate-800 rounded-xl p-1 mb-6">
+                    <button id="tabLogin" onclick="showForm('login')" class="flex-1 py-2 text-sm font-semibold rounded-lg transition bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm">Đăng nhập</button>
+                    <button id="tabRegister" onclick="showForm('register')" class="flex-1 py-2 text-sm font-semibold rounded-lg transition text-gray-500 dark:text-gray-400">Đăng ký</button>
+                </div>
+
+                <div class="mb-6">
+                    <h1 id="formTitle" class="text-2xl font-bold">Chào mừng trở lại 👋</h1>
+                    <p id="formSubtitle" class="text-sm text-gray-500 dark:text-gray-400 mt-1">Đăng nhập để tiếp tục học tập</p>
+                </div>
+
+                <!-- Alert -->
+                <div id="alertBox" class="hidden mb-4 p-3 rounded-xl text-xs font-medium flex items-start gap-2"></div>
+
+                <!-- Google button -->
+                <div class="mb-5">
+                    <div id="googleBtnContainer" class="flex justify-center"></div>
+                    <button id="googleFallbackBtn" onclick="googleFallback()" class="hidden w-full py-2.5 border border-gray-200 dark:border-slate-600 rounded-xl text-sm font-medium flex items-center justify-center gap-3 hover:bg-gray-50 dark:hover:bg-slate-800 transition">
+                        <svg class="w-5 h-5" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+                        <span id="googleFallbackText">Tiếp tục với Google</span>
+                    </button>
+                </div>
+
+                <div class="flex items-center mb-5">
+                    <div class="flex-1 h-px bg-gray-200 dark:bg-slate-700"></div>
+                    <span class="px-3 text-xs text-gray-400">hoặc dùng email</span>
+                    <div class="flex-1 h-px bg-gray-200 dark:bg-slate-700"></div>
+                </div>
+
+                <!-- LOGIN FORM -->
+                <form id="loginForm" class="space-y-4" onsubmit="handleLogin(event)">
+                    <div>
+                        <label class="block text-xs font-semibold mb-1.5">Email</label>
+                        <div class="relative">
+                            <i class="fa-regular fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input id="loginEmail" type="email" required placeholder="ten@email.com" class="w-full pl-10 pr-4 py-2.5 text-sm bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition">
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between mb-1.5">
+                            <label class="block text-xs font-semibold">Mật khẩu</label>
+                            <a href="#" onclick="forgotPassword(event)" class="text-xs text-blue-600 dark:text-blue-400 hover:underline">Quên mật khẩu?</a>
+                        </div>
+                        <div class="relative">
+                            <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input id="loginPassword" type="password" required placeholder="••••••••" class="w-full pl-10 pr-10 py-2.5 text-sm bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition">
+                            <button type="button" onclick="togglePw('loginPassword', this)" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"><i class="fa-regular fa-eye"></i></button>
+                        </div>
+                    </div>
+                    <label class="flex items-center text-xs text-gray-600 dark:text-gray-300 cursor-pointer">
+                        <input id="rememberMe" type="checkbox" checked class="mr-2 rounded text-blue-600"> Ghi nhớ đăng nhập
+                    </label>
+                    <button type="submit" class="w-full py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-semibold rounded-xl shadow-lg shadow-blue-500/20 transition">Đăng nhập</button>
+                </form>
+
+                <!-- REGISTER FORM -->
+                <form id="registerForm" class="space-y-4 hidden" onsubmit="handleRegister(event)">
+                    <div>
+                        <label class="block text-xs font-semibold mb-1.5">Họ và tên</label>
+                        <div class="relative">
+                            <i class="fa-regular fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input id="regName" type="text" required placeholder="Nguyễn Văn A" class="w-full pl-10 pr-4 py-2.5 text-sm bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1.5">Mã số sinh viên <span class="text-gray-400 font-normal">(không bắt buộc)</span></label>
+                        <div class="relative">
+                            <i class="fa-regular fa-id-card absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input id="regMssv" type="text" placeholder="SV20261001" class="w-full pl-10 pr-4 py-2.5 text-sm bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1.5">Email</label>
+                        <div class="relative">
+                            <i class="fa-regular fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input id="regEmail" type="email" required placeholder="ten@email.com" class="w-full pl-10 pr-4 py-2.5 text-sm bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold mb-1.5">Mật khẩu</label>
+                            <input id="regPassword" type="password" required minlength="8" placeholder="Tối thiểu 8 ký tự" oninput="checkStrength()" class="w-full px-4 py-2.5 text-sm bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold mb-1.5">Nhập lại</label>
+                            <input id="regPassword2" type="password" required placeholder="Nhập lại mật khẩu" class="w-full px-4 py-2.5 text-sm bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition">
+                        </div>
+                    </div>
+                    <div>
+                        <div class="w-full bg-gray-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                            <div id="strengthBar" class="h-full rounded-full transition-all duration-300" style="width:0%"></div>
+                        </div>
+                        <p id="strengthText" class="text-[11px] text-gray-400 mt-1">Độ mạnh mật khẩu</p>
+                    </div>
+                    <label class="flex items-start text-xs text-gray-600 dark:text-gray-300 cursor-pointer">
+                        <input id="regAgree" type="checkbox" required class="mr-2 mt-0.5 rounded text-blue-600">
+                        <span>Tôi đồng ý với <a href="terms.html" target="_blank" rel="noopener" class="text-blue-600 dark:text-blue-400 font-semibold hover:underline">Điều khoản sử dụng</a> và <a href="privacy.html" target="_blank" rel="noopener" class="text-blue-600 dark:text-blue-400 font-semibold hover:underline">Chính sách bảo mật</a> của EduHub</span>
+                    </label>
+                    <button type="submit" class="w-full py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-semibold rounded-xl shadow-lg shadow-blue-500/20 transition">Tạo tài khoản</button>
+                </form>
+
+                <!-- RESET PASSWORD FORM -->
+                <form id="resetForm" class="space-y-4 hidden" onsubmit="handleReset(event)">
+                    <div>
+                        <label class="block text-xs font-semibold mb-1.5" for="resetEmail">Email đã đăng ký</label>
+                        <input id="resetEmail" type="email" required placeholder="ten@email.com" class="w-full px-4 py-2.5 text-sm bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1.5" for="resetCode">Mã khôi phục</label>
+                        <input id="resetCode" type="text" required autocomplete="off" spellcheck="false" placeholder="XXXX-XXXX-XXXX-XXXX" class="w-full px-4 py-2.5 text-sm tracking-wider uppercase bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold mb-1.5" for="resetPassword">Mật khẩu mới</label>
+                            <input id="resetPassword" type="password" required minlength="8" placeholder="Tối thiểu 8 ký tự" class="w-full px-4 py-2.5 text-sm bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold mb-1.5" for="resetPassword2">Nhập lại</label>
+                            <input id="resetPassword2" type="password" required placeholder="Nhập lại mật khẩu mới" class="w-full px-4 py-2.5 text-sm bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition">
+                        </div>
+                    </div>
+                    <p class="text-[11px] text-gray-400">Mã khôi phục được hiển thị một lần khi bạn tạo tài khoản (hoặc tạo lại trong Cài đặt &amp; Dữ liệu). Bản demo chưa có máy chủ nên không gửi email xác thực; nếu mất mã, bạn không thể đặt lại mật khẩu.</p>
+                    <button type="submit" class="w-full py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-semibold rounded-xl shadow-lg shadow-blue-500/20 transition">Đặt lại mật khẩu</button>
+                    <button type="button" onclick="showForm('login')" class="w-full text-xs text-gray-500 dark:text-gray-400 hover:underline">Quay lại đăng nhập</button>
+                </form>
+
+                <p id="switchText" class="text-center text-xs text-gray-500 dark:text-gray-400 mt-6">
+                    Chưa có tài khoản? <a href="#" onclick="showForm('register'); return false;" class="text-blue-600 dark:text-blue-400 font-semibold hover:underline">Đăng ký ngay</a>
+                </p>
+
+                <p class="text-center text-[11px] text-gray-400 dark:text-gray-500 mt-6">
+                    <a href="terms.html" class="hover:text-blue-600 dark:hover:text-blue-400">Điều khoản sử dụng</a>
+                    <span class="mx-1">·</span>
+                    <a href="privacy.html" class="hover:text-blue-600 dark:hover:text-blue-400">Chính sách bảo mật</a>
+                    <span class="mx-1">·</span>
+                    <a href="mailto:phongdaotao@eduhub.edu.vn" class="hover:text-blue-600 dark:hover:text-blue-400">Hỗ trợ</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ================= CẤU HÌNH =================
+           1. Vào https://console.cloud.google.com/apis/credentials
+           2. Tạo "OAuth client ID" loại "Web application"
+           3. Thêm domain của bạn vào "Authorized JavaScript origins"
+              (khi test local: http://localhost:5500 hoặc http://localhost:3000 ...)
+           4. Dán Client ID vào bên dưới.
+           Lưu ý: Google đăng nhập KHÔNG chạy khi mở file bằng file:// — cần chạy qua http server.
+        ================================================ */
+        const GOOGLE_CLIENT_ID = '684693390710-6thjue7q704f34r29qk4eg47ec21ebbo.apps.googleusercontent.com';
+        const DASHBOARD_URL = 'index.html';
+        const UNAVAILABLE_MSG = 'Không tải được thư viện kết nối máy chủ (có thể mạng đang chặn). Hãy kiểm tra mạng rồi tải lại trang.';
+        let resetMode = 'local';   // 'local' (mã khôi phục) | 'request' (gửi email) | 'newpass' (đặt mật khẩu mới sau khi bấm link)
+
+        const USERS_KEY = 'eduhub_users';      // danh sách tài khoản (demo, lưu localStorage)
+        const SESSION_KEY = 'eduhub_session';  // phiên đăng nhập hiện tại
+
+        /* ---------- Tiện ích ---------- */
+        function getUsers() {
+            try { return JSON.parse(localStorage.getItem(USERS_KEY)) || []; } catch { return []; }
+        }
+        function saveUsers(users) {
+            try { localStorage.setItem(USERS_KEY, JSON.stringify(users)); return true; }
+            catch { showAlert('Không lưu được dữ liệu: trình duyệt đang chặn lưu trữ cục bộ hoặc đã đầy bộ nhớ.'); return false; }
+        }
+        const lockMsg = sec => `Bạn đã nhập sai quá nhiều lần. Hãy thử lại sau ${Math.ceil(sec / 60)} phút.`;
+
+        /* Từ bản cập nhật này, mật khẩu dùng PBKDF2-SHA256 + salt ngẫu nhiên (xem config.js).
+           Tài khoản cũ chỉ có SHA-256 vẫn đăng nhập được và sẽ được nâng cấp tự động. */
+        const hashPassword = (pw) => EduHub.hashPassword(pw);
+
+        function startSession(user, remember = true) {
+            const data = JSON.stringify({ ...user, loginAt: Date.now() });
+            // "Ghi nhớ" -> localStorage, ngược lại -> sessionStorage
+            localStorage.removeItem(SESSION_KEY);
+            sessionStorage.removeItem(SESSION_KEY);
+            (remember ? localStorage : sessionStorage).setItem(SESSION_KEY, data);
+            window.location.href = DASHBOARD_URL;
+        }
+
+        function showAlert(msg, type = 'error') {
+            const box = document.getElementById('alertBox');
+            const styles = {
+                error: 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-300 border border-red-100 dark:border-red-800',
+                success: 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-300 border border-emerald-100 dark:border-emerald-800',
+                info: 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 border border-blue-100 dark:border-blue-800'
+            };
+            const icons = { error: 'fa-circle-exclamation', success: 'fa-circle-check', info: 'fa-circle-info' };
+            box.className = 'mb-4 p-3 rounded-xl text-xs font-medium flex items-start gap-2 ' + styles[type];
+            box.innerHTML = `<i class="fa-solid ${icons[type]} mt-0.5"></i><span></span>`;
+            box.querySelector('span').textContent = msg;
+        }
+        function hideAlert() { document.getElementById('alertBox').classList.add('hidden'); }
+
+        /* ---------- Chuyển Đăng nhập / Đăng ký ---------- */
+        function showForm(which) {
+            hideAlert();
+            const isLogin = which === 'login', isRegister = which === 'register';
+            document.getElementById('loginForm').classList.toggle('hidden', !isLogin);
+            document.getElementById('registerForm').classList.toggle('hidden', !isRegister);
+            document.getElementById('resetForm').classList.toggle('hidden', which !== 'reset');
+
+            const active = 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm';
+            const inactive = 'text-gray-500 dark:text-gray-400';
+            const base = 'flex-1 py-2 text-sm font-semibold rounded-lg transition ';
+            document.getElementById('tabLogin').className = base + (isLogin ? active : inactive);
+            document.getElementById('tabRegister').className = base + (isRegister ? active : inactive);
+
+            const titles = {
+                login: ['Chào mừng trở lại 👋', 'Đăng nhập để tiếp tục học tập'],
+                register: ['Tạo tài khoản mới 🎓', 'Chỉ mất chưa đến 1 phút để bắt đầu'],
+                reset: ['Đặt lại mật khẩu 🔑', 'Nhập email và mã khôi phục của bạn']
+            };
+            const t = titles[which] || titles.login;
+            document.getElementById('formTitle').textContent = t[0];
+            document.getElementById('formSubtitle').textContent = t[1];
+            document.getElementById('googleBtnContainer').classList.toggle('hidden', !isLogin);
+            document.getElementById('googleFallbackText').textContent = isLogin ? 'Tiếp tục với Google' : 'Đăng ký với Google';
+            document.getElementById('switchText').innerHTML = isLogin
+                ? `Chưa có tài khoản? <a href="#" onclick="showForm('register'); return false;" class="text-blue-600 dark:text-blue-400 font-semibold hover:underline">Đăng ký ngay</a>`
+                : `Đã có tài khoản? <a href="#" onclick="showForm('login'); return false;" class="text-blue-600 dark:text-blue-400 font-semibold hover:underline">Đăng nhập</a>`;
+        }
+
+        function togglePw(id, btn) {
+            const input = document.getElementById(id);
+            const show = input.type === 'password';
+            input.type = show ? 'text' : 'password';
+            btn.innerHTML = `<i class="fa-regular ${show ? 'fa-eye-slash' : 'fa-eye'}"></i>`;
+        }
+
+        function checkStrength() {
+            const pw = document.getElementById('regPassword').value;
+            let score = 0;
+            if (pw.length >= 8) score++;
+            if (/[A-Z]/.test(pw) && /[a-z]/.test(pw)) score++;
+            if (/\d/.test(pw)) score++;
+            if (/[^A-Za-z0-9]/.test(pw)) score++;
+            const levels = [
+                { w: 0, c: 'bg-gray-300', t: 'Độ mạnh mật khẩu' },
+                { w: 25, c: 'bg-red-500', t: 'Yếu' },
+                { w: 50, c: 'bg-amber-500', t: 'Trung bình' },
+                { w: 75, c: 'bg-blue-500', t: 'Khá mạnh' },
+                { w: 100, c: 'bg-emerald-500', t: 'Rất mạnh' }
+            ];
+            const lv = levels[pw ? Math.max(score, 1) : 0];
+            const bar = document.getElementById('strengthBar');
+            bar.style.width = lv.w + '%';
+            bar.className = 'h-full rounded-full transition-all duration-300 ' + lv.c;
+            document.getElementById('strengthText').textContent = lv.t;
+        }
+
+        /* ---------- Đăng nhập email ---------- */
+        async function handleLogin(e) {
+            e.preventDefault();
+            hideAlert();
+            const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+            const pw = document.getElementById('loginPassword').value;
+            const remember = document.getElementById('rememberMe').checked;
+
+            if (EduCloud.unavailable) return showAlert(UNAVAILABLE_MSG);
+            if (EduCloud.enabled) {   // CHẾ ĐỘ MÁY CHỦ (Supabase)
+                try {
+                    const p = await EduCloud.signIn(email, pw);
+                    return startSession({ name: p.name, email: p.email, mssv: p.mssv, picture: null, provider: p.provider, cloud: true }, remember);
+                } catch (err) { return showAlert(err.message); }
+            }
+
+            const lock = EduHub.attempt.remaining('login:' + email);
+            if (lock) return showAlert(lockMsg(lock));
+            const user = getUsers().find(u => u.email === email);
+            if (!user) return showAlert('Email này chưa được đăng ký. Hãy tạo tài khoản mới.');
+            if (user.provider === 'google' && !user.passwordHash)
+                return showAlert('Tài khoản này đăng ký bằng Google. Hãy bấm "Tiếp tục với Google".');
+            if (!await EduHub.verifyPassword(pw, user)) {
+                const wait = EduHub.attempt.fail('login:' + email);
+                return showAlert(wait ? lockMsg(wait) : 'Mật khẩu không đúng.');
+            }
+            EduHub.attempt.ok('login:' + email);
+            if (EduHub.isLegacyHash(user)) {   // nâng cấp hash cũ (SHA-256, không salt) lên PBKDF2
+                const all = getUsers();
+                const i = all.findIndex(x => x.email === user.email);
+                if (i >= 0) { all[i].passwordHash = await EduHub.hashPassword(pw); all[i].passwordUpgradedAt = Date.now(); saveUsers(all); }
+            }
+
+            startSession({ name: user.name, email: user.email, mssv: user.mssv, picture: user.picture || null, provider: 'email' }, remember);
+        }
+
+        /* ---------- Đăng ký email ---------- */
+        async function handleRegister(e) {
+            e.preventDefault();
+            hideAlert();
+            const name = document.getElementById('regName').value.trim();
+            const mssv = document.getElementById('regMssv').value.trim();
+            const email = document.getElementById('regEmail').value.trim().toLowerCase();
+            const pw = document.getElementById('regPassword').value;
+            const pw2 = document.getElementById('regPassword2').value;
+
+            if (pw.length < 8) return showAlert('Mật khẩu phải có ít nhất 8 ký tự.');
+            if (pw !== pw2) return showAlert('Mật khẩu nhập lại không khớp.');
+
+            if (EduCloud.unavailable) return showAlert(UNAVAILABLE_MSG);
+            if (EduCloud.enabled) {   // CHẾ ĐỘ MÁY CHỦ (Supabase)
+                try {
+                    const r = await EduCloud.signUp({ email, password: pw, name, mssv });
+                    if (r.needsConfirm) {
+                        showForm('login');
+                        return showAlert('Đăng ký thành công! Hãy mở email để xác nhận tài khoản rồi đăng nhập.', 'success');
+                    }
+                    return startSession({ name, email, mssv, picture: null, provider: 'email', cloud: true }, true);
+                } catch (err) { return showAlert(err.message); }
+            }
+
+            const users = getUsers();
+            if (users.some(u => u.email === email)) return showAlert('Email này đã được đăng ký. Hãy đăng nhập.');
+
+            const code = EduHub.newRecoveryCode();
+            users.push({ name, mssv, email, passwordHash: await EduHub.hashPassword(pw), recoveryHash: await EduHub.hashRecovery(code), provider: 'email', createdAt: Date.now() });
+            if (!saveUsers(users)) return;
+            // Hiện mã khôi phục MỘT lần rồi mới vào trang chính
+            EduHub.showRecoveryCode(code, () => startSession({ name, email, mssv, picture: null, provider: 'email' }, true), 'Lưu mã khôi phục của bạn');
+        }
+
+        /* Đặt lại mật khẩu bằng MÃ KHÔI PHỤC (bí mật, 80 bit, chỉ lưu dạng băm PBKDF2).
+           Trước đây dùng email + MSSV, nhưng MSSV không phải bí mật nên ai biết cũng chiếm được tài khoản.
+           Lưu ý: vì chưa có máy chủ, mọi cơ chế phía trình duyệt đều có thể bị người có quyền truy cập thiết bị này vượt qua. */
+        function setResetMode(mode) {
+            resetMode = mode;
+            const f = document.getElementById('resetForm');
+            const email = document.getElementById('resetEmail'), code = document.getElementById('resetCode');
+            const p1 = document.getElementById('resetPassword'), p2 = document.getElementById('resetPassword2');
+            const btn = f.querySelector('button[type=submit]');
+            if (!btn.dataset.orig) btn.dataset.orig = btn.textContent.trim();
+            email.closest('div').classList.toggle('hidden', mode === 'newpass');
+            code.closest('div').classList.toggle('hidden', mode !== 'local');
+            p1.closest('.grid').classList.toggle('hidden', mode === 'request');
+            const note = f.querySelector('p'); if (note) note.classList.toggle('hidden', mode !== 'local');
+            email.required = mode !== 'newpass'; code.required = mode === 'local';
+            p1.required = p2.required = mode !== 'request';
+            btn.textContent = mode === 'request' ? 'Gửi liên kết đặt lại' : btn.dataset.orig;
+            const sub = document.getElementById('formSubtitle');
+            if (mode === 'request') sub.textContent = 'Nhập email để nhận liên kết đặt lại mật khẩu';
+            if (mode === 'newpass') sub.textContent = 'Nhập mật khẩu mới cho tài khoản của bạn';
+        }
+        function forgotPassword(e) {
+            e.preventDefault();
+            showForm('reset');
+            setResetMode(EduCloud.enabled ? 'request' : 'local');
+        }
+        async function cloudReset() {
+            if (resetMode === 'request') {
+                const email = document.getElementById('resetEmail').value.trim().toLowerCase();
+                try {
+                    await EduCloud.resetPassword(email);
+                    showAlert('Nếu email đã đăng ký, liên kết đặt lại mật khẩu đã được gửi. Hãy kiểm tra hộp thư (cả mục Spam).', 'success');
+                } catch (err) { showAlert(err.message); }
+                return;
+            }
+            const pw = document.getElementById('resetPassword').value;
+            const pw2 = document.getElementById('resetPassword2').value;
+            if (pw.length < 8) return showAlert('Mật khẩu mới phải có ít nhất 8 ký tự.');
+            if (pw !== pw2) return showAlert('Mật khẩu nhập lại không khớp.');
+            try {
+                await EduCloud.updatePassword(pw);
+                await EduCloud.signOut();
+                history.replaceState(null, '', location.pathname);
+                ['resetPassword', 'resetPassword2'].forEach(i => document.getElementById(i).value = '');
+                showForm('login');
+                showAlert('Đã đặt lại mật khẩu. Hãy đăng nhập bằng mật khẩu mới.', 'success');
+            } catch (err) { showAlert(err.message); }
+        }
+        async function handleReset(ev) {
+            ev.preventDefault();
+            hideAlert();
+            if (EduCloud.unavailable) return showAlert(UNAVAILABLE_MSG);
+            if (EduCloud.enabled) return cloudReset();
+            const email = document.getElementById('resetEmail').value.trim().toLowerCase();
+            const codeIn = document.getElementById('resetCode').value;
+            const pw = document.getElementById('resetPassword').value;
+            const pw2 = document.getElementById('resetPassword2').value;
+            const lock = EduHub.attempt.remaining('reset:' + email);
+            if (lock) return showAlert(lockMsg(lock));
+            const users = getUsers();
+            const user = users.find(u => u.email === email);
+            const generic = 'Email hoặc mã khôi phục không đúng.';
+            if (!user) return showAlert(generic);
+            if (user.provider === 'google' && !user.passwordHash)
+                return showAlert('Tài khoản này đăng nhập bằng Google. Hãy bấm "Tiếp tục với Google".');
+            if (!user.recoveryHash)
+                return showAlert('Tài khoản này chưa có mã khôi phục (tạo từ phiên bản cũ). Hãy đăng nhập bằng mật khẩu hiện tại rồi tạo mã trong Cài đặt & Dữ liệu.');
+            if (pw.length < 8) return showAlert('Mật khẩu mới phải có ít nhất 8 ký tự.');
+            if (pw !== pw2) return showAlert('Mật khẩu nhập lại không khớp.');
+            if (!await EduHub.verifyRecovery(codeIn, user)) {
+                const wait = EduHub.attempt.fail('reset:' + email);
+                return showAlert(wait ? lockMsg(wait) : generic);
+            }
+            EduHub.attempt.ok('reset:' + email);
+            EduHub.attempt.ok('login:' + email);
+            const newCode = EduHub.newRecoveryCode();                    // mã dùng một lần: đổi mã mới sau mỗi lần đặt lại
+            user.passwordHash = await EduHub.hashPassword(pw);
+            user.recoveryHash = await EduHub.hashRecovery(newCode);
+            user.passwordUpdatedAt = Date.now();
+            if (!saveUsers(users)) return;
+            EduHub.showRecoveryCode(newCode, () => {
+                showForm('login');
+                showAlert('Đã đặt lại mật khẩu. Hãy đăng nhập bằng mật khẩu mới.', 'success');
+            }, 'Mã khôi phục MỚI của bạn');
+            ['resetPassword', 'resetPassword2', 'resetCode'].forEach(i => document.getElementById(i).value = '');
+        }
+
+        /* ---------- Google Sign-In (Google Identity Services) ---------- */
+        function parseJwt(token) {
+            const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+            const json = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+            return JSON.parse(json);
+        }
+
+        // Google gọi hàm này sau khi người dùng chọn tài khoản
+        function handleGoogleCredential(response) {
+            try {
+                const p = parseJwt(response.credential);
+                if (EduCloud.unavailable) return showAlert(UNAVAILABLE_MSG);
+                if (EduCloud.enabled) {   // CHẾ ĐỘ MÁY CHỦ: đổi mã Google lấy phiên Supabase
+                    EduCloud.signInGoogle(response.credential)
+                        .then(pr => startSession({ name: pr.name || p.name, email: pr.email, mssv: pr.mssv, picture: p.picture || null, provider: 'google', cloud: true }, true))
+                        .catch(err => showAlert(err.message));
+                    return;
+                }
+                const email = (p.email || '').toLowerCase();
+                const users = getUsers();
+                let user = users.find(u => u.email === email);
+
+                if (!user) {
+                    // Chưa có tài khoản -> tự động đăng ký bằng Google
+                    user = { name: p.name, email, picture: p.picture, mssv: '', provider: 'google', googleId: p.sub, createdAt: Date.now() };
+                    users.push(user);
+                } else {
+                    // Đã có -> cập nhật ảnh/tên từ Google
+                    user.picture = p.picture || user.picture;
+                    user.googleId = p.sub;
+                }
+                saveUsers(users);
+
+                startSession({ name: user.name, email: user.email, mssv: user.mssv, picture: user.picture, provider: 'google' }, true);
+            } catch (err) {
+                showAlert('Không thể xử lý phản hồi từ Google. Vui lòng thử lại.');
+            }
+        }
+
+        function googleConfigured() {
+            return !GOOGLE_CLIENT_ID.startsWith('YOUR_GOOGLE_CLIENT_ID');
+        }
+
+        let googleTries = 0;
+        function initGoogle() {
+            if (!window.google || !google.accounts) {
+                if (++googleTries > 15) {   // ~3 giây: mạng trường/công ty có thể chặn Google
+                    const fb = document.getElementById('googleFallbackBtn');
+                    fb.dataset.shown = '1';
+                    fb.classList.remove('hidden');
+                    return;
+                }
+                return setTimeout(initGoogle, 200);
+            }
+            if (!googleConfigured()) {
+                document.getElementById('googleFallbackBtn').classList.remove('hidden');
+                return;
+            }
+            google.accounts.id.initialize({
+                client_id: GOOGLE_CLIENT_ID,
+                callback: handleGoogleCredential,
+                ux_mode: 'popup'
+            });
+            const isDark = document.documentElement.classList.contains('dark');
+            google.accounts.id.renderButton(document.getElementById('googleBtnContainer'), {
+                theme: isDark ? 'filled_black' : 'outline',
+                size: 'large', shape: 'pill', width: 380, text: 'continue_with', locale: 'vi'
+            });
+        }
+
+        function googleFallback() {
+            showAlert('Bạn chưa cấu hình Google Client ID. Mở login.html, tìm GOOGLE_CLIENT_ID và dán Client ID từ Google Cloud Console vào.', 'info');
+        }
+
+        window.addEventListener('load', initGoogle);
+
+        /* ---------- Giao diện Sáng/Tối ----------
+           Việc áp dụng và ghi nhớ do config.js đảm nhiệm; ở đây chỉ vẽ lại nút Google
+           khi theme đổi để nút hiển thị đúng tông màu. */
+        document.addEventListener('eduhub:theme', () => {
+            if (googleConfigured() && window.google) {
+                document.getElementById('googleBtnContainer').innerHTML = '';
+                initGoogle();
+            }
+        });
+        const brandYear = document.getElementById('brandYear');
+        if (brandYear) brandYear.textContent = new Date().getFullYear();
+
+        /* ---------- Nếu đã đăng nhập thì vào thẳng dashboard ---------- */
+        if (EduCloud.unavailable) showAlert(UNAVAILABLE_MSG);
+        if (EduCloud.enabled) {   // bấm link "đặt lại mật khẩu" trong email -> hiện form nhập mật khẩu mới
+            EduCloud.onRecovery(() => { showForm('reset'); setResetMode('newpass'); showAlert('Hãy nhập mật khẩu mới cho tài khoản của bạn.', 'info'); });
+        }
+        (async () => {
+            const hasLocal = localStorage.getItem(SESSION_KEY) || sessionStorage.getItem(SESSION_KEY);
+            if (!hasLocal || /type=recovery/.test(location.hash)) return;
+            if (EduCloud.enabled) {   // chế độ máy chủ: phiên cũ không còn tài khoản đám mây -> bắt đăng nhập lại
+                const u = await EduCloud.user();
+                if (!u) { localStorage.removeItem(SESSION_KEY); sessionStorage.removeItem(SESSION_KEY); return; }
+            }
+            window.location.replace(DASHBOARD_URL);
+        })();
+    </script>
+</body>
+</html>

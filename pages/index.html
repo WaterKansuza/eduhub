@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="vi" class="light">
+<head>
+    <script>
+        // Chưa đăng nhập -> quay về trang đăng nhập
+        if (!localStorage.getItem('eduhub_session') && !sessionStorage.getItem('eduhub_session')) {
+            window.location.replace('login.html');
+        }
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduHub - Nền Tảng Quản Lý Học Tập Sinh Viên</title>
+    <meta name="description" content="EduHub - nền tảng quản lý học tập cho sinh viên: môn học, thời khóa biểu tự động, bảng điểm GPA, bài tập, lịch thi và thông báo.">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Ctext x='50%25' y='53%25' dy='.35em' text-anchor='middle' font-family='sans-serif' font-size='36' font-weight='700' fill='%23fff'%3EE%3C/text%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Cấu hình & tiện ích dùng chung (phải nạp trước) -->
+    <script src="../assets/js/config.js"></script>
+    <script>EduHub.guardSession();</script>
+<script src="../assets/js/supabase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="../assets/js/cloud.js"></script>
+<script src="../assets/js/sync.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts: Be Vietnam Pro -->
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Be Vietnam Pro', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+        }
+        /* Custom scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        /* In bảng điểm / thời khóa biểu gọn gàng */
+        @media print {
+            aside, header, .no-print { display: none !important; }
+            body { background: #fff !important; color: #000 !important; }
+            main { overflow: visible !important; }
+        }
+    </style>
+<link rel="stylesheet" href="../assets/css/simple.css">
+</head>
+<body class="bg-gray-50 dark:bg-slate-900 text-gray-800 dark:text-gray-100 antialiased min-h-screen flex flex-col transition-colors duration-200">
+
+    <!-- Lớp phủ khi mở sidebar trên mobile (bấm ra ngoài để đóng) -->
+    <div id="sidebarOverlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-20 hidden md:hidden"></div>
+
+    <div class="flex h-screen overflow-hidden">
+
+        <!-- SIDEBAR NAVIGATION -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-30 w-64 bg-white dark:bg-slate-800 border-r border-gray-200 dark:border-slate-700 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col">
+            <!-- Brand Logo -->
+            <div class="flex items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-slate-700">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-500/30">
+                        E
+                    </div>
+                    <div>
+                        <span class="text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">EduHub</span>
+                        
+                    </div>
+                </div>
+                <button id="closeSidebarMobile" class="md:hidden text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Nav Links -->
+            <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+                <div class="text-[11px] text-gray-400 px-4 pb-2 font-semibold tracking-wide">MENU CHÍNH</div>
+                <button type="button" onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 transition-colors text-left">
+                    <i class="fa-solid fa-chart-pie w-5 h-5 mr-3 flex items-center justify-center text-lg"></i>
+                    Tổng quan
+                </button>
+                <button type="button" onclick="switchTab('courses')" id="nav-courses" class="nav-item w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white transition-colors text-left">
+                    <i class="fa-solid fa-book-open w-5 h-5 mr-3 flex items-center justify-center text-lg"></i>
+                    Môn học &amp; TKB
+                </button>
+                <button type="button" onclick="switchTab('assignments')" id="nav-assignments" class="nav-item w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white transition-colors text-left">
+                    <i class="fa-solid fa-list-check w-5 h-5 mr-3 flex items-center justify-center text-lg"></i>
+                    Bài tập
+                    <span id="navAssignmentsBadge" class="hidden ml-auto bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-semibold px-2 py-0.5 rounded-full">0</span>
+                </button>
+                <button type="button" onclick="switchTab('grades')" id="nav-grades" class="nav-item w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white transition-colors text-left">
+                    <i class="fa-solid fa-graduation-cap w-5 h-5 mr-3 flex items-center justify-center text-lg"></i>
+                    Điểm số
+                </button>
+                <button type="button" onclick="switchTab('exams')" id="nav-exams" class="nav-item w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white transition-colors text-left">
+                    <i class="fa-solid fa-file-pen w-5 h-5 mr-3 flex items-center justify-center text-lg"></i>
+                    Lịch thi
+                </button>
+                <button type="button" onclick="switchTab('notifications')" id="nav-notifications" class="nav-item w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white transition-colors text-left">
+                    <i class="fa-solid fa-bell w-5 h-5 mr-3 flex items-center justify-center text-lg"></i>
+                    Thông báo
+                    <span id="navNotifBadge" class="hidden ml-auto bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+                </button>
+                <a href="feedback.html" class="nav-item flex items-center px-4 py-3 text-sm font-medium rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white transition-colors">
+                    <i class="fa-solid fa-star w-5 h-5 mr-3 flex items-center justify-center text-lg"></i>
+                    Đánh giá web
+                </a>
+                <button type="button" onclick="switchTab('settings')" id="nav-settings" class="nav-item w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white transition-colors text-left">
+                    <i class="fa-solid fa-gear w-5 h-5 mr-3 flex items-center justify-center text-lg"></i>
+                    Cài đặt
+                </button>
+            </nav>
+
+            <!-- Đăng xuất -->
+            <div class="p-4 border-t border-gray-200 dark:border-slate-700">
+                <a href="logout.html" onclick="return confirm('Bạn có chắc muốn đăng xuất?')" class="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-sm font-semibold text-red-600 dark:text-red-400 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 transition">
+                    <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+                </a>
+            </div>
+        </aside>
+
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden md:ml-64">
+
+            <!-- HEADER BAR -->
+            <header class="bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 h-16 flex items-center justify-between px-4 sm:px-6 z-20">
+                <div class="flex items-center space-x-3">
+                    <button id="openSidebarMobile" aria-label="Mở thanh điều hướng" aria-expanded="false" class="md:hidden text-gray-600 dark:text-gray-300 hover:text-gray-900 focus:outline-none">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                    <!-- Search Input -->
+                    <div id="searchWrap" class="relative hidden sm:block w-64 lg:w-80">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input id="globalSearch" type="search" aria-label="Tìm môn học, bài tập, lịch thi" placeholder="Tìm môn học, bài tập, lịch thi…" class="w-full pl-9 pr-4 py-2 text-sm bg-gray-100 dark:bg-slate-700/60 border border-transparent focus:border-blue-500 dark:focus:border-blue-400 rounded-xl focus:outline-none focus:bg-white dark:focus:bg-slate-800 text-gray-800 dark:text-gray-200 transition">
+                        <div id="searchResults" class="hidden absolute left-0 right-0 mt-2 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-gray-100 dark:border-slate-700 py-1 z-50 max-h-80 overflow-y-auto"></div>
+                    </div>
+                </div>
+
+                <!-- Right Action Buttons -->
+                <div class="flex items-center space-x-3 sm:space-x-4">
+                    <!-- Chuỗi ngày học (gamify.js) -->
+                    <button type="button" id="streakChip" class="hidden inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 text-sm font-bold hover:bg-orange-100 dark:hover:bg-orange-900/30 transition" title="Chuỗi ngày học"></button>
+
+                    <!-- Theme Toggle -->
+                    <button id="themeToggle" class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white rounded-xl hover:bg-gray-100 dark:hover:bg-slate-700 transition" title="Đổi giao diện Sáng/Tối">
+                        <i id="themeIcon" class="fa-solid fa-moon text-lg"></i>
+                    </button>
+
+                    <!-- Notifications Dropdown Trigger -->
+                    <div class="relative hidden" id="notifWrap">
+                        <button id="notifDropdownBtn" onclick="toggleNotifDropdown()" class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white rounded-xl hover:bg-gray-100 dark:hover:bg-slate-700 transition relative">
+                            <i class="fa-regular fa-bell text-lg"></i>
+                            <span id="notifDot" class="hidden absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-slate-800"></span>
+                        </button>
+
+                        <!-- Notification Box -->
+                        <div id="notifDropdown" class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-gray-100 dark:border-slate-700 py-2 z-50">
+                            <div class="px-4 py-2 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center">
+                                <h4 id="notifDropdownTitle" class="font-semibold text-sm">Thông báo</h4>
+                                <button type="button" onclick="markAllNotificationsRead()" class="text-xs text-blue-600 dark:text-blue-400 hover:underline">Đánh dấu đã đọc</button>
+                            </div>
+                            <div id="notifDropdownList" class="max-h-80 overflow-y-auto divide-y divide-gray-100 dark:divide-slate-700/50"></div>
+                            <div class="p-2 text-center border-t border-gray-100 dark:border-slate-700">
+                                <button type="button" onclick="switchTab('notifications')" class="text-xs text-blue-600 dark:text-blue-400 font-medium hover:underline">Xem tất cả thông báo</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User Profile -->
+                    <div class="flex items-center space-x-3 cursor-pointer">
+                        <img id="userAvatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256" alt="Avatar Sinh Viên" class="w-9 h-9 rounded-xl object-cover ring-2 ring-blue-500/30">
+                        <div class="hidden lg:block text-left">
+                            <div id="userName" class="text-sm font-semibold leading-tight">Nguyễn Văn A</div>
+                            <div id="userSub" class="hidden text-[11px] text-gray-500 dark:text-gray-400">MSSV: SV20261001</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+
+                <!-- TAB 1: DASHBOARD OVERVIEW -->
+                <div id="tab-dashboard" class="tab-content space-y-6">
+                    <!-- Welcome Banner -->
+                    <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl px-5 py-4 text-white flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                            <h1 class="text-xl font-bold">Xin chào, <span id="welcomeName">Sinh viên</span>!</h1>
+                            <p class="text-blue-100 text-sm"><span id="semesterBadge">Học kỳ hiện tại</span> · <span id="dueSoonCount" class="font-semibold text-white">0 bài tập</span> cần nộp · <span id="todayCount" class="font-semibold text-white">0 buổi học</span> hôm nay</p>
+                        </div>
+                        <button onclick="openRecords()" class="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white text-xs font-semibold px-3 py-2 rounded-xl transition"><i class="fa-solid fa-pen-to-square"></i>Nhập điểm</button>
+                    </div>
+
+                    <div id="statCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6"></div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                        <!-- Left Main 2 Columns -->
+                        <div class="lg:col-span-2 space-y-6">
+
+                            <!-- Active Courses Widget -->
+                            <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-gray-100 dark:border-slate-700/60 shadow-sm">
+                                <div class="flex justify-between items-center mb-4">
+                                    <div>
+                                        <h2 class="font-bold text-base text-gray-900 dark:text-white">Môn đang học</h2>
+                                        <p id="dashCourseSub" class="text-xs text-gray-500 dark:text-gray-400">...</p>
+                                    </div>
+                                    <button onclick="switchTab('courses')" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">Xem tất cả</button>
+                                </div>
+
+                                <div id="dashCourses" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+                            </div>
+
+                            
+
+                        </div>
+
+                        <!-- Right Column: Today's Schedule & Deadlines -->
+                        <div class="space-y-6">
+
+                            <!-- Today Schedule Widget -->
+                            <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-gray-100 dark:border-slate-700/60 shadow-sm">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h2 class="font-bold text-base text-gray-900 dark:text-white">Lịch học hôm nay</h2>
+                                    <span id="todayLabel" class="text-xs bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 font-semibold px-2.5 py-1 rounded-lg">...</span>
+                                </div>
+
+                                <div id="todayList" class="space-y-3"></div>
+                            </div>
+
+                            <!-- Deadlines Widget -->
+                            <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-gray-100 dark:border-slate-700/60 shadow-sm">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h2 class="font-bold text-base text-gray-900 dark:text-white">Bài tập cần nộp</h2>
+                                    <button onclick="switchTab('assignments')" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">Tất cả</button>
+                                </div>
+
+                                <div id="dashDeadlines" class="space-y-3"></div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                
+                    <!-- Phần nâng cao: gom lại, bấm để mở -->
+                    <details id="moreSection" class="group">
+                        <summary class="cursor-pointer select-none list-none inline-flex items-center gap-2 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+                            <i class="fa-solid fa-chevron-down text-xs transition-transform group-open:rotate-180"></i> Xem thêm: chuỗi học, Boss môn học, Wrapped, so sánh điểm
+                        </summary>
+                        <div class="space-y-6 mt-5">
+                            <!-- Chuỗi ngày học & huy hiệu (gamify.js) -->
+                    <div id="gamifySection"></div>
+
+                    <!-- Boss môn học (boss.js) & Kỳ học Wrapped (wrapped.js) -->
+                    <div id="bossSection"></div>
+                    <div id="wrappedSection"></div>
+
+                    <div id="compareSection" class="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-gray-100 dark:border-slate-700/60 shadow-sm space-y-6"></div>
+
+                    <!-- Chart Canvas Container -->
+                            <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-gray-100 dark:border-slate-700/60 shadow-sm">
+                                <div class="flex justify-between items-center mb-4 gap-2">
+                                    <div>
+                                        <h2 class="font-bold text-base text-gray-900 dark:text-white">Điểm từng môn qua các kỳ</h2>
+                                    </div>
+                                    <span id="chartMonth" class="text-[11px] bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-semibold px-2.5 py-1 rounded-lg">Kỳ này</span>
+                                </div>
+                                <div class="h-64 w-full">
+                                    <canvas id="semesterComparisonChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- MÔN HỌC & THỜI KHÓA BIỂU (gộp Môn học + Thời khóa biểu + Tạo TKB; xử lý trong timetable.js) -->
+                <div id="tab-courses" class="tab-content hidden space-y-6">
+                    <div class="no-print flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <h1 class="text-2xl font-bold">Môn học &amp; Thời khóa biểu</h1>
+                            <p id="ttSummary" class="text-xs text-gray-500 dark:text-gray-400"></p>
+                        </div>
+                        <button type="button" onclick="EduTT.openForm()" class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-semibold rounded-xl shadow-lg shadow-blue-500/20"><i class="fa-solid fa-plus"></i>Thêm môn học</button>
+                    </div>
+
+                    <div class="no-print inline-flex p-1 rounded-xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700/60" role="tablist">
+                        <button type="button" role="tab" id="sub-courses" onclick="switchTab('courses')" class="sub-tab px-4 py-2 text-xs font-semibold rounded-lg transition"><i class="fa-solid fa-book-open mr-1.5"></i>Môn học</button>
+                        <button type="button" role="tab" id="sub-schedule" onclick="switchTab('schedule')" class="sub-tab px-4 py-2 text-xs font-semibold rounded-lg transition"><i class="fa-solid fa-calendar-days mr-1.5"></i>Thời khóa biểu</button>
+                    </div>
+
+                    <!-- Tab con: Môn học -->
+                    <div id="pane-courses" role="tabpanel">
+                        <div id="courseCards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                    </div>
+
+                    <!-- Tab con: Thời khóa biểu (xem + tự xếp) -->
+                    <div id="pane-schedule" role="tabpanel" class="hidden space-y-5">
+                        <div id="ttEmpty" class="hidden text-center text-sm text-gray-500 py-10 border-2 border-dashed border-gray-200 dark:border-slate-700 rounded-2xl">
+                            Thêm ít nhất một môn học để xếp lịch. <button type="button" onclick="EduTT.openForm()" class="text-blue-600 dark:text-blue-400 font-semibold hover:underline">Thêm môn học</button>
+                        </div>
+                        <div id="ttApp" class="space-y-5">
+                            <section class="no-print bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700/60 shadow-sm p-5 grid md:grid-cols-4 gap-5">
+                                <div class="md:col-span-2">
+                                    <span class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Các ngày có thể học</span>
+                                    <div id="ttDays" class="flex flex-wrap gap-2"></div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1" for="ttMax">Tối đa số tiết / ngày</label>
+                                    <select id="ttMax"></select>
+                                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1 mt-3" for="ttMode">Kiểu sắp xếp</label>
+                                    <select id="ttMode"><option value="spread">Dàn đều các ngày</option><option value="compact">Dồn vào ít ngày</option></select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1" for="ttPref">Buổi ưu tiên</label>
+                                    <select id="ttPref"><option value="any">Không ưu tiên</option><option value="morning">Ưu tiên buổi sáng</option><option value="afternoon">Ưu tiên buổi chiều</option></select>
+                                    <button type="button" id="ttGen" class="w-full mt-3 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-semibold rounded-xl shadow-lg shadow-blue-500/20"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Tạo lịch</button>
+                                </div>
+                            </section>
+
+                            <div id="ttNotice" class="hidden text-xs rounded-xl px-4 py-3"></div>
+                            <div id="ttWarns" class="space-y-2"></div>
+
+                            <section id="ttResult" class="hidden space-y-3">
+                                <div class="flex flex-wrap items-center justify-between gap-2">
+                                    <p id="ttStats" class="text-sm font-semibold"></p>
+                                    <div class="no-print flex gap-2">
+                                        <button type="button" id="ttRegen" class="px-3 py-2 bg-gray-100 dark:bg-slate-700 text-xs font-medium rounded-xl"><i class="fa-solid fa-shuffle mr-1"></i>Phương án khác</button>
+                                        <button type="button" id="ttCsv" class="px-3 py-2 bg-gray-100 dark:bg-slate-700 text-xs font-medium rounded-xl"><i class="fa-solid fa-file-csv mr-1"></i>Xuất CSV</button>
+                                        <button type="button" onclick="window.print()" class="px-3 py-2 bg-gray-100 dark:bg-slate-700 text-xs font-medium rounded-xl"><i class="fa-solid fa-print mr-1"></i>In</button>
+                                    </div>
+                                </div>
+                                <p class="no-print text-[11px] text-gray-400">Bấm vào một ô để nhập hoặc sửa phòng học.</p>
+                                <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700/60 overflow-x-auto shadow-sm">
+                                    <table id="ttGrid" class="w-full text-xs border-collapse min-w-[640px]"></table>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-assignments" class="tab-content hidden space-y-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <h1 class="text-2xl font-bold">Bài tập &amp; Deadline</h1>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Tệp bài nộp chỉ lưu trên thiết bị này, không gửi tới giảng viên.</p>
+                        </div>
+                        <button type="button" onclick="EduHubAssignments.openForm()" class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-semibold rounded-xl shadow-lg shadow-blue-500/20"><i class="fa-solid fa-plus"></i>Thêm bài tập</button>
+                    </div>
+                    <div id="assignmentList" class="space-y-4"></div>
+                </div>
+
+                <div id="tab-exams" class="tab-content hidden space-y-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <h1 class="text-2xl font-bold">Lịch thi</h1>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <button type="button" onclick="EduHubExams.exportICS()" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-200 text-xs font-semibold rounded-xl"><i class="fa-solid fa-calendar-plus"></i>Xuất .ics</button>
+                            <button type="button" onclick="EduHubExams.openForm()" class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-semibold rounded-xl shadow-lg shadow-blue-500/20"><i class="fa-solid fa-plus"></i>Thêm lịch thi</button>
+                        </div>
+                    </div>
+                    <div id="examList" class="space-y-4"></div>
+                </div>
+
+                <div id="tab-grades" class="tab-content hidden space-y-6">
+                    <div id="gradesTab"></div>
+                    <!-- Máy tính mục tiêu điểm (goal.js) -->
+                    <div id="goalSection"></div>
+                </div>
+
+                <div id="tab-notifications" class="tab-content hidden space-y-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <h1 class="text-2xl font-bold">Thông báo</h1>
+                        </div>
+                        <button type="button" onclick="markAllNotificationsRead()" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-200 text-xs font-semibold rounded-xl"><i class="fa-solid fa-check-double"></i>Đánh dấu đã đọc</button>
+                    </div>
+                    <div id="notificationList" class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700/60 shadow-sm divide-y divide-gray-100 dark:divide-slate-700/50 overflow-hidden"></div>
+                </div>
+
+                <div id="tab-settings" class="tab-content hidden space-y-6">
+                    <h1 class="text-2xl font-bold">Cài đặt &amp; Dữ liệu</h1>
+
+                    <div id="storageWarn" class="hidden text-xs rounded-xl px-4 py-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300"></div>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <section class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700/60 shadow-sm p-5 space-y-4">
+                            <h2 class="font-bold text-sm"><i class="fa-solid fa-database mr-2 text-blue-500"></i>Sao lưu &amp; Khôi phục</h2>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Dữ liệu chỉ nằm trong trình duyệt này; hãy sao lưu trước khi xóa cache hoặc đổi máy. Tệp bài nộp không nằm trong bản sao lưu.</p>
+                            <div class="flex flex-wrap gap-2">
+                                <button type="button" onclick="EduHub.exportAll()" class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-semibold rounded-xl"><i class="fa-solid fa-download"></i>Xuất tệp sao lưu</button>
+                                <button type="button" onclick="document.getElementById('importFile').click()" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-200 text-xs font-semibold rounded-xl"><i class="fa-solid fa-upload"></i>Khôi phục từ tệp</button>
+                                <input type="file" id="importFile" accept="application/json,.json" class="hidden" onchange="importBackup(event)">
+                            </div>
+                            <p id="importMsg" class="hidden text-xs text-emerald-600"></p>
+                        </section>
+
+                        <section class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700/60 shadow-sm p-5 space-y-4">
+                            <h2 class="font-bold text-sm"><i class="fa-solid fa-key mr-2 text-amber-500"></i>Đổi mật khẩu</h2>
+                            <div><label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1" for="pwOld">Mật khẩu hiện tại</label><input id="pwOld" type="password" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 focus:outline-none focus:border-blue-500"></div>
+                            <div><label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1" for="pwNew">Mật khẩu mới (tối thiểu 8 ký tự)</label><input id="pwNew" type="password" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 focus:outline-none focus:border-blue-500"></div>
+                            <div><label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1" for="pwNew2">Nhập lại mật khẩu mới</label><input id="pwNew2" type="password" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 focus:outline-none focus:border-blue-500"></div>
+                            <p id="pwMsg" class="hidden text-xs rounded-lg px-3 py-2"></p>
+                            <button type="button" onclick="changePassword()" class="w-full py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-semibold rounded-xl">Cập nhật mật khẩu</button>
+                            
+                        </section>
+
+                        <section class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700/60 shadow-sm p-5 space-y-3">
+                            <h2 class="font-bold text-sm"><i class="fa-solid fa-life-ring mr-2 text-emerald-500"></i>Mã khôi phục tài khoản</h2>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Dùng để đặt lại mật khẩu. Mã mới vô hiệu mã cũ và chỉ hiện một lần.</p>
+                            <div><label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1" for="rcPw">Mật khẩu hiện tại</label><input id="rcPw" type="password" autocomplete="current-password" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 focus:outline-none focus:border-blue-500"></div>
+                            <p id="rcMsg" class="hidden text-xs rounded-lg px-3 py-2"></p>
+                            <button type="button" onclick="regenRecovery()" class="w-full py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs font-semibold rounded-xl">Tạo mã khôi phục mới</button>
+                        </section>
+
+                        <section class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700/60 shadow-sm p-5 space-y-3">
+                            <h2 class="font-bold text-sm"><i class="fa-solid fa-headset mr-2 text-indigo-500"></i>Liên hệ &amp; Hỗ trợ</h2>
+                            <p class="text-xs"><a class="text-blue-600 dark:text-blue-400 hover:underline" href="mailto:phongdaotao@eduhub.edu.vn">phongdaotao@eduhub.edu.vn</a> · <a class="text-blue-600 dark:text-blue-400 hover:underline" href="tel:19006789">1900 6789</a></p>
+                            <p class="text-[11px] text-gray-400">Thứ 2 – Thứ 6, 08:00 – 17:00</p>
+                        </section>
+
+                        <section class="bg-white dark:bg-slate-800 rounded-2xl border border-red-100 dark:border-red-900/40 shadow-sm p-5 space-y-3">
+                            <h2 class="font-bold text-sm text-red-600 dark:text-red-400"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Vùng nguy hiểm</h2>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Xóa toàn bộ dữ liệu học tập của tài khoản này. Không thể hoàn tác.</p>
+                            <button type="button" onclick="clearMyData()" class="px-4 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-xs font-semibold rounded-xl">Xóa dữ liệu học tập</button>
+                        </section>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- MODAL COURSE DETAIL -->
+    <div id="courseModal" role="dialog" aria-modal="true" aria-labelledby="courseModalTitle" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center border-b border-gray-100 dark:border-slate-700 pb-3">
+                <h3 id="courseModalTitle" class="text-lg font-bold">Chi tiết khóa học</h3>
+                <button type="button" data-eh-close aria-label="Đóng hộp thoại" onclick="closeCourseModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="text-right"><button onclick="closeCourseModal()" class="px-4 py-2 bg-gray-200 dark:bg-slate-700 text-xs rounded-xl">Đóng</button></div>
+        </div>
+    </div>
+
+    <script>
+        /* ---------- Chuyển tab (hỗ trợ deep-link ?tab=... và F5 giữ nguyên tab) ---------- */
+        const TABS = ['dashboard', 'courses', 'schedule', 'assignments', 'grades', 'exams', 'notifications', 'settings'];
+        function switchTab(tabName, skipHash) {
+            if (TABS.indexOf(tabName) < 0) tabName = 'dashboard';
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+            document.querySelectorAll('.nav-item').forEach(nav => {
+                nav.classList.remove('bg-blue-50', 'dark:bg-blue-900/30', 'text-blue-600', 'dark:text-blue-400');
+                nav.classList.add('text-gray-600', 'dark:text-gray-300');
+            });
+
+            // "Môn học" và "Thời khóa biểu" là 2 tab con của cùng mục "Môn học & TKB"
+            const merged = tabName === 'courses' || tabName === 'schedule';
+            const targetTab = document.getElementById('tab-' + (merged ? 'courses' : tabName));
+            if (targetTab) targetTab.classList.remove('hidden');
+            if (merged) {
+                ['courses', 'schedule'].forEach(s => {
+                    const on = s === tabName, b = document.getElementById('sub-' + s);
+                    document.getElementById('pane-' + s).classList.toggle('hidden', !on);
+                    b.setAttribute('aria-selected', on ? 'true' : 'false');
+                    b.classList.toggle('bg-blue-600', on); b.classList.toggle('text-white', on);
+                    b.classList.toggle('text-gray-500', !on); b.classList.toggle('dark:text-gray-400', !on);
+                });
+            }
+
+            const activeNav = document.getElementById('nav-' + (merged ? 'courses' : tabName));
+            if (activeNav) {
+                activeNav.classList.add('bg-blue-50', 'dark:bg-blue-900/30', 'text-blue-600', 'dark:text-blue-400');
+                activeNav.classList.remove('text-gray-600', 'dark:text-gray-300');
+            }
+            if (!skipHash) { try { history.replaceState(null, '', '?tab=' + tabName); } catch (e) {} }
+            closeSidebarMobile();
+            document.dispatchEvent(new CustomEvent('eduhub:tab', { detail: { tab: tabName } }));
+        }
+
+        /* ---------- Sidebar trên mobile + lớp phủ ---------- */
+        function openSidebarMobile() {
+            document.getElementById('sidebar').classList.remove('-translate-x-full');
+            document.getElementById('sidebarOverlay').classList.remove('hidden');
+            document.getElementById('openSidebarMobile').setAttribute('aria-expanded', 'true');
+        }
+        function closeSidebarMobile() {
+            document.getElementById('sidebar').classList.add('-translate-x-full');
+            document.getElementById('sidebarOverlay').classList.add('hidden');
+            const b = document.getElementById('openSidebarMobile');
+            if (b) b.setAttribute('aria-expanded', 'false');
+        }
+        document.getElementById('openSidebarMobile').addEventListener('click', openSidebarMobile);
+        document.getElementById('closeSidebarMobile').addEventListener('click', closeSidebarMobile);
+        document.getElementById('sidebarOverlay').addEventListener('click', closeSidebarMobile);
+
+        /* ---------- Dropdown thông báo ---------- */
+        function toggleNotifDropdown() {
+            document.getElementById('notifDropdown').classList.toggle('hidden');
+        }
+        document.addEventListener('click', e => {
+            const dd = document.getElementById('notifDropdown'), btn = document.getElementById('notifDropdownBtn');
+            if (dd && btn && !dd.classList.contains('hidden') && !dd.contains(e.target) && !btn.contains(e.target)) dd.classList.add('hidden');
+        });
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') { const dd = document.getElementById('notifDropdown'); if (dd) dd.classList.add('hidden'); }
+        });
+
+        /* ---------- Hộp thoại chi tiết môn học ---------- */
+        function openCourseDetail(courseName) {
+            document.getElementById('courseModalTitle').innerText = courseName;
+            document.getElementById('courseModal').classList.remove('hidden');
+        }
+        function closeCourseModal() {
+            document.getElementById('courseModal').classList.add('hidden');
+        }
+
+        /* ---------- Tìm kiếm toàn cục (trước đây không có xử lý nào) ---------- */
+        (function () {
+            const input = document.getElementById('globalSearch'), box = document.getElementById('searchResults');
+            if (!input || !box) return;
+            const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+            const vnd = d => { const x = new Date(d); return isNaN(x) ? '' : x.toLocaleDateString('vi-VN'); };
+            function find(q) {
+                q = q.trim().toLowerCase();
+                if (!q) return [];
+                const out = [];
+                const subs = EduHub.get(EduHub.userKey('eduhub_subjects'), []);
+                (Array.isArray(subs) ? subs : []).forEach(s => {
+                    if ((s.name + ' ' + (s.code || '') + ' ' + (s.teacher || '')).toLowerCase().indexOf(q) >= 0)
+                        out.push({ icon: 'fa-book', label: s.name, sub: (s.code || 'Môn học') + ' · ' + (s.teacher || 'chưa có giảng viên'), tab: 'courses' });
+                });
+                const as = EduHub.get(EduHub.userKey('eduhub_assignments'), []);
+                (Array.isArray(as) ? as : []).forEach(a => {
+                    if ((a.title + ' ' + (a.subject || '')).toLowerCase().indexOf(q) >= 0)
+                        out.push({ icon: 'fa-list-check', label: a.title, sub: (a.subject || 'Bài tập') + ' · hạn ' + vnd(a.due), tab: 'assignments' });
+                });
+                const ex = EduHub.get(EduHub.userKey('eduhub_exams'), []);
+                (Array.isArray(ex) ? ex : []).forEach(x => {
+                    if ((x.subject + ' ' + (x.room || '')).toLowerCase().indexOf(q) >= 0)
+                        out.push({ icon: 'fa-file-pen', label: x.subject, sub: 'Thi ' + vnd(x.date) + (x.room ? ' · ' + x.room : ''), tab: 'exams' });
+                });
+                return out.slice(0, 8);
+            }
+            function draw() {
+                if (!input.value.trim()) { box.classList.add('hidden'); return; }
+                const list = find(input.value);
+                box.innerHTML = list.length
+                    ? list.map(r => '<button type="button" data-tab="' + r.tab + '" class="w-full text-left flex items-start gap-3 px-4 py-2.5 hover:bg-gray-50 dark:hover:bg-slate-700/50"><i class="fa-solid ' + r.icon + ' text-gray-400 mt-0.5"></i><span class="min-w-0"><span class="block text-xs font-semibold truncate">' + esc(r.label) + '</span><span class="block text-[11px] text-gray-400 truncate">' + esc(r.sub) + '</span></span></button>').join('')
+                    : '<p class="px-4 py-3 text-xs text-gray-400">Không tìm thấy kết quả nào.</p>';
+                box.classList.remove('hidden');
+                box.querySelectorAll('button[data-tab]').forEach(b => b.addEventListener('click', () => {
+                    switchTab(b.dataset.tab); box.classList.add('hidden'); input.value = '';
+                }));
+            }
+            input.addEventListener('input', draw);
+            input.addEventListener('focus', draw);
+            document.addEventListener('click', e => { const w = document.getElementById('searchWrap'); if (w && !w.contains(e.target)) box.classList.add('hidden'); });
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') box.classList.add('hidden'); });
+        })();
+
+        /* ---------- Cài đặt: đổi mật khẩu, khôi phục, xóa dữ liệu ---------- */
+        async function changePassword() {
+            const msg = document.getElementById('pwMsg');
+            const show = (t, ok) => {
+                msg.textContent = t;
+                msg.className = 'text-xs rounded-lg px-3 py-2 ' + (ok ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20' : 'text-red-600 bg-red-50 dark:bg-red-900/20');
+                msg.classList.remove('hidden');
+            };
+            const session = EduHub.session();
+            if (!session) return show('Bạn cần đăng nhập lại.', false);
+            if (session.provider === 'google') return show('Tài khoản Google không có mật khẩu để đổi.', false);
+            const n1 = document.getElementById('pwNew').value, n2 = document.getElementById('pwNew2').value;
+            if (n1.length < 8) return show('Mật khẩu mới phải có ít nhất 8 ký tự.', false);
+            if (n1 !== n2) return show('Mật khẩu nhập lại không khớp.', false);
+            const users = EduHub.get(EduHub.CFG.USERS_KEY, []) || [];
+            const u = users.find(x => x.email === session.email);
+            if (!u) return show('Không tìm thấy tài khoản.', false);
+            if (!await EduHub.verifyPassword(document.getElementById('pwOld').value, u)) return show('Mật khẩu hiện tại không đúng.', false);
+            u.passwordHash = await EduHub.hashPassword(n1);
+            u.passwordUpdatedAt = Date.now();
+            EduHub.set(EduHub.CFG.USERS_KEY, users);
+            document.getElementById('pwOld').value = document.getElementById('pwNew').value = document.getElementById('pwNew2').value = '';
+            show('Đã cập nhật mật khẩu thành công.', true);
+            EduHub.toast('Đã đổi mật khẩu.', 'success');
+        }
+        async function regenRecovery() {
+            const msg = document.getElementById('rcMsg');
+            const show = (t, ok) => {
+                msg.textContent = t;
+                msg.className = 'text-xs rounded-lg px-3 py-2 ' + (ok ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20' : 'text-red-600 bg-red-50 dark:bg-red-900/20');
+                msg.classList.remove('hidden');
+            };
+            const session = EduHub.session();
+            if (!session) return show('Bạn cần đăng nhập lại.', false);
+            const users = EduHub.get(EduHub.CFG.USERS_KEY, []) || [];
+            const u = users.find(x => x.email === session.email);
+            if (!u || !u.passwordHash) return show('Tài khoản này không dùng mật khẩu (đăng nhập bằng Google).', false);
+            const key = 'pw:' + session.email, lock = EduHub.attempt.remaining(key);
+            if (lock) return show('Bạn đã nhập sai quá nhiều lần. Hãy thử lại sau ' + Math.ceil(lock / 60) + ' phút.', false);
+            if (!await EduHub.verifyPassword(document.getElementById('rcPw').value, u)) {
+                EduHub.attempt.fail(key);
+                return show('Mật khẩu hiện tại không đúng.', false);
+            }
+            EduHub.attempt.ok(key);
+            const code = EduHub.newRecoveryCode();
+            u.recoveryHash = await EduHub.hashRecovery(code);
+            if (!EduHub.set(EduHub.CFG.USERS_KEY, users)) return show('Không lưu được: trình duyệt đang chặn lưu trữ.', false);
+            document.getElementById('rcPw').value = '';
+            msg.classList.add('hidden');
+            EduHub.showRecoveryCode(code, () => EduHub.toast('Đã tạo mã khôi phục mới. Mã cũ không còn hiệu lực.', 'success'));
+        }
+        function importBackup(e) {
+            const inputEl = e.target;
+            const f = e.target.files && e.target.files[0];
+            if (!f) return;
+            const m = document.getElementById('importMsg');
+            EduHub.importAll(f).then(n => {
+                m.className = 'text-xs text-emerald-600';
+                m.textContent = 'Đã khôi phục ' + n + ' nhóm dữ liệu. Đang tải lại...';
+                m.classList.remove('hidden');
+                EduHub.toast('Khôi phục dữ liệu thành công.', 'success');
+                setTimeout(() => location.reload(), 900);
+            }).catch(err => {
+                m.className = 'text-xs text-red-600';
+                m.textContent = err && err.message === 'email-mismatch' ? 'Tệp sao lưu thuộc về tài khoản khác. Hãy đăng nhập đúng tài khoản đó để khôi phục.'
+                    : err && err.message === 'too-big' ? 'Tệp quá lớn (tối đa 5 MB).'
+                    : 'Tệp không hợp lệ hoặc chứa dữ liệu sai định dạng. Hãy chọn đúng tệp sao lưu do EduHub xuất ra.';
+                m.classList.remove('hidden');
+            }).finally(() => { inputEl.value = ''; });
+        }
+        function clearMyData() {
+            if (!confirm('Xóa toàn bộ dữ liệu học tập của tài khoản này? Hành động không thể hoàn tác.')) return;
+            ['eduhub_records', 'eduhub_subjects', 'eduhub_timetable', 'eduhub_assignments', 'eduhub_submissions', 'eduhub_notifications', 'eduhub_exams', 'eduhub_boss', 'eduhub_goal']
+                .forEach(b => EduHub.del(EduHub.userKey(b)));
+            EduHub.del('eduhub_total_' + EduHub.email());
+            if (window.EduHubFiles) EduHubFiles.clearUser().catch(() => {});
+            if (window.EduSync) EduSync.fileDelAll();   // xóa cả tệp bài nộp trên máy chủ
+            EduHub.toast('Đã xóa dữ liệu học tập.', 'info');
+            setTimeout(() => location.reload(), 800);
+        }
+
+        /* ---------- Khôi phục tab đang mở + cảnh báo lưu trữ bị chặn ---------- */
+        (function () {
+            let p = new URLSearchParams(location.search).get('tab') || '';
+            if (!p && location.hash) p = location.hash.slice(1);
+            switchTab(p || 'dashboard', true);
+            if (!EduHub.storageOK) {
+                const w = document.getElementById('storageWarn');
+                w.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-1"></i>Trình duyệt đang chặn lưu trữ cục bộ (localStorage), nên dữ liệu bạn nhập sẽ KHÔNG được giữ lại. Hãy tắt chế độ ẩn danh hoặc cho phép cookie cho trang này.';
+                w.classList.remove('hidden');
+            }
+        })();
+    </script>
+    <script>
+        /* ---------- Hiển thị người dùng đang đăng nhập ---------- */
+        (function () {
+            let user = null;
+            try {
+                user = JSON.parse(localStorage.getItem('eduhub_session') || sessionStorage.getItem('eduhub_session'));
+            } catch {}
+            if (!user) return;
+
+            const name = (user.name || '').trim() || user.email || 'Sinh viên';
+            document.getElementById('userName').textContent = name;
+            document.getElementById('welcomeName').textContent = name;
+            document.getElementById('userSub').textContent = user.mssv ? 'MSSV: ' + user.mssv : (user.email || '');
+
+            const avatar = document.getElementById('userAvatar');
+            avatar.alt = 'Avatar ' + name;
+            if (user.picture) {
+                avatar.referrerPolicy = 'no-referrer';   // ảnh Google cần dòng này để tải được
+                avatar.src = user.picture;
+            } else {
+                // Không có ảnh -> tạo avatar chữ cái đầu của tên
+                const words = name.split(/\s+/).filter(Boolean);
+                const initials = (words.length > 1 ? words[0][0] + words[words.length - 1][0] : words[0].slice(0, 2)).toUpperCase();
+                const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><defs><linearGradient id="g" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#4f46e5"/></linearGradient></defs><rect width="64" height="64" fill="url(#g)"/><text x="50%" y="50%" dy=".35em" text-anchor="middle" font-family="sans-serif" font-size="26" font-weight="700" fill="#fff">' + initials.replace(/[<>&]/g, '') + '</text></svg>';
+                avatar.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+            }
+        })();
+
+        /* ---------- Nhãn học kỳ / tháng động (thay cho giá trị viết cứng) ---------- */
+        (function () {
+            const now = new Date(), m = now.getMonth() + 1, year = now.getFullYear();
+            let sem, y1;
+            if (m >= 9) { sem = 'Học kỳ 1'; y1 = year; }
+            else if (m <= 1) { sem = 'Học kỳ 1'; y1 = year - 1; }
+            else if (m <= 6) { sem = 'Học kỳ 2'; y1 = year - 1; }
+            else { sem = 'Học kỳ hè'; y1 = year - 1; }
+            const badge = document.getElementById('semesterBadge');
+            if (badge) badge.textContent = sem + ' - Năm học ' + y1 + '-' + (y1 + 1);
+        })();
+    </script>
+    <script src="../assets/js/records.js"></script>
+    <script src="../assets/js/timetable.js"></script>
+    <script src="../assets/js/schedule.js"></script>
+    <script src="../assets/js/assignments.js"></script>
+    <script src="../assets/js/exams.js"></script>
+    <script src="../assets/js/gamify.js"></script>
+    <script src="../assets/js/boss.js"></script>
+    <script src="../assets/js/goal.js"></script>
+    <script src="../assets/js/wrapped.js"></script>
+</body>
+</html>

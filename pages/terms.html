@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="vi" class="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduHub - Điều khoản sử dụng</title>
+<meta name="description" content="Điều khoản sử dụng của nền tảng quản lý học tập EduHub.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Ctext x='50%25' y='53%25' dy='.35em' text-anchor='middle' font-family='sans-serif' font-size='36' font-weight='700' fill='%23fff'%3EE%3C/text%3E%3C/svg%3E">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script>tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Be Vietnam Pro','sans-serif']}}}}</script>
+<style>body{font-family:'Be Vietnam Pro',sans-serif}</style>
+<script src="../assets/js/config.js"></script>
+</head>
+<body class="bg-gray-50 dark:bg-slate-900 text-gray-800 dark:text-gray-100 antialiased min-h-screen transition-colors">
+
+<header class="bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 h-16 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-20">
+  <a href="index.html" class="flex items-center gap-3">
+    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-500/30">E</div>
+    <span class="text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">EduHub</span>
+  </a>
+  <nav class="flex items-center gap-2 text-sm font-medium">
+    <a href="index.html" class="px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-700 transition"><i class="fa-solid fa-arrow-left sm:mr-1"></i><span class="hidden sm:inline">Về trang chính</span></a>
+    <button id="themeToggle" type="button" aria-label="Đổi giao diện Sáng/Tối" class="px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-700 transition"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
+  </nav>
+</header>
+
+<main class="max-w-3xl mx-auto p-4 sm:p-6 lg:p-8">
+  <h1 class="text-3xl font-bold mb-2">Điều khoản sử dụng</h1>
+  <p class="text-xs text-gray-500 dark:text-gray-400 mb-6">Cập nhật lần cuối: 08/10/2026</p>
+
+  <div class="bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 text-xs rounded-xl px-4 py-3 mb-8">
+    <i class="fa-solid fa-triangle-exclamation mr-1"></i>
+    <strong>Lưu ý quan trọng:</strong> EduHub hiện là bản demo chạy hoàn toàn trong trình duyệt, không có máy chủ.
+    Tài khoản, điểm số, thời khóa biểu và bài tập bạn nhập chỉ được lưu trên chính thiết bị của bạn.
+    Không sử dụng nền tảng này để lưu dữ liệu học vụ chính thức.
+  </div>
+
+  <article class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700/60 shadow-sm p-6 space-y-6 text-sm leading-relaxed">
+    <section>
+      <h2 class="font-bold text-base mb-2">1. Chấp nhận điều khoản</h2>
+      <p class="text-gray-600 dark:text-gray-300">Khi tạo tài khoản hoặc sử dụng EduHub, bạn đồng ý với các điều khoản dưới đây. Nếu không đồng ý, vui lòng không sử dụng nền tảng.</p>
+    </section>
+    <section>
+      <h2 class="font-bold text-base mb-2">2. Tài khoản người dùng</h2>
+      <p class="text-gray-600 dark:text-gray-300">Bạn chịu trách nhiệm bảo mật thông tin đăng nhập của mình. Không chia sẻ tài khoản cho người khác. Mọi hoạt động phát sinh từ tài khoản của bạn được coi là do bạn thực hiện.</p>
+    </section>
+    <section>
+      <h2 class="font-bold text-base mb-2">3. Dữ liệu và tính chính xác</h2>
+      <p class="text-gray-600 dark:text-gray-300">Điểm số, thời khóa biểu và kết quả hiển thị do bạn tự nhập hoặc do hệ thống tự tính từ dữ liệu bạn nhập. EduHub không phải là nguồn dữ liệu học vụ chính thức; hãy đối chiếu với cổng thông tin của nhà trường.</p>
+    </section>
+    <section>
+      <h2 class="font-bold text-base mb-2">4. Hành vi bị cấm</h2>
+      <ul class="list-disc pl-5 text-gray-600 dark:text-gray-300 space-y-1">
+        <li>Sử dụng nền tảng cho mục đích gian lận học thuật.</li>
+        <li>Tìm cách phá hoại, khai thác lỗ hổng hoặc gây quá tải hệ thống.</li>
+        <li>Nhập dữ liệu vi phạm pháp luật hoặc xâm phạm quyền của người khác.</li>
+      </ul>
+    </section>
+    <section>
+      <h2 class="font-bold text-base mb-2">5. Giới hạn trách nhiệm</h2>
+      <p class="text-gray-600 dark:text-gray-300">EduHub được cung cấp "nguyên trạng". Chúng tôi không bảo đảm dữ liệu luôn được giữ lại nếu bạn xóa dữ liệu trình duyệt, đổi thiết bị hoặc dùng chế độ ẩn danh. Hãy dùng chức năng <strong>Sao lưu dữ liệu</strong> trong mục Cài đặt.</p>
+    </section>
+    <section>
+      <h2 class="font-bold text-base mb-2">6. Thay đổi điều khoản</h2>
+      <p class="text-gray-600 dark:text-gray-300">Điều khoản có thể được cập nhật; phiên bản mới sẽ hiển thị ngày cập nhật ở đầu trang.</p>
+    </section>
+    <section>
+      <h2 class="font-bold text-base mb-2">7. Liên hệ</h2>
+      <p class="text-gray-600 dark:text-gray-300">Mọi thắc mắc xin gửi về <a href="mailto:phongdaotao@eduhub.edu.vn" class="text-blue-600 dark:text-blue-400 hover:underline">phongdaotao@eduhub.edu.vn</a> hoặc gọi <a href="tel:19006789" class="text-blue-600 dark:text-blue-400 hover:underline">1900 6789</a>.</p>
+    </section>
+  </article>
+
+  <footer class="mt-8 pt-6 border-t border-gray-200 dark:border-slate-700 text-[11px] text-gray-500 dark:text-gray-400 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+    <p>© <span id="footerYear">2026</span> EduHub · Phòng Đào tạo – Tòa nhà A, Trường Đại học</p>
+    <p class="flex flex-wrap items-center gap-3">
+      <a href="terms.html" class="hover:text-blue-600 dark:hover:text-blue-400">Điều khoản</a>
+      <a href="privacy.html" class="hover:text-blue-600 dark:hover:text-blue-400">Bảo mật</a>
+      <a href="feedback.html" class="hover:text-blue-600 dark:hover:text-blue-400">Đánh giá web</a>
+      <a href="login.html" class="hover:text-blue-600 dark:hover:text-blue-400">Đăng nhập</a>
+    </p>
+  </footer>
+</main>
+
+<script>document.getElementById('footerYear').textContent = new Date().getFullYear();</script>
+</body>
+</html>

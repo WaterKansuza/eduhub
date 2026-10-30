@@ -1,0 +1,45 @@
+/* EduHub – lớp giao diện tối giản (theo hướng StudyHub / eduhub-gon)
+   Chỉ là lớp phủ lên Tailwind: nền phẳng, bo góc 14px, viền mảnh, không đổ bóng, nút màu đặc.
+   Xóa thẻ <link href="simple.css"> để quay về giao diện cũ. */
+
+html:not(.dark) body { background: #f4f7fc !important; color: #202b43; }
+
+/* Thẻ & khung: phẳng, viền mảnh */
+body .rounded-2xl { border-radius: 14px !important; }
+body .shadow-sm, body .shadow-md, body .shadow-lg, body .shadow-xl { box-shadow: none !important; }
+body .hover\:shadow-md:hover { box-shadow: none !important; }
+html:not(.dark) body .border-gray-100 { border-color: #e8edf5 !important; }
+
+/* Thanh bên */
+html:not(.dark) #sidebar { background: #fff; border-right: 1px solid #e8edf5; }
+#sidebar .nav-item { font-weight: 500; border-radius: 10px !important; padding: 11px 14px !important; font-size: 14px !important; }
+#sidebar .nav-item i { font-size: 16px !important; opacity: .85; }
+html:not(.dark) #sidebar .nav-item.bg-blue-50 { background: #edf2ff !important; color: #2563eb !important; font-weight: 600; }
+
+/* Logo & nút chính: màu đặc thay vì chuyển sắc */
+body .bg-gradient-to-tr { background: #2563eb !important; box-shadow: none !important; }
+body .bg-clip-text { background: none !important; -webkit-text-fill-color: #2563eb; color: #2563eb; }
+body button.bg-gradient-to-r, body a.bg-gradient-to-r { background: #2563eb !important; box-shadow: none !important; }
+body button.bg-gradient-to-r:hover, body a.bg-gradient-to-r:hover { filter: brightness(1.08); }
+
+/* Thanh đầu trang */
+html:not(.dark) body header { background: #f4f7fc; border-bottom: 0; }
+body header #globalSearch { background: #fff !important; border: 1px solid #e8edf5 !important; border-radius: 10px !important; }
+
+/* Banner chào mừng (thẻ chuyển sắc đầu tab Tổng quan) */
+#tab-dashboard > .bg-gradient-to-r { background: linear-gradient(110deg, #2563eb, #6d8cf5) !important; border-radius: 18px !important; padding: 26px 28px !important; }
+#tab-dashboard > .bg-gradient-to-r h1 { font-size: 24px; margin-bottom: 6px; }
+#tab-dashboard > .bg-gradient-to-r p { line-height: 1.7; }
+#tab-dashboard > .bg-gradient-to-r button { background: #fff !important; color: #2563eb !important; font-weight: 600; }
+
+/* Tiêu đề trang */
+#tab-courses > h1, #tab-schedule > h1, .tab-content h1.text-2xl { font-size: 26px; }
+
+/* Thanh tiến độ & chip mềm */
+body .rounded-full.overflow-hidden { background-color: #edf0f6; }
+
+/* Nút phụ (xám) */
+html:not(.dark) body button.bg-gray-100 { background: #edf2ff; color: #2563eb; }
+
+/* Mục "Xem thêm" ở Tổng quan */
+#moreSection > summary::-webkit-details-marker { display: none; }

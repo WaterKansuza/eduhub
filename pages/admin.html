@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="vi" class="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>EduHub - Quản trị</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Ctext x='50%25' y='53%25' dy='.35em' text-anchor='middle' font-family='sans-serif' font-size='36' font-weight='700' fill='%23fff'%3EE%3C/text%3E%3C/svg%3E">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script>tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Be Vietnam Pro','sans-serif']}}}}</script>
+<link rel="stylesheet" href="../assets/css/simple.css">
+<style>
+  body{font-family:'Be Vietnam Pro',sans-serif}
+  .tab-btn[aria-selected="true"]{background:#2563eb;color:#fff}
+  .inp{width:100%;font-size:14px;border-radius:12px;border:1px solid #e5e7eb;background:#fff;padding:10px 14px}
+  .dark .inp{background:#0f172a;border-color:#475569;color:#f1f5f9}
+  .inp:focus{outline:none;box-shadow:0 0 0 2px #3b82f6}
+  table.tbl th{font-size:11px;text-transform:uppercase;letter-spacing:.03em;text-align:left;padding:10px 12px;color:#6b7280;white-space:nowrap}
+  table.tbl td{padding:10px 12px;font-size:13px;border-top:1px solid #eef1f6;vertical-align:middle}
+  .dark table.tbl td{border-color:#334155}
+</style>
+<script src="../assets/js/config.js"></script>
+<script src="../assets/js/supabase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="../assets/js/cloud.js"></script>
+</head>
+<body class="bg-gray-50 dark:bg-slate-900 text-gray-800 dark:text-gray-100 antialiased min-h-screen transition-colors">
+
+<header class="bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 h-16 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-20">
+  <a href="index.html" class="flex items-center gap-3">
+    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xl">E</div>
+    <span class="text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">EduHub</span>
+    <span class="hidden sm:inline text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300">QUẢN TRỊ</span>
+  </a>
+  <nav class="flex items-center gap-2 text-sm font-medium">
+    <a href="index.html" class="px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-700 transition"><i class="fa-solid fa-arrow-left sm:mr-1"></i><span class="hidden sm:inline">Về trang chính</span></a>
+    <button id="logoutBtn" type="button" class="hidden px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-700 transition"><i class="fa-solid fa-lock sm:mr-1"></i><span class="hidden sm:inline">Khóa</span></button>
+    <button id="themeToggle" type="button" aria-label="Đổi giao diện Sáng/Tối" class="px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-700 transition"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
+  </nav>
+</header>
+
+<!-- CỔNG ĐĂNG NHẬP QUẢN TRỊ -->
+<main id="gate" class="max-w-sm mx-auto p-6 mt-12">
+  <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700/60 p-6 space-y-4">
+    <div class="text-center">
+      <div class="w-14 h-14 mx-auto rounded-2xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center text-2xl mb-3"><i class="fa-solid fa-user-shield"></i></div>
+      <h1 id="gateTitle" class="text-xl font-bold">Đăng nhập quản trị</h1>
+      <p id="gateHint" class="text-xs text-gray-500 dark:text-gray-400 mt-1"></p>
+    </div>
+    <div id="emailWrap" class="hidden">
+      <label for="adminEmail" class="text-xs font-semibold block mb-1">Email quản trị</label>
+      <input id="adminEmail" type="email" autocomplete="username" class="inp">
+    </div>
+    <div>
+      <label for="pw1" class="text-xs font-semibold block mb-1">Mật khẩu quản trị</label>
+      <input id="pw1" type="password" autocomplete="current-password" class="inp">
+    </div>
+    <div id="pw2Wrap" class="hidden">
+      <label for="pw2" class="text-xs font-semibold block mb-1">Nhập lại mật khẩu</label>
+      <input id="pw2" type="password" autocomplete="new-password" class="inp">
+    </div>
+    <div id="gateErr" class="hidden text-xs text-red-600 dark:text-red-400" role="alert"></div>
+    <button id="gateBtn" type="button" class="w-full py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-semibold rounded-xl"></button>
+    <p id="gateNote" class="text-[11px] text-gray-400 leading-relaxed"><i class="fa-solid fa-triangle-exclamation mr-1"></i>EduHub chưa có máy chủ nên mật khẩu này chỉ bảo vệ ở mức giao diện trên trình duyệt này, không thay thế được xác thực phía server.</p>
+  </div>
+</main>
+
+<!-- ỨNG DỤNG QUẢN TRỊ -->
+<main id="app" class="hidden max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+  <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+    <div>
+      <h1 class="text-3xl font-bold mb-1">Quản trị EduHub</h1>
+      <p class="text-sm text-gray-500 dark:text-gray-400">Quản lý người dùng và đánh giá trang web.</p>
+    </div>
+    <div role="tablist" class="inline-flex gap-1 p-1 bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl text-sm font-medium self-start">
+      <button role="tab" data-tab="overview" class="tab-btn px-4 py-2 rounded-lg" aria-selected="true"><i class="fa-solid fa-chart-pie mr-1"></i>Tổng quan</button>
+      <button role="tab" data-tab="users" class="tab-btn px-4 py-2 rounded-lg" aria-selected="false"><i class="fa-solid fa-users mr-1"></i>Người dùng</button>
+      <button role="tab" data-tab="reviews" class="tab-btn px-4 py-2 rounded-lg" aria-selected="false"><i class="fa-solid fa-star mr-1"></i>Đánh giá</button>
+    </div>
+  </div>
+
+  <div id="dataBanner" class="bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 text-xs rounded-xl px-4 py-3">
+    <i class="fa-solid fa-circle-info mr-1"></i>
+    Trang này đọc dữ liệu lưu trong <strong>trình duyệt hiện tại</strong> (các tài khoản đã đăng ký và đánh giá trên thiết bị này). Dữ liệu từ thiết bị khác sẽ không xuất hiện ở đây.
+  </div>
+
+  <!-- TỔNG QUAN -->
+  <section id="tab-overview" class="space-y-6">
+    <div id="statCards" class="grid grid-cols-2 lg:grid-cols-4 gap-4"></div>
+    <div id="learnBox" class="hidden bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700/60 p-5">
+      <h2 class="font-bold text-sm mb-1">Dữ liệu học tập (tổng hợp ẩn danh)</h2>
+      <p class="text-[11px] text-gray-400 mb-4">Chỉ là số liệu tổng. Quản trị viên không xem được nội dung dữ liệu của từng sinh viên.</p>
+      <div id="learnCards" class="grid grid-cols-2 lg:grid-cols-4 gap-3 text-xs"></div>
+    </div>
+    <div class="grid lg:grid-cols-2 gap-6">
+      <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700/60 p-5">
+        <h2 class="font-bold text-sm mb-4">Phân bố số sao</h2>
+        <div id="distBox" class="space-y-2"></div>
+      </div>
+      <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700/60 p-5">
+        <h2 class="font-bold text-sm mb-4">Điểm trung bình theo tiêu chí</h2>
+        <div id="catBox" class="space-y-3"></div>
+      </div>
+      <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700/60 p-5">
+        <h2 class="font-bold text-sm mb-4">Tính năng được quan tâm</h2>
+        <div id="tagBox" class="space-y-2"></div>
+      </div>
+      <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700/60 p-5">
+        <h2 class="font-bold text-sm mb-4">Đánh giá mới nhất</h2>
+        <ul id="recentBox" class="space-y-3"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- NGƯỜI DÙNG -->
+  <section id="tab-users" class="hidden bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700/60 p-5 space-y-4">
+    <div class="flex flex-col sm:flex-row gap-3 sm:items-center justify-between">
+      <h2 class="font-bold text-base">Người dùng <span id="userCount" class="text-gray-400 font-normal text-sm"></span></h2>
+      <div class="flex gap-2">
+        <input id="userQ" type="search" placeholder="Tìm tên, MSSV, email…" class="inp sm:w-64" aria-label="Tìm người dùng">
+        <button id="userCsv" type="button" class="px-4 py-2 bg-gray-100 dark:bg-slate-700 text-sm font-semibold rounded-xl whitespace-nowrap"><i class="fa-solid fa-download mr-1"></i>CSV</button>
+      </div>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="tbl w-full">
+        <thead><tr><th>Họ tên</th><th>MSSV</th><th>Email</th><th>Đăng ký</th><th>Kiểu</th><th>Đánh giá</th><th></th></tr></thead>
+        <tbody id="userBody"></tbody>
+      </table>
+    </div>
+    <div id="userEmpty" class="hidden text-center text-sm text-gray-500 dark:text-gray-400 py-8">Không có người dùng nào.</div>
+  </section>
+
+  <!-- ĐÁNH GIÁ -->
+  <section id="tab-reviews" class="hidden space-y-4">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700/60 p-5 space-y-3">
+      <div class="flex flex-wrap gap-3 items-center">
+        <input id="revQ" type="search" placeholder="Tìm trong nhận xét, tên, email…" class="inp sm:w-72" aria-label="Tìm đánh giá">
+        <select id="revStars" class="inp w-auto" aria-label="Lọc theo sao">
+          <option value="">Mọi số sao</option><option value="5">5 sao</option><option value="4">4 sao</option><option value="3">3 sao</option><option value="2">2 sao</option><option value="1">1 sao</option>
+        </select>
+        <select id="revStatus" class="inp w-auto" aria-label="Lọc theo trạng thái">
+          <option value="">Mọi trạng thái</option><option value="new">Chưa phản hồi</option><option value="replied">Đã phản hồi</option><option value="hidden">Đã ẩn</option>
+        </select>
+        <button id="revCsv" type="button" class="ml-auto px-4 py-2 bg-gray-100 dark:bg-slate-700 text-sm font-semibold rounded-xl"><i class="fa-solid fa-download mr-1"></i>CSV</button>
+      </div>
+      <div id="revFilterChip" class="hidden"></div>
+      <div id="revCount" class="text-xs text-gray-500 dark:text-gray-400"></div>
+    </div>
+    <ul id="revList" class="space-y-3"></ul>
+    <div id="revEmpty" class="hidden text-center text-sm text-gray-500 dark:text-gray-400 py-10 bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700/60">Không có đánh giá phù hợp.</div>
+  </section>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+
+  var ADMIN_KEY = 'eduhub_admin', LOCK_KEY = 'eduhub_admin_lock', SS = 'eduhub_admin_ok';
+  var TTL = 30 * 60 * 1000, MAX_FAIL = 5, LOCK_MS = 5 * 60 * 1000, MIN_PW = 8;
+  var FB_PREFIX = 'eduhub_feedback_';
+  var LABELS = ['', 'Rất tệ', 'Chưa tốt', 'Bình thường', 'Tốt', 'Tuyệt vời'];
+  var CATS = [{ id: 'ui', name: 'Giao diện' }, { id: 'speed', name: 'Tốc độ' }, { id: 'ease', name: 'Dễ sử dụng' }, { id: 'features', name: 'Tính năng' }];
+  var USER_DATA_BASES = ['eduhub_records', 'eduhub_subjects', 'eduhub_timetable', 'eduhub_assignments', 'eduhub_submissions', 'eduhub_notifications', 'eduhub_exams', 'eduhub_gamify', 'eduhub_boss', 'eduhub_goal', 'eduhub_feedback'];
+
+  var cloud = EduCloud.enabled, cloudOk = false;
+  var DB = { users: [], reviews: [], byEmail: {} };
+  var rf = { q: '', stars: '', status: '', email: '' };   // bộ lọc đánh giá
+  var uq = '';                                            // tìm người dùng
+
+  /* ================= PHIÊN QUẢN TRỊ ================= */
+  function authed() {
+    if (cloud) return cloudOk;
+    var t = parseInt(sessionStorage.getItem(SS) || '0', 10);
+    return t > 0 && Date.now() - t < TTL;
+  }
+  function touch() { if (cloud) return; try { sessionStorage.setItem(SS, String(Date.now())); } catch (e) {} }
+  function lockInfo() { var l = EduHub.get(LOCK_KEY, null); return l && typeof l === 'object' ? l : { n: 0, until: 0 }; }
+
+  function showGate() {
+    $('app').classList.add('hidden');
+    $('gate').classList.remove('hidden');
+    $('logoutBtn').classList.add('hidden');
+    if (EduCloud.unavailable) {
+      $('gateTitle').textContent = 'Chưa kết nối được máy chủ';
+      $('gateHint').textContent = 'Không tải được thư viện Supabase (mạng có thể đang chặn). Hãy tải lại trang.';
+      $('gateBtn').disabled = true; $('gateBtn').textContent = 'Đăng nhập';
+      return;
+    }
+    if (cloud) {
+      $('gateTitle').textContent = 'Đăng nhập quản trị';
+      $('gateHint').textContent = 'Dùng tài khoản có vai trò admin trên máy chủ.';
+      $('emailWrap').classList.remove('hidden');
+      $('pw2Wrap').classList.add('hidden');
+      $('gateBtn').textContent = 'Đăng nhập';
+      $('gateNote').innerHTML = '<i class="fa-solid fa-shield-halved mr-1"></i>Quyền quản trị được kiểm tra trên máy chủ Supabase.';
+      $('pw1').value = ''; $('pw2').value = '';
+      return;
+    }
+    var has = !!(EduHub.get(ADMIN_KEY, null) || {}).hash;
+    $('gateTitle').textContent = has ? 'Đăng nhập quản trị' : 'Tạo mật khẩu quản trị';
+    $('gateHint').textContent = has ? 'Nhập mật khẩu để quản lý EduHub.' : 'Lần đầu truy cập: đặt mật khẩu (ít nhất ' + MIN_PW + ' ký tự).';
+    $('pw2Wrap').classList.toggle('hidden', has);
+    $('gateBtn').textContent = has ? 'Đăng nhập' : 'Tạo mật khẩu & vào';
+    $('pw1').value = ''; $('pw2').value = '';
+  }
+  function gateErr(m) { var e = $('gateErr'); e.textContent = m; e.classList.remove('hidden'); }
+
+  async function gateSubmit() {
+    $('gateErr').classList.add('hidden');
+    if (EduCloud.unavailable) return gateErr('Không tải được thư viện kết nối máy chủ. Hãy tải lại trang.');
+    if (cloud) {
+      var em = $('adminEmail').value.trim().toLowerCase(), cpw = $('pw1').value;
+      if (!em || !cpw) return gateErr('Nhập email và mật khẩu quản trị.');
+      $('gateBtn').disabled = true;
+      try { await EduCloud.admin.signIn(em, cpw); cloudOk = true; await enter(); }
+      catch (e) { gateErr(e.message); }
+      $('gateBtn').disabled = false;
+      return;
+    }
+    var cfg = EduHub.get(ADMIN_KEY, null) || {};
+    var pw = $('pw1').value;
+    if (!cfg.hash) {                                       // thiết lập lần đầu
+      if (pw.length < MIN_PW) return gateErr('Mật khẩu cần ít nhất ' + MIN_PW + ' ký tự.');
+      if (pw !== $('pw2').value) return gateErr('Hai mật khẩu không khớp.');
+      var h = await EduHub.hashPassword(pw);
+      if (!EduHub.set(ADMIN_KEY, { hash: h, createdAt: Date.now() })) return gateErr('Không lưu được mật khẩu (trình duyệt chặn lưu trữ?).');
+      touch(); enter(); return;
+    }
+    var lk = lockInfo();
+    if (lk.until > Date.now()) return gateErr('Sai quá nhiều lần. Thử lại sau ' + Math.ceil((lk.until - Date.now()) / 60000) + ' phút.');
+    var ok = pw && await EduHub.verifyPassword(pw, { passwordHash: cfg.hash });
+    if (!ok) {
+      var n = (lk.until && lk.until <= Date.now() ? 0 : lk.n) + 1;
+      EduHub.set(LOCK_KEY, n >= MAX_FAIL ? { n: 0, until: Date.now() + LOCK_MS } : { n: n, until: 0 });
+      return gateErr(n >= MAX_FAIL ? 'Sai ' + MAX_FAIL + ' lần. Đã khóa 5 phút.' : 'Mật khẩu không đúng (' + n + '/' + MAX_FAIL + ').');
+    }
+    EduHub.del(LOCK_KEY);
+    touch(); enter();
+  }
+  async function enter() {
+    $('gate').classList.add('hidden');
+    $('app').classList.remove('hidden');
+    $('logoutBtn').classList.remove('hidden');
+    if (cloud) $('dataBanner').innerHTML = '<i class="fa-solid fa-cloud mr-1"></i>Đang hiển thị dữ liệu trên <strong>máy chủ</strong>: tài khoản và đánh giá từ mọi thiết bị.';
+    await refresh();
+  }
+
+  /* ================= DỮ LIỆU ================= */
+  function loadLocal() {
+    var users = EduHub.get(EduHub.CFG.USERS_KEY, []);
+    DB.users = Array.isArray(users) ? users.filter(function (u) { return u && typeof u.email === 'string'; }) : [];
+    var out = [];
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      if (!k || k.indexOf(FB_PREFIX) !== 0) continue;
+      var email = k.slice(FB_PREFIX.length), arr = EduHub.get(k, []);
+      if (!Array.isArray(arr)) continue;
+      arr.forEach(function (r) {
+        if (r && typeof r.id === 'string' && r.overall >= 1 && r.overall <= 5) { r._email = email; out.push(r); }
+      });
+    }
+    DB.reviews = out.sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
+  }
+  async function loadData() {
+    if (cloud) {
+      var res = await Promise.all([EduCloud.admin.listProfiles(), EduCloud.admin.listReviews()]);
+      DB.learn = await EduCloud.admin.learningStats().catch(function () { return null; });   // null nếu chưa chạy lại schema.sql giai đoạn 2
+      DB.users = res[0];
+      var byId = {}; DB.users.forEach(function (u) { byId[u.id] = u; });
+      DB.reviews = res[1].map(function (r) { r._email = (byId[r.userId] || {}).email || '(tài khoản đã xóa)'; return r; });
+    } else loadLocal();
+    DB.byEmail = {}; DB.users.forEach(function (u) { DB.byEmail[u.email] = u; });
+  }
+  async function refresh() {
+    try { await loadData(); }
+    catch (e) {
+      EduHub.toast(e.message, 'error');
+      if (cloud && /đăng nhập lại|quyền/i.test(e.message)) { cloudOk = false; showGate(); return; }
+    }
+    renderAll();
+  }
+  function getUsers() { return DB.users; }
+  function getReviews() { return DB.reviews; }
+  function userByEmail(email) { return DB.byEmail[email] || null; }
+  function updateReview(email, id, fn) {
+    var k = FB_PREFIX + email, arr = EduHub.get(k, []);
+    if (!Array.isArray(arr)) return false;
+    var r = arr.filter(function (x) { return x && x.id === id; })[0];
+    if (!r) return false;
+    fn(r);
+    return EduHub.set(k, arr);
+  }
+  function removeReview(email, id) {
+    var k = FB_PREFIX + email, arr = EduHub.get(k, []);
+    return Array.isArray(arr) && EduHub.set(k, arr.filter(function (x) { return !(x && x.id === id); }));
+  }
+
+  /* ================= TIỆN ÍCH ================= */
+  function starsHtml(n) {
+    var s = '';
+    for (var i = 1; i <= 5; i++) s += '<i class="' + (i <= Math.round(n) ? 'fa-solid' : 'fa-regular') + ' fa-star"></i>';
+    return s;
+  }
+  function fmtDate(ts) { return ts ? new Date(ts).toLocaleDateString('vi-VN') : '—'; }
+  function fmtDateTime(ts) { return ts ? new Date(ts).toLocaleDateString('vi-VN') + ' ' + new Date(ts).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : ''; }
+  function norm(s) { return String(s || '').toLowerCase(); }
+  function csvCell(v) {
+    var s = String(v == null ? '' : v);
+    if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;               // chống công thức độc hại khi mở bằng Excel
+    return '"' + s.replace(/"/g, '""') + '"';
+  }
+  function downloadCsv(name, rows) {
+    var text = '\ufeff' + rows.map(function (r) { return r.map(csvCell).join(','); }).join('\r\n');
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([text], { type: 'text/csv;charset=utf-8' }));
+    a.download = name + '-' + new Date().toISOString().slice(0, 10) + '.csv';
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1500);
+  }
+  function bar(label, valueText, pct, color) {
+    var row = el('div', 'flex items-center gap-3 text-xs text-gray-600 dark:text-gray-300');
+    var l = el('span', 'w-28 shrink-0 truncate', label); l.title = label;
+    var track = el('div', 'flex-1 h-2 rounded-full bg-gray-100 dark:bg-slate-700 overflow-hidden');
+    var fill = el('div', 'h-full rounded-full'); fill.style.width = Math.max(0, Math.min(100, pct)) + '%'; fill.style.background = color || '#2563eb';
+    track.appendChild(fill);
+    row.appendChild(l); row.appendChild(track); row.appendChild(el('span', 'w-10 text-right font-semibold', valueText));
+    return row;
+  }
+
+  /* ================= TỔNG QUAN ================= */
+  function renderLearn() {
+    var box = $('learnBox'), L = DB.learn;
+    if (!cloud || !L) { box.classList.add('hidden'); return; }
+    box.classList.remove('hidden');
+    var wrap = $('learnCards'); wrap.innerHTML = '';
+    if (L.hidden) {
+      var note = el('div', 'col-span-full text-gray-500 dark:text-gray-400');
+      note.textContent = 'Chưa đủ để thống kê ẩn danh: cần từ 3 người dùng trở lên có dữ liệu (hiện có ' + (L.users_with_data || 0) + ').';
+      wrap.appendChild(note); return;
+    }
+    var kb = function (b) { return b >= 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB'; };
+    [['Người dùng có dữ liệu', L.users_with_data], ['Hoạt động 7 ngày qua', L.active_7d], ['Môn học', L.subjects],
+     ['Bài tập (đã nộp)', L.assignments + ' (' + L.submitted + ')'], ['Lịch thi', L.exams], ['Dung lượng dữ liệu', kb(L.bytes || 0)]]
+      .forEach(function (c) {
+        var d = el('div', 'rounded-xl bg-gray-50 dark:bg-slate-700/40 p-3');
+        var v = el('div', 'text-lg font-bold'); v.textContent = String(c[1] == null ? 0 : c[1]);
+        var l = el('div', 'text-gray-500 dark:text-gray-400 mt-0.5'); l.textContent = c[0];
+        d.appendChild(v); d.appendChild(l); wrap.appendChild(d);
+      });
+  }
+  function renderOverview() {
+    var users = getUsers(), all = getReviews();
+    var vis = all.filter(function (r) { return !r.hidden; });
+    var avg = vis.length ? vis.reduce(function (s, r) { return s + r.overall; }, 0) / vis.length : 0;
+    var pending = all.filter(function (r) { return !r.hidden && !r.reply; }).length;
+    var reviewers = {}; all.forEach(function (r) { reviewers[r._email] = 1; });
+
+    var cards = [
+      ['fa-users', 'Người dùng', String(users.length), '#2563eb'],
+      ['fa-comments', 'Đã đánh giá', all.length + ' (' + Object.keys(reviewers).length + ' người)', '#8b5cf6'],
+      ['fa-star', 'Điểm trung bình', vis.length ? avg.toFixed(2) + ' / 5' : '—', '#f59e0b'],
+      ['fa-inbox', 'Chưa phản hồi', String(pending), pending ? '#ef4444' : '#10b981']
+    ];
+    renderLearn();
+    var sc = $('statCards'); sc.innerHTML = '';
+    cards.forEach(function (c) {
+      var d = el('div', 'bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700/60 p-4');
+      var ic = el('div', 'w-9 h-9 rounded-xl flex items-center justify-center text-white mb-3'); ic.style.background = c[3];
+      ic.innerHTML = '<i class="fa-solid ' + c[0] + '"></i>';
+      d.appendChild(ic); d.appendChild(el('div', 'text-xl font-bold', c[2])); d.appendChild(el('div', 'text-xs text-gray-500 dark:text-gray-400 mt-0.5', c[1]));
+      sc.appendChild(d);
+    });
+
+    var dist = [0, 0, 0, 0, 0, 0]; vis.forEach(function (r) { dist[r.overall]++; });
+    var db = $('distBox'); db.innerHTML = '';
+    for (var s = 5; s >= 1; s--) db.appendChild(bar(s + ' sao', String(dist[s]), vis.length ? dist[s] / vis.length * 100 : 0, '#f59e0b'));
+    if (!vis.length) db.appendChild(el('p', 'text-xs text-gray-400', 'Chưa có dữ liệu.'));
+
+    var cb = $('catBox'); cb.innerHTML = '';
+    CATS.forEach(function (c) {
+      var vals = vis.map(function (r) { return r.cats && r.cats[c.id]; }).filter(Boolean);
+      var a = vals.length ? vals.reduce(function (x, y) { return x + y; }, 0) / vals.length : 0;
+      cb.appendChild(bar(c.name, vals.length ? a.toFixed(1) : '—', a / 5 * 100, '#2563eb'));
+    });
+
+    var counts = {};
+    vis.forEach(function (r) { (r.tags || []).forEach(function (t) { counts[t] = (counts[t] || 0) + 1; }); });
+    var tags = Object.keys(counts).sort(function (a, b) { return counts[b] - counts[a]; }).slice(0, 8);
+    var tb = $('tagBox'); tb.innerHTML = '';
+    tags.forEach(function (t) { tb.appendChild(bar(t, String(counts[t]), counts[t] / counts[tags[0]] * 100, '#8b5cf6')); });
+    if (!tags.length) tb.appendChild(el('p', 'text-xs text-gray-400', 'Chưa có dữ liệu.'));
+
+    var rb = $('recentBox'); rb.innerHTML = '';
+    all.slice(0, 5).forEach(function (r) {
+      var li = el('li', 'text-sm');
+      var u = userByEmail(r._email);
+      var top = el('div', 'flex items-center justify-between gap-2');
+      top.appendChild(el('span', 'font-semibold truncate', u ? u.name : r._email));
+      var st = el('span', 'text-amber-500 text-xs shrink-0'); st.innerHTML = starsHtml(r.overall); top.appendChild(st);
+      li.appendChild(top);
+      if (r.comment) li.appendChild(el('p', 'text-xs text-gray-500 dark:text-gray-400 line-clamp-2 break-words', r.comment));
+      rb.appendChild(li);
+    });
+    if (!all.length) rb.appendChild(el('p', 'text-xs text-gray-400', 'Chưa có đánh giá nào.'));
+  }
+
+  /* ================= NGƯỜI DÙNG ================= */
+  function renderUsers() {
+    var users = getUsers(), reviews = getReviews(), cnt = {};
+    reviews.forEach(function (r) { cnt[r._email] = (cnt[r._email] || 0) + 1; });
+    var q = norm(uq);
+    var list = users.filter(function (u) { return !q || norm(u.name).indexOf(q) >= 0 || norm(u.mssv).indexOf(q) >= 0 || norm(u.email).indexOf(q) >= 0; })
+      .sort(function (a, b) { return (b.createdAt || 0) - (a.createdAt || 0); });
+    $('userCount').textContent = '(' + list.length + (q ? '/' + users.length : '') + ')';
+    var body = $('userBody'); body.innerHTML = '';
+    $('userEmpty').classList.toggle('hidden', list.length > 0);
+    list.forEach(function (u) {
+      var tr = el('tr');
+      var tdN = el('td', 'font-semibold', u.name || '—');
+      if (u.role === 'admin') tdN.appendChild(el('span', 'ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300', 'ADMIN'));
+      tr.appendChild(tdN);
+      tr.appendChild(el('td', '', u.mssv || '—'));
+      tr.appendChild(el('td', 'text-gray-600 dark:text-gray-300', u.email));
+      tr.appendChild(el('td', 'whitespace-nowrap', fmtDate(u.createdAt)));
+      tr.appendChild(el('td', '', u.provider === 'google' ? 'Google' : 'Email'));
+      var tdR = el('td'); var n = cnt[u.email] || 0;
+      if (n) {
+        var b = el('button', 'text-blue-600 dark:text-blue-400 font-semibold hover:underline', n + ' đánh giá'); b.type = 'button';
+        b.addEventListener('click', function () { rf = { q: '', stars: '', status: '', email: u.email }; syncFilterUi(); setTab('reviews'); });
+        tdR.appendChild(b);
+      } else tdR.appendChild(el('span', 'text-gray-400', '0'));
+      tr.appendChild(tdR);
+      var tdA = el('td', 'text-right');
+      var del = el('button', 'px-3 py-1.5 rounded-lg text-xs font-medium bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:opacity-80');
+      del.type = 'button'; del.innerHTML = '<i class="fa-solid fa-trash mr-1"></i>Xóa';
+      del.addEventListener('click', function () { deleteUser(u); });
+      if (u.role !== 'admin') tdA.appendChild(del);
+      tr.appendChild(tdA);
+      body.appendChild(tr);
+    });
+  }
+  async function deleteUser(u) {
+    var typed = prompt('XÓA tài khoản "' + (u.name || u.email) + '" cùng toàn bộ dữ liệu học tập và đánh giá trên thiết bị này.\nHành động không thể hoàn tác.\n\nNhập chính xác email để xác nhận:');
+    if (typed == null) return;
+    if (typed.trim().toLowerCase() !== u.email.toLowerCase()) { EduHub.toast('Email không khớp, đã hủy xóa.', 'warn'); return; }
+    if (cloud) {
+      try { await EduCloud.admin.deleteUser(u.id); }
+      catch (e) { EduHub.toast(e.message, 'error'); return; }
+      EduHub.toast('Đã xóa tài khoản ' + u.email, 'success');
+      await refresh();
+      return;
+    }
+    var users = (EduHub.get(EduHub.CFG.USERS_KEY, []) || []).filter(function (x) { return x.email !== u.email; });
+    if (!EduHub.set(EduHub.CFG.USERS_KEY, users)) { EduHub.toast('Không thể ghi dữ liệu.', 'error'); return; }
+    USER_DATA_BASES.forEach(function (b) { EduHub.del(b + '_' + u.email); });
+    EduHub.del('eduhub_total_' + u.email);
+    EduHub.toast('Đã xóa tài khoản ' + u.email, 'success');
+    await refresh();
+  }
+
+  /* ================= ĐÁNH GIÁ ================= */
+  function filteredReviews() {
+    var q = norm(rf.q);
+    return getReviews().filter(function (r) {
+      if (rf.email && r._email !== rf.email) return false;
+      if (rf.stars && String(r.overall) !== rf.stars) return false;
+      if (rf.status === 'hidden' && !r.hidden) return false;
+      if (rf.status === 'new' && (r.hidden || r.reply)) return false;
+      if (rf.status === 'replied' && !r.reply) return false;
+      if (q) {
+        var u = userByEmail(r._email);
+        var hay = norm(r.comment) + ' ' + norm(r._email) + ' ' + norm(u && u.name) + ' ' + norm((r.tags || []).join(' '));
+        if (hay.indexOf(q) < 0) return false;
+      }
+      return true;
+    });
+  }
+  function syncFilterUi() {
+    $('revQ').value = rf.q; $('revStars').value = rf.stars; $('revStatus').value = rf.status;
+    var chip = $('revFilterChip'); chip.innerHTML = '';
+    chip.classList.toggle('hidden', !rf.email);
+    if (rf.email) {
+      var b = el('button', 'text-xs font-medium px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400');
+      b.type = 'button'; b.textContent = 'Người dùng: ' + rf.email + '  ✕';
+      b.addEventListener('click', function () { rf.email = ''; syncFilterUi(); renderReviews(); });
+      chip.appendChild(b);
+    }
+  }
+  function renderReviews() {
+    var list = filteredReviews(), ul = $('revList');
+    ul.innerHTML = '';
+    $('revEmpty').classList.toggle('hidden', list.length > 0);
+    $('revCount').textContent = list.length + ' đánh giá';
+    list.forEach(function (r) {
+      var u = userByEmail(r._email);
+      var li = el('li', 'bg-white dark:bg-slate-800 rounded-2xl border p-4 text-sm space-y-2 ' + (r.hidden ? 'border-dashed border-gray-300 dark:border-slate-600 opacity-70' : 'border-gray-100 dark:border-slate-700/60'));
+
+      var top = el('div', 'flex flex-wrap items-center justify-between gap-2');
+      var who = el('div');
+      who.appendChild(el('div', 'font-semibold', u ? u.name : '(tài khoản đã xóa / khách)'));
+      who.appendChild(el('div', 'text-[11px] text-gray-400', r._email + ' · ' + fmtDateTime(r.ts)));
+      top.appendChild(who);
+      var st = el('div', 'text-amber-500 text-sm'); st.innerHTML = starsHtml(r.overall) + ' ';
+      st.appendChild(el('span', 'ml-1 text-xs font-semibold text-gray-700 dark:text-gray-200', LABELS[r.overall]));
+      top.appendChild(st);
+      li.appendChild(top);
+
+      if (r.hidden) li.appendChild(el('span', 'inline-block text-[11px] font-semibold px-2 py-0.5 rounded-full bg-gray-100 dark:bg-slate-700 text-gray-500', 'ĐÃ ẨN (không tính vào thống kê)'));
+
+      var cats = CATS.filter(function (c) { return r.cats && r.cats[c.id]; });
+      if (cats.length) {
+        var cb = el('div', 'flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-gray-500 dark:text-gray-400');
+        cats.forEach(function (c) { cb.appendChild(el('span', '', c.name + ': ' + r.cats[c.id] + '/5')); });
+        li.appendChild(cb);
+      }
+      if (r.tags && r.tags.length) {
+        var tg = el('div', 'flex flex-wrap gap-1.5');
+        r.tags.forEach(function (t) { tg.appendChild(el('span', 'text-[11px] px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400', t)); });
+        li.appendChild(tg);
+      }
+      if (r.comment) li.appendChild(el('p', 'text-gray-600 dark:text-gray-300 whitespace-pre-wrap break-words', r.comment));
+
+      // phản hồi của quản trị
+      var rw = el('div', 'pt-2');
+      var ta = el('textarea', 'inp'); ta.rows = 2; ta.maxLength = 300; ta.value = r.reply || '';
+      ta.placeholder = 'Phản hồi gửi tới người dùng (hiện trên trang đánh giá của họ)…';
+      ta.setAttribute('aria-label', 'Phản hồi của quản trị');
+      rw.appendChild(ta);
+      li.appendChild(rw);
+
+      var act = el('div', 'flex flex-wrap gap-2 text-xs font-medium');
+      function btn(cls, icon, text, fn) {
+        var b = el('button', 'px-3 py-1.5 rounded-lg hover:opacity-80 ' + cls); b.type = 'button';
+        b.innerHTML = '<i class="fa-solid ' + icon + ' mr-1"></i>'; b.appendChild(document.createTextNode(text));
+        b.addEventListener('click', fn); act.appendChild(b);
+      }
+      btn('bg-blue-600 text-white', 'fa-reply', r.reply ? 'Cập nhật phản hồi' : 'Lưu phản hồi', async function () {
+        var text = ta.value.trim().slice(0, 300);
+        if (await setReview(r, { reply: text })) EduHub.toast(text ? 'Đã lưu phản hồi' : 'Đã gỡ phản hồi', 'success');
+        await refresh();
+      });
+      btn('bg-gray-100 dark:bg-slate-700', r.hidden ? 'fa-eye' : 'fa-eye-slash', r.hidden ? 'Hiện lại' : 'Ẩn', async function () {
+        await setReview(r, { hidden: !r.hidden });
+        await refresh();
+      });
+      btn('bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400', 'fa-trash', 'Xóa', async function () {
+        if (!confirm('Xóa vĩnh viễn đánh giá này?')) return;
+        try {
+          if (cloud) await EduCloud.admin.removeReview(r.id); else removeReview(r._email, r.id);
+        } catch (e) { EduHub.toast(e.message, 'error'); return; }
+        EduHub.toast('Đã xóa đánh giá', 'info');
+        await refresh();
+      });
+      li.appendChild(act);
+      ul.appendChild(li);
+    });
+  }
+
+  /* ================= ĐIỀU KHIỂN CHUNG ================= */
+  async function setReview(r, patch) {
+    var reply = 'reply' in patch ? patch.reply : (r.reply || '');
+    var hidden = 'hidden' in patch ? patch.hidden : !!r.hidden;
+    try {
+      if (cloud) await EduCloud.admin.moderate(r.id, reply, hidden);
+      else if (!updateReview(r._email, r.id, function (x) {
+        if (reply) { x.reply = reply; x.replyTs = Date.now(); } else { delete x.reply; delete x.replyTs; }
+        if (hidden) x.hidden = true; else delete x.hidden;
+      })) throw new Error('Không lưu được thay đổi.');
+      return true;
+    } catch (e) { EduHub.toast(e.message, 'error'); return false; }
+  }
+  function setTab(name) {
+    ['overview', 'users', 'reviews'].forEach(function (t) { $('tab-' + t).classList.toggle('hidden', t !== name); });
+    Array.prototype.forEach.call(document.querySelectorAll('.tab-btn'), function (b) { b.setAttribute('aria-selected', b.dataset.tab === name ? 'true' : 'false'); });
+    if (name === 'reviews') renderReviews();
+  }
+  function renderAll() {
+    if (!authed()) { showGate(); return; }
+    renderOverview(); renderUsers(); renderReviews();
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('.tab-btn'), function (b) { b.addEventListener('click', function () { setTab(b.dataset.tab); }); });
+  $('gateBtn').addEventListener('click', gateSubmit);
+  ['pw1', 'pw2'].forEach(function (id) { $(id).addEventListener('keydown', function (e) { if (e.key === 'Enter') gateSubmit(); }); });
+  $('logoutBtn').addEventListener('click', function () {
+    if (cloud) { cloudOk = false; EduCloud.admin.signOut(); } else sessionStorage.removeItem(SS);
+    showGate();
+  });
+  $('userQ').addEventListener('input', function () { uq = this.value; renderUsers(); });
+  $('revQ').addEventListener('input', function () { rf.q = this.value; renderReviews(); });
+  $('revStars').addEventListener('change', function () { rf.stars = this.value; renderReviews(); });
+  $('revStatus').addEventListener('change', function () { rf.status = this.value; renderReviews(); });
+
+  $('userCsv').addEventListener('click', function () {
+    var cnt = {}; getReviews().forEach(function (r) { cnt[r._email] = (cnt[r._email] || 0) + 1; });
+    var rows = [['Họ tên', 'MSSV', 'Email', 'Ngày đăng ký', 'Kiểu đăng nhập', 'Số đánh giá']];
+    getUsers().forEach(function (u) { rows.push([u.name, u.mssv, u.email, u.createdAt ? new Date(u.createdAt).toISOString() : '', u.provider || 'email', cnt[u.email] || 0]); });
+    downloadCsv('eduhub-nguoi-dung', rows);
+  });
+  $('revCsv').addEventListener('click', function () {
+    var rows = [['Thời gian', 'Họ tên', 'Email', 'Sao', 'Giao diện', 'Tốc độ', 'Dễ sử dụng', 'Tính năng', 'Tính năng quan tâm', 'Nhận xét', 'Phản hồi', 'Đã ẩn']];
+    filteredReviews().forEach(function (r) {
+      var u = userByEmail(r._email), c = r.cats || {};
+      rows.push([r.ts ? new Date(r.ts).toISOString() : '', u ? u.name : '', r._email, r.overall, c.ui || '', c.speed || '', c.ease || '', c.features || '', (r.tags || []).join('; '), r.comment || '', r.reply || '', r.hidden ? 'x' : '']);
+    });
+    downloadCsv('eduhub-danh-gia', rows);
+  });
+
+  // thao tác của quản trị làm mới hạn phiên; hết hạn thì quay về cổng
+  document.addEventListener('click', function () { if (authed()) touch(); });
+  setInterval(function () { if (!$('app').classList.contains('hidden') && !authed()) showGate(); }, 30000);
+  // dữ liệu đổi ở tab khác (đăng ký, đánh giá mới) -> làm mới
+  window.addEventListener('storage', function (e) {
+    if (!cloud && (!e.key || e.key.indexOf('eduhub_') === 0)) { if (!$('app').classList.contains('hidden')) refresh(); }
+  });
+
+  (async function () {
+    if (cloud) {   // đã có phiên quản trị còn hạn thì vào thẳng
+      var p = await EduCloud.admin.check();
+      if (p) { cloudOk = true; enter(); return; }
+      showGate(); return;
+    }
+    if (!EduCloud.unavailable && authed()) enter(); else showGate();
+  })();
+})();
+</script>
+</body>
+</html>
