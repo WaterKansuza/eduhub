@@ -923,3 +923,811 @@ Một nhân viên muốn truy cập network (mạng) của tổ chức từ xa, 
 Internet là gì?
 
 Hai chức năng của End Devices (các thiết bị đầu cuối) trên network (mạng) là gì? (Chọn hai.)
+
+# Module 2: Basic Switch and End Device Configuration (Cấu hình cơ bản cho switch và thiết bị đầu cuối)
+
+## 2.0 Introduction (Giới thiệu)
+
+## 2.0.1 Tại sao mình nên học module này?
+
+Chào mừng bạn đến với Basic Switch and End Device Configuration (Cấu hình cơ bản cho switch và thiết bị đầu cuối)!
+
+Khi làm trong ngành mạng, có thể bạn sẽ phải dựng một hệ thống mạng mới, hoặc bảo trì và nâng cấp một mạng đã có sẵn. Dù là trường hợp nào, bạn cũng sẽ phải cấu hình các switch (bộ chuyển mạch) và end device (thiết bị đầu cuối) sao cho chúng an toàn và hoạt động hiệu quả theo đúng yêu cầu của bạn.
+
+Ngay khi mở hộp, switch (bộ chuyển mạch) và end device (thiết bị đầu cuối) đã có sẵn một số cấu hình chung. Nhưng với mạng riêng của bạn, chúng vẫn cần thông tin và chỉ dẫn cụ thể từ bạn. Trong module (mô-đun) này, bạn sẽ học cách truy cập vào các network device (thiết bị mạng) chạy Cisco IOS. Bạn cũng sẽ học các configuration command (lệnh cấu hình) cơ bản, rồi dùng chúng để cấu hình và kiểm tra một Cisco IOS device (thiết bị Cisco IOS) cũng như một end device (thiết bị đầu cuối) với một IP address (địa chỉ IP).
+
+Dĩ nhiên, quản trị mạng còn rất nhiều thứ khác nữa, nhưng chẳng thứ nào làm được nếu chưa cấu hình switch (bộ chuyển mạch) và end device (thiết bị đầu cuối) trước. Bắt đầu thôi nào!
+
+## 2.0.2 Mình sẽ học được những gì trong module này?
+
+**Tên module:** Basic Switch and End Device Configuration (Cấu hình cơ bản cho switch và thiết bị đầu cuối)
+
+**Mục tiêu của module:** Triển khai các cài đặt ban đầu, gồm password (mật khẩu), IP addressing (địa chỉ hóa IP) và các tham số default gateway (cổng mặc định), trên một network switch (bộ chuyển mạch mạng) và các end device (thiết bị đầu cuối).
+
+| Tên chủ đề | Mục tiêu của chủ đề |
+| --- | --- |
+| **Cisco IOS Access** (Truy cập Cisco IOS) | Giải thích cách truy cập một Cisco IOS device (thiết bị Cisco IOS) để phục vụ cấu hình. |
+| **IOS Navigation** (Điều hướng trong IOS) | Giải thích cách điều hướng trong Cisco IOS để cấu hình các network device (thiết bị mạng). |
+| **The Command Structure** (Cấu trúc lệnh) | Mô tả command structure (cấu trúc lệnh) của phần mềm Cisco IOS. |
+| **Basic Device Configuration** (Cấu hình thiết bị cơ bản) | Cấu hình một Cisco IOS device (thiết bị Cisco IOS) bằng CLI (giao diện dòng lệnh). |
+| **Save Configurations** (Lưu cấu hình) | Dùng các IOS command (lệnh IOS) để lưu running configuration (cấu hình đang chạy). |
+| **Ports and Addresses** (Cổng và địa chỉ) | Giải thích cách các thiết bị giao tiếp với nhau qua network media (phương tiện truyền dẫn mạng). |
+| **Configure IP Addressing** (Cấu hình địa chỉ IP) | Cấu hình IP address (địa chỉ IP) cho một host device (thiết bị máy trạm). |
+| **Verify Connectivity** (Kiểm tra kết nối) | Kiểm tra connectivity (khả năng kết nối) giữa hai end device (thiết bị đầu cuối). |
+
+## 2.1 Cisco IOS Access (Truy cập Cisco IOS)
+
+## 2.1.1 Operating Systems (Hệ điều hành)
+
+Mọi end device (thiết bị đầu cuối) và network device (thiết bị mạng) đều cần có operating system – OS (hệ điều hành). Như trong hình, phần của OS (hệ điều hành) tương tác trực tiếp với computer hardware (phần cứng máy tính) được gọi là kernel (nhân). Phần giao tiếp với các ứng dụng và người dùng được gọi là shell (lớp vỏ). Người dùng có thể tương tác với shell (lớp vỏ) bằng command-line interface – CLI (giao diện dòng lệnh) hoặc graphical user interface – GUI (giao diện đồ họa người dùng).
+
+**Mô tả hình:** Có ba vòng tròn đồng tâm tỏa ra từ màn hình của một chiếc máy tính, được gán nhãn là user interface (giao diện người dùng). Chúng thể hiện mối quan hệ giữa các phần khác nhau của một operating system (hệ điều hành). Vòng tròn trong cùng có nhãn hardware (phần cứng), hiển thị các ví dụ về phần cứng máy tính; vòng tròn ở giữa có nhãn kernel (nhân); vòng tròn ngoài cùng có nhãn shell (lớp vỏ). Dòng chữ ở phía dưới ghi: Shell (lớp vỏ) - Giao diện người dùng cho phép người dùng yêu cầu máy tính thực hiện những tác vụ cụ thể. Những yêu cầu này có thể được đưa ra qua CLI (giao diện dòng lệnh) hoặc GUI (giao diện đồ họa); Kernel (nhân) - Làm cầu nối giữa phần cứng và phần mềm của máy tính, đồng thời quản lý cách các tài nguyên phần cứng được sử dụng để đáp ứng yêu cầu của phần mềm; Hardware (phần cứng) - Phần vật lý của máy tính, bao gồm các linh kiện điện tử bên dưới.
+
+**Tài nguyên hình ảnh:** `https://www.netacad.com/authoring-resources/_assets/media/2d9e05c0-1c25-11ea-a010-eb2108469056/2d9e2cd0-1c25-11ea-81a0-ffc2c49b96bc.svg`
+
+**Nhãn trong hình:** Shell (lớp vỏ) | Kernel (nhân) | Hardware (phần cứng) | User Interface (giao diện người dùng)
+
+Khi dùng CLI (giao diện dòng lệnh), người dùng tương tác trực tiếp với hệ thống trong môi trường dựa trên văn bản, bằng cách gõ các command (lệnh) trên bàn phím tại command prompt (dấu nhắc lệnh), như trong ví dụ. Hệ thống sẽ thực thi lệnh và thường trả về kết quả dạng văn bản. CLI (giao diện dòng lệnh) tốn rất ít overhead (tài nguyên phụ trội) để vận hành. Tuy nhiên, nó đòi hỏi người dùng phải hiểu command structure (cấu trúc lệnh) nền tảng điều khiển hệ thống.
+
+## 2.1.2 GUI (Giao diện đồ họa người dùng)
+
+Một GUI (giao diện đồ họa người dùng) như Windows, macOS, Linux KDE, Apple iOS hay Android cho phép người dùng tương tác với hệ thống thông qua môi trường gồm các biểu tượng đồ họa, menu và cửa sổ. Ví dụ GUI (giao diện đồ họa) trong hình thân thiện với người dùng hơn và cần ít kiến thức hơn về command structure (cấu trúc lệnh) điều khiển hệ thống. Vì lý do đó, đa số người dùng dựa vào môi trường GUI (giao diện đồ họa).
+
+**Tài nguyên hình ảnh:** `https://www.netacad.com/authoring-resources/_assets/en-US/assets/98b25a52c937411d9258e6bac7b19822.png`
+
+Tuy nhiên, GUI (giao diện đồ họa) không phải lúc nào cũng cung cấp đủ mọi tính năng như CLI (giao diện dòng lệnh). GUI (giao diện đồ họa) cũng có thể bị lỗi, bị treo, hoặc đơn giản là không chạy đúng như mong đợi. Vì vậy, network device (thiết bị mạng) thường được truy cập qua CLI (giao diện dòng lệnh). So với GUI (giao diện đồ họa), CLI (giao diện dòng lệnh) tốn ít tài nguyên hơn và rất ổn định.
+
+Dòng network operating system (hệ điều hành mạng) được dùng trên nhiều thiết bị Cisco có tên là Cisco Internetwork Operating System – IOS (hệ điều hành liên mạng của Cisco). Cisco IOS được dùng trên rất nhiều router (bộ định tuyến) và switch (bộ chuyển mạch) của Cisco, bất kể loại hay quy mô của thiết bị. Mỗi loại router (bộ định tuyến) hay switch (bộ chuyển mạch) lại dùng một phiên bản Cisco IOS khác nhau. Các operating system (hệ điều hành) khác của Cisco gồm IOS XE, IOS XR và NX-OS.
+
+**Lưu ý:** Hệ điều hành trên home router (bộ định tuyến gia đình) thường được gọi là _firmware_ (phần sụn). Cách phổ biến nhất để cấu hình home router (bộ định tuyến gia đình) là dùng GUI (giao diện đồ họa) chạy trên trình duyệt web.
+
+## 2.1.3 Purpose of an OS (Mục đích của một hệ điều hành)
+
+Network operating system (hệ điều hành mạng) khá giống hệ điều hành trên PC. Thông qua GUI (giao diện đồ họa), một PC operating system (hệ điều hành máy tính cá nhân) cho phép người dùng làm những việc sau:
+
+  * Dùng chuột để chọn và chạy chương trình
+  * Nhập văn bản và các text-based command (lệnh dạng văn bản)
+  * Xem kết quả trên màn hình
+
+Một network operating system (hệ điều hành mạng) dựa trên CLI (giao diện dòng lệnh) (ví dụ: Cisco IOS trên switch (bộ chuyển mạch) hoặc router (bộ định tuyến)) cho phép network technician (kỹ thuật viên mạng) làm những việc sau:
+
+  * Dùng bàn phím để chạy các chương trình mạng dựa trên CLI (giao diện dòng lệnh)
+  * Dùng bàn phím để nhập văn bản và các text-based command (lệnh dạng văn bản)
+  * Xem kết quả trên màn hình
+
+Các networking device (thiết bị mạng) của Cisco chạy những phiên bản Cisco IOS cụ thể. Phiên bản IOS phụ thuộc vào loại thiết bị đang dùng và các tính năng cần có. Dù thiết bị nào cũng được cài sẵn một IOS mặc định cùng một feature set (bộ tính năng), bạn vẫn có thể nâng cấp phiên bản IOS hoặc feature set (bộ tính năng) để có thêm khả năng mới.
+
+Hình minh họa danh sách các bản phát hành phần mềm IOS cho Cisco Catalyst 2960 Switch (bộ chuyển mạch Cisco Catalyst 2960).
+
+**Tài nguyên hình ảnh:** `https://www.netacad.com/authoring-resources/_assets/en-US/assets/af240fb6e33542cd928c87dc25cb35f1.png`
+
+## 2.1.4 Access Methods (Các phương thức truy cập)
+
+Theo mặc định, một switch (bộ chuyển mạch) sẽ tự forward (chuyển tiếp) traffic (lưu lượng) và không cần được cấu hình rõ ràng để hoạt động. Ví dụ, hai host (máy trạm) đã được cấu hình và cùng kết nối vào một switch mới vẫn có thể giao tiếp với nhau.
+
+Bất kể hành vi mặc định của một switch mới ra sao, mọi switch (bộ chuyển mạch) đều nên được cấu hình và bảo mật.
+
+| **Phương thức** | **Mô tả** |
+| --- | --- |
+| **Console** (cổng điều khiển) | Đây là một management port (cổng quản trị) vật lý, cung cấp out-of-band access (truy cập ngoài băng tần) tới thiết bị Cisco. Out-of-band access (truy cập ngoài băng tần) nghĩa là truy cập qua một management channel (kênh quản trị) riêng, chỉ dùng cho mục đích bảo trì thiết bị. Ưu điểm của console port (cổng console) là bạn vẫn truy cập được thiết bị ngay cả khi chưa cấu hình bất kỳ networking service (dịch vụ mạng) nào, chẳng hạn khi làm cấu hình ban đầu. Để kết nối qua console, bạn cần một máy tính chạy terminal emulation software (phần mềm giả lập thiết bị đầu cuối) và một console cable (cáp console) chuyên dụng để nối vào thiết bị. |
+| **Secure Shell – SSH** (giao thức truy cập từ xa an toàn) | SSH là một phương thức in-band (trong băng tần) được khuyến nghị để thiết lập từ xa kết nối CLI (giao diện dòng lệnh) an toàn, thông qua một virtual interface (giao diện ảo), qua mạng. Khác với kết nối console, kết nối SSH đòi hỏi thiết bị phải có các networking service (dịch vụ mạng) đang hoạt động, trong đó có một interface (giao diện) đang hoạt động và đã được cấu hình địa chỉ. Hầu hết các phiên bản Cisco IOS đều có SSH server (máy chủ SSH) và SSH client (máy khách SSH) để thiết lập SSH session (phiên SSH) với các thiết bị khác. |
+| **Telnet** (giao thức truy cập từ xa không mã hóa) | Telnet là một phương thức in-band (trong băng tần) không an toàn để thiết lập từ xa một CLI session (phiên CLI) thông qua một virtual interface (giao diện ảo) qua mạng. Khác với SSH, Telnet không cung cấp kết nối an toàn, có encrypt (mã hóa), nên chỉ nên dùng trong lab environment (môi trường thực hành). User authentication (xác thực người dùng), password (mật khẩu) và các command (lệnh) đều được gửi qua mạng ở dạng plaintext (văn bản thuần). Best practice (thực hành tốt nhất) là dùng SSH thay cho Telnet. Cisco IOS có sẵn cả Telnet server (máy chủ Telnet) lẫn Telnet client (máy khách Telnet). |
+
+**Lưu ý:** Một số thiết bị, chẳng hạn router (bộ định tuyến), còn có thể hỗ trợ auxiliary port (cổng phụ) kiểu cũ, từng được dùng để thiết lập CLI session (phiên CLI) từ xa qua đường điện thoại bằng modem. Giống như kết nối console, AUX port (cổng AUX) là out-of-band (ngoài băng tần) và không yêu cầu các networking service (dịch vụ mạng) phải được cấu hình hay sẵn sàng.
+
+## 2.1.5 Terminal Emulation Programs (Các chương trình giả lập thiết bị đầu cuối)
+
+Có nhiều terminal emulation program (chương trình giả lập thiết bị đầu cuối) để bạn kết nối tới một networking device (thiết bị mạng), hoặc bằng serial connection (kết nối nối tiếp) qua console port (cổng console), hoặc bằng kết nối SSH/Telnet. Các chương trình này giúp bạn làm việc hiệu quả hơn nhờ điều chỉnh kích thước cửa sổ, đổi cỡ chữ và đổi bảng màu.
+
+Nhấp vào tên từng chương trình để xem ảnh chụp màn hình giao diện.
+
+### PuTTY
+
+**Mô tả hình:** ảnh chụp màn hình giao diện PuTTY, gồm các danh mục hiện có, ô để chỉ định đích muốn kết nối bằng host name (tên host) hoặc IP address (địa chỉ IP), port number (số cổng) sẽ dùng và loại kết nối
+
+**Tài nguyên hình ảnh:** `https://www.netacad.com/authoring-resources/_assets/media/2d9f3e41-1c25-11ea-a010-eb2108469056/2d9f3e42-1c25-11ea-81a0-ffc2c49b96bc.png`
+
+### Tera Term
+
+**Mô tả hình:** ảnh chụp màn hình một phiên Tera Term, gồm loại kết nối (TCP/IP hoặc serial), ô để nhập host cần kết nối, port number (số cổng) sẽ dùng và loại dịch vụ
+
+**Tài nguyên hình ảnh:** `https://www.netacad.com/authoring-resources/_assets/media/2d9f6550-1c25-11ea-a010-eb2108469056/2d9f6551-1c25-11ea-81a0-ffc2c49b96bc.png`
+
+### SecureCRT
+
+**Mô tả hình:** ảnh chụp màn hình một phiên SecureCRT, gồm ô để nhập protocol (giao thức) sẽ dùng, hostname (tên host), port number (số cổng), username (tên người dùng) và loại authentication (xác thực)
+
+**Tài nguyên hình ảnh:** `https://www.netacad.com/authoring-resources/_assets/media/2d9f8c60-1c25-11ea-a010-eb2108469056/2d9f8c60-1c25-11ea-81a0-ffc2c49b96bc.png`
+
+## 2.1.6 Check Your Understanding - Cisco IOS Access (Kiểm tra hiểu bài - Truy cập Cisco IOS)
+
+Hãy kiểm tra mức độ hiểu bài về Cisco IOS Access (Truy cập Cisco IOS) bằng cách chọn đáp án ĐÚNG NHẤT cho các câu hỏi sau.
+
+## Question (Câu hỏi)
+
+Phương thức truy cập nào là phù hợp nhất nếu bạn đang ở trong phòng thiết bị với một switch (bộ chuyển mạch) mới cần được cấu hình?
+
+Phương thức truy cập nào là phù hợp nhất nếu quản lý đưa bạn một sợi cáp đặc biệt và bảo bạn dùng nó để cấu hình switch (bộ chuyển mạch)?
+
+Phương thức truy cập nào là in-band access (truy cập trong băng tần) phù hợp nhất để vào IOS qua kết nối mạng?
+
+Phương thức truy cập nào là phù hợp nhất nếu bạn gọi cho quản lý để báo rằng mình không thể truy cập router (bộ định tuyến) ở một thành phố khác qua internet, và ông ấy cung cấp cho bạn thông tin để truy cập router (bộ định tuyến) đó qua kết nối điện thoại?
+
+## 2.2 IOS Navigation (Điều hướng trong IOS)
+
+## 2.2.1 Primary Command Modes (Các chế độ lệnh chính)
+
+Ở chủ đề trước, bạn đã biết rằng mọi network device (thiết bị mạng) đều cần OS (hệ điều hành) và có thể được cấu hình bằng CLI (giao diện dòng lệnh) hoặc GUI (giao diện đồ họa). Dùng CLI (giao diện dòng lệnh) có thể giúp network administrator (quản trị viên mạng) kiểm soát chính xác và linh hoạt hơn so với dùng GUI (giao diện đồ họa). Chủ đề này nói về việc dùng CLI (giao diện dòng lệnh) để điều hướng trong Cisco IOS.
+
+Như một tính năng bảo mật, phần mềm Cisco IOS tách management access (quyền truy cập quản trị) thành hai command mode (chế độ lệnh) sau:
+
+  * **User EXEC Mode** (chế độ thực thi dành cho người dùng) \- Chế độ này có khả năng hạn chế nhưng hữu ích cho các thao tác cơ bản. Nó chỉ cho phép một số ít monitoring command (lệnh giám sát) cơ bản và không cho phép chạy bất kỳ lệnh nào có thể làm thay đổi cấu hình của thiết bị. User EXEC mode (chế độ thực thi dành cho người dùng) được nhận biết nhờ CLI prompt (dấu nhắc CLI) kết thúc bằng ký hiệu >.
+  * **Privileged EXEC Mode** (chế độ thực thi đặc quyền) \- Để chạy các configuration command (lệnh cấu hình), network administrator (quản trị viên mạng) phải truy cập privileged EXEC mode (chế độ thực thi đặc quyền). Các configuration mode (chế độ cấu hình) cấp cao hơn, như global configuration mode (chế độ cấu hình toàn cục), chỉ có thể vào được từ privileged EXEC mode (chế độ thực thi đặc quyền). Privileged EXEC mode (chế độ thực thi đặc quyền) có thể nhận biết nhờ prompt (dấu nhắc lệnh) kết thúc bằng ký hiệu #.
+
+Bảng dưới đây tóm tắt hai chế độ này và hiển thị default CLI prompt (dấu nhắc CLI mặc định) của switch (bộ chuyển mạch) và router (bộ định tuyến) Cisco.
+
+| **Chế độ lệnh** | **Mô tả** | **Dấu nhắc mặc định của thiết bị** |
+| --- | --- | --- |
+| **User Exec Mode** (chế độ thực thi dành cho người dùng) | * Chế độ này chỉ cho phép truy cập một số ít monitoring command (lệnh giám sát) cơ bản.<br>* Thường được gọi là chế độ “view-only" (chỉ xem). | Switch><br>Router> |
+| **Privileged EXEC Mode** (chế độ thực thi đặc quyền) | * Chế độ này cho phép truy cập tất cả command (lệnh) và tính năng.<br>* Người dùng có thể dùng mọi monitoring command (lệnh giám sát) cũng như chạy các configuration command (lệnh cấu hình) và lệnh quản lý. | Switch#<br>Router# |
+
+## 2.2.2 Configuration Mode and Subconfiguration Modes (Chế độ cấu hình và các chế độ cấu hình con)
+
+Để cấu hình thiết bị, người dùng phải vào global configuration mode (chế độ cấu hình toàn cục), thường được gọi tắt là global config mode (chế độ cấu hình toàn cục).
+
+Từ global config mode (chế độ cấu hình toàn cục), các thay đổi cấu hình qua CLI (giao diện dòng lệnh) được thực hiện và ảnh hưởng đến hoạt động của toàn bộ thiết bị. Global configuration mode (chế độ cấu hình toàn cục) được nhận biết nhờ prompt (dấu nhắc lệnh) kết thúc bằng (config)# sau tên thiết bị, chẳng hạn **Switch(config)#**.
+
+Global configuration mode (chế độ cấu hình toàn cục) phải được vào trước các configuration mode (chế độ cấu hình) cụ thể khác. Từ global config mode (chế độ cấu hình toàn cục), người dùng có thể vào nhiều subconfiguration mode (chế độ cấu hình con) khác nhau. Mỗi chế độ cho phép cấu hình một bộ phận hoặc một chức năng cụ thể của IOS device (thiết bị IOS). Hai subconfiguration mode (chế độ cấu hình con) phổ biến gồm:
+
+  * **Line Configuration Mode** (chế độ cấu hình đường truy cập) \- Dùng để cấu hình truy cập qua console, SSH, Telnet hoặc AUX.
+  * **Interface Configuration Mode** (chế độ cấu hình giao diện) \- Dùng để cấu hình một switch port (cổng switch) hoặc một router network interface (giao diện mạng của router).
+
+Khi dùng CLI (giao diện dòng lệnh), chế độ hiện tại được nhận biết qua command-line prompt (dấu nhắc dòng lệnh) riêng của chế độ đó. Theo mặc định, mọi prompt (dấu nhắc lệnh) đều bắt đầu bằng tên thiết bị. Phần còn lại phía sau tên cho biết chế độ. Ví dụ, prompt (dấu nhắc lệnh) mặc định của line configuration mode (chế độ cấu hình đường truy cập) là **Switch(config-line)#**, còn của interface configuration mode (chế độ cấu hình giao diện) là **Switch(config-if)#**.
+
+## 2.2.3 Video - IOS CLI Primary Command Modes (Video - Các chế độ lệnh chính của IOS CLI)
+
+Nhấp vào Play (phát) trong hình để xem video minh họa cách chuyển qua lại giữa các IOS mode (chế độ IOS).
+
+[Xem video](https://players.brightcove.net/2649925992001/ZtjDPtmlF_default/index.html?videoId=cb578ba9-35d0-4646-8869-ecf9777aa8fa)
+
+## 2.2.4 Navigate Between IOS Modes (Di chuyển giữa các chế độ IOS)
+
+Có nhiều command (lệnh) dùng để vào và ra các command prompt (dấu nhắc lệnh) khác nhau. Để chuyển từ user EXEC mode (chế độ thực thi dành cho người dùng) sang privileged EXEC mode (chế độ thực thi đặc quyền), dùng lệnh **enable**. Dùng lệnh **disable** của privileged EXEC mode (chế độ thực thi đặc quyền) để quay về user EXEC mode (chế độ thực thi dành cho người dùng).
+
+**Lưu ý:** Privileged EXEC mode (chế độ thực thi đặc quyền) đôi khi còn được gọi là _enable mode_ (chế độ enable).
+
+Để vào và ra global configuration mode (chế độ cấu hình toàn cục), dùng lệnh **configure terminal** của privileged EXEC mode (chế độ thực thi đặc quyền). Để quay về privileged EXEC mode (chế độ thực thi đặc quyền), nhập lệnh **exit** của global config mode (chế độ cấu hình toàn cục).
+
+Có rất nhiều subconfiguration mode (chế độ cấu hình con) khác nhau. Ví dụ, để vào line subconfiguration mode (chế độ cấu hình con của line), bạn dùng lệnh **line** theo sau là loại và số của management line (đường quản trị) mà bạn muốn truy cập. Dùng lệnh **exit** để thoát khỏi một subconfiguration mode (chế độ cấu hình con) và quay về global configuration mode (chế độ cấu hình toàn cục).
+
+Để chuyển từ bất kỳ subconfiguration mode (chế độ cấu hình con) nào của global configuration mode (chế độ cấu hình toàn cục) lên chế độ nằm ngay phía trên nó trong hierarchy (thứ bậc) các chế độ, nhập lệnh **exit**.
+
+Để chuyển từ bất kỳ subconfiguration mode (chế độ cấu hình con) nào về privileged EXEC mode (chế độ thực thi đặc quyền), nhập lệnh **end** hoặc tổ hợp phím **Ctrl+Z**.
+
+Bạn cũng có thể chuyển thẳng từ một subconfiguration mode (chế độ cấu hình con) sang một chế độ khác. Hãy để ý cách sau khi chọn một interface (giao diện), command prompt (dấu nhắc lệnh) đổi từ **(config-line)#** sang **(config-if)#**.
+
+## 2.2.5 Video - Navigate Between IOS Modes (Video - Di chuyển giữa các chế độ IOS)
+
+Nhấp vào Play (phát) trong hình để xem video minh họa cách di chuyển giữa các IOS CLI mode (chế độ CLI của IOS).
+
+[Xem video](https://players.brightcove.net/2649925992001/ZtjDPtmlF_default/index.html?videoId=ff821177-ad3c-4999-a511-cfc83ed4f4b4)
+
+## 2.2.6 A Note About Syntax Checker Activities (Lưu ý về các hoạt động Syntax Checker)
+
+Khi đang học cách thay đổi cấu hình thiết bị, có lẽ bạn nên bắt đầu trong một non-production environment (môi trường không phải môi trường vận hành thực tế) an toàn trước khi thử trên thiết bị thật. NetAcad cung cấp nhiều simulation tool (công cụ mô phỏng) để giúp bạn rèn kỹ năng cấu hình và troubleshooting (xử lý sự cố). Vì là công cụ mô phỏng, chúng thường không có đầy đủ chức năng như thiết bị thật. Một trong số đó là Syntax Checker (công cụ kiểm tra cú pháp). Trong mỗi Syntax Checker (công cụ kiểm tra cú pháp), bạn được đưa một bộ hướng dẫn để nhập một tập lệnh cụ thể. Bạn không thể đi tiếp trong Syntax Checker (công cụ kiểm tra cú pháp) trừ khi nhập đúng và đầy đủ lệnh như yêu cầu. Các simulation tool (công cụ mô phỏng) nâng cao hơn, như Packet Tracer, cho phép bạn nhập abbreviated command (lệnh viết tắt), giống như khi làm trên thiết bị thật.
+
+## 2.2.7 Syntax Checker - Navigate Between IOS Modes (Syntax Checker - Di chuyển giữa các chế độ IOS)
+
+Dùng hoạt động Syntax Checker (công cụ kiểm tra cú pháp) để di chuyển giữa các IOS command line (dòng lệnh IOS) trên một switch (bộ chuyển mạch).
+
+## 2.2.8 Check Your Understanding - IOS Navigation (Kiểm tra hiểu bài - Điều hướng trong IOS)
+
+Hãy kiểm tra mức độ hiểu bài về IOS navigation (điều hướng trong IOS) bằng cách chọn đáp án đúng cho các câu hỏi sau.
+
+## Question (Câu hỏi)
+
+Chế độ IOS nào cho phép truy cập tất cả command (lệnh) và tính năng?
+
+Bạn đang ở IOS mode (chế độ IOS) nào nếu prompt (dấu nhắc lệnh) Switch(config)# được hiển thị?
+
+Bạn đang ở IOS mode (chế độ IOS) nào nếu prompt (dấu nhắc lệnh) Switch> được hiển thị?
+
+Hai lệnh nào sẽ đưa bạn trở về privileged EXEC prompt (dấu nhắc thực thi đặc quyền) bất kể bạn đang ở configuration mode (chế độ cấu hình) nào? (Chọn hai đáp án.)
+
+## 2.3 The Command Structure (Cấu trúc lệnh)
+
+## 2.3.1 Basic IOS Command Structure (Cấu trúc lệnh cơ bản của IOS)
+
+Chủ đề này trình bày cấu trúc cơ bản của các command (lệnh) trong Cisco IOS. Network administrator (quản trị viên mạng) cần nắm command structure (cấu trúc lệnh) cơ bản của IOS để có thể dùng CLI (giao diện dòng lệnh) cấu hình thiết bị.
+
+Một Cisco IOS device (thiết bị Cisco IOS) hỗ trợ rất nhiều command (lệnh). Mỗi IOS command (lệnh IOS) có một định dạng riêng, hay còn gọi là syntax (cú pháp), và chỉ chạy được ở đúng mode (chế độ) phù hợp. Cú pháp chung của một lệnh, như trong hình, là command (lệnh) theo sau là các keyword (từ khóa) và argument (đối số) phù hợp.
+
+**Mô tả hình:** Sơ đồ cho thấy general syntax (cú pháp chung) của một lệnh trên switch (gồm prompt (dấu nhắc lệnh), command (lệnh), khoảng trắng, và keyword (từ khóa) hoặc argument (đối số)) kèm hai ví dụ.  Ở ví dụ thứ nhất, prompt là Switch&gt;, lệnh là show, theo sau là một khoảng trắng, và keyword là ip protocols. Ở ví dụ thứ hai, prompt là Switch&gt;, lệnh là ping, theo sau là một khoảng trắng, và argument là 192 dot 168 dot 10 dot 5.
+
+**Tài nguyên hình ảnh:** `https://www.netacad.com/authoring-resources/_assets/media/2da49570-1c25-11ea-a010-eb2108469056/2da49572-1c25-11ea-81a0-ffc2c49b96bc.svg`
+
+**Nhãn trong hình:** Prompt (dấu nhắc lệnh) | Command (lệnh) | Space (khoảng trắng) | Keyword(s) (từ khóa) hoặc Argument(s) (đối số)
+
+* **Keyword** (từ khóa) \- Đây là một tham số cụ thể được định nghĩa sẵn trong operating system (hệ điều hành) (trong hình là **ip protocols**).
+  * **Argument** (đối số) \- Cái này không được định nghĩa trước; đây là một giá trị hoặc biến do người dùng tự xác định (trong hình là **192.168.10.5**).
+
+Sau khi nhập xong mỗi lệnh hoàn chỉnh, gồm cả các keyword (từ khóa) và argument (đối số), nhấn phím **Enter** để gửi lệnh tới command interpreter (trình thông dịch lệnh).
+
+## 2.3.2 IOS Command Syntax Check (Kiểm tra cú pháp lệnh IOS)
+
+Một lệnh có thể cần một hoặc nhiều argument (đối số). Để biết lệnh cần những keyword (từ khóa) và argument (đối số) nào, hãy xem command syntax (cú pháp lệnh). Cú pháp cung cấp mẫu, hay định dạng, bắt buộc phải dùng khi nhập lệnh.
+
+Như trong bảng, boldface text (chữ in đậm) chỉ các command (lệnh) và keyword (từ khóa) được nhập y nguyên như hiển thị. Italic text (chữ in nghiêng) chỉ một argument (đối số) mà người dùng tự cung cấp giá trị.
+
+| **Quy ước** | **Mô tả** |
+| --- | --- |
+| **boldface** (chữ in đậm) | Chữ in đậm chỉ các command (lệnh) và keyword (từ khóa) mà bạn nhập nguyên văn như hiển thị. |
+| _italics_ (chữ in nghiêng) | Chữ in nghiêng chỉ các argument (đối số) mà bạn tự điền giá trị. |
+| **[** x**]** | Square brackets (dấu ngoặc vuông) chỉ một optional element (thành phần tùy chọn), có thể là keyword (từ khóa) hoặc argument (đối số). |
+| **{** x**}** | Braces (dấu ngoặc nhọn) chỉ một required element (thành phần bắt buộc), có thể là keyword (từ khóa) hoặc argument (đối số). |
+| **[** x**{** y **\|** z **}]** | Braces (dấu ngoặc nhọn) và vertical lines (dấu gạch đứng) nằm trong square brackets (dấu ngoặc vuông) chỉ một required choice (lựa chọn bắt buộc) bên trong một optional element (thành phần tùy chọn). Khoảng trắng được dùng để phân tách rõ các phần của lệnh. |
+
+Ví dụ, cú pháp để dùng lệnh **description** là **description** _string._ Argument (đối số) ở đây là một giá trị _string_ (chuỗi ký tự) do người dùng cung cấp. Lệnh **description** thường dùng để ghi chú mục đích của một interface (giao diện). Chẳng hạn, nhập lệnh **description Connects to the main headquarter office switch** , sẽ mô tả thiết bị ở đầu bên kia của kết nối nằm ở đâu.
+
+Các ví dụ sau minh họa những convention (quy ước) dùng để ghi tài liệu và sử dụng IOS command (lệnh IOS):
+
+  * **ping** _ip-address_ \- Lệnh là **ping** và argument (đối số) do người dùng định nghĩa là _ip-address_ của thiết bị đích. Ví dụ: **ping 10.10.10.5**.
+  * **traceroute** _ip-address_ \- Lệnh là **traceroute** và argument (đối số) do người dùng định nghĩa là _ip-address_ của thiết bị đích. Ví dụ: **traceroute 192.168.254.254**.
+
+Nếu một lệnh phức tạp với nhiều argument (đối số), bạn có thể thấy nó được biểu diễn như sau:
+
+Switch(config-if)# **switchport port-security aging** {  **static** | **time** _time_ | **type** {**absolute** | **inactivity**}}
+
+Thông thường, sau lệnh sẽ có phần mô tả chi tiết về lệnh và từng argument (đối số).
+
+Cisco IOS Command Reference (Tài liệu tham khảo lệnh Cisco IOS) là nguồn thông tin tối cao cho bất kỳ IOS command (lệnh IOS) cụ thể nào.
+
+## 2.3.3 IOS Help Features (Các tính năng trợ giúp của IOS)
+
+IOS có hai dạng trợ giúp: context-sensitive help (trợ giúp theo ngữ cảnh) và command syntax check (kiểm tra cú pháp lệnh).
+
+Context-sensitive help (trợ giúp theo ngữ cảnh) giúp bạn nhanh chóng tìm ra câu trả lời cho những câu hỏi sau:
+
+  * Những command (lệnh) nào có sẵn trong mỗi command mode (chế độ lệnh)?
+  * Những lệnh nào bắt đầu bằng một ký tự hoặc một nhóm ký tự cụ thể?
+  * Những argument (đối số) và keyword (từ khóa) nào có sẵn cho từng lệnh cụ thể?
+
+Để dùng context-sensitive help (trợ giúp theo ngữ cảnh), bạn chỉ cần gõ dấu chấm hỏi, **?** , tại CLI (giao diện dòng lệnh).
+
+Command syntax check (kiểm tra cú pháp lệnh) xác minh rằng người dùng đã nhập một lệnh hợp lệ. Khi một lệnh được nhập, command line interpreter (trình thông dịch dòng lệnh) sẽ đánh giá lệnh đó từ trái sang phải. Nếu trình thông dịch hiểu lệnh, hành động được yêu cầu sẽ được thực thi và CLI (giao diện dòng lệnh) quay về prompt (dấu nhắc lệnh) phù hợp. Nhưng nếu trình thông dịch không hiểu lệnh đang nhập, nó sẽ phản hồi để mô tả lệnh đó sai ở đâu.
+
+## 2.3.4 Video - Context Sensitive Help and Command Syntax Check (Video - Trợ giúp theo ngữ cảnh và kiểm tra cú pháp lệnh)
+
+Nhấp vào Play (phát) trong hình để xem video minh họa context-sensitive help (trợ giúp theo ngữ cảnh) và command syntax check (kiểm tra cú pháp lệnh).
+
+[Xem video](https://players.brightcove.net/2649925992001/ZtjDPtmlF_default/index.html?videoId=b63d5f7f-d7f1-4374-831b-d86f92e398c7)
+
+## 2.3.5 Hot Keys and Shortcuts (Phím nóng và phím tắt)
+
+IOS CLI (giao diện dòng lệnh của IOS) cung cấp các hot key (phím nóng) và shortcut (phím tắt) giúp việc cấu hình, giám sát và xử lý sự cố dễ dàng hơn.
+
+Các command (lệnh) và keyword (từ khóa) có thể được rút gọn xuống số ký tự tối thiểu đủ để xác định duy nhất một lựa chọn. Ví dụ, lệnh **configure** có thể rút gọn thành **conf** vì **configure** là lệnh duy nhất bắt đầu bằng **conf**. Một bản rút gọn ngắn hơn nữa, **con** , sẽ không hoạt động vì có hơn một lệnh bắt đầu bằng **con**. Keyword (từ khóa) cũng có thể được rút gọn.
+
+Bảng dưới liệt kê các keystroke (tổ hợp phím) giúp chỉnh sửa command line (dòng lệnh) tốt hơn.
+
+| **Keystroke** (tổ hợp phím) | **Mô tả** |
+| --- | --- |
+| **Tab** | Hoàn thành phần tên lệnh đang nhập dở. |
+| **Backspace** | Xóa ký tự bên trái con trỏ. |
+| **Ctrl+D** | Xóa ký tự tại vị trí con trỏ. |
+| **Ctrl+K** | Xóa toàn bộ ký tự từ con trỏ đến cuối dòng lệnh. |
+| **Esc D** | Xóa toàn bộ ký tự từ con trỏ đến cuối từ. |
+| **Ctrl+U** hoặc **Ctrl+X** | Xóa toàn bộ ký tự từ con trỏ ngược về đầu dòng lệnh. |
+| **Ctrl+W** | Xóa từ bên trái con trỏ. |
+| **Ctrl+A** | Di chuyển con trỏ về đầu dòng. |
+| **Left Arrow** hoặc **Ctrl+B** | Di chuyển con trỏ sang trái một ký tự. |
+| **Esc B** | Di chuyển con trỏ lùi về bên trái một từ. |
+| **Esc F** | Di chuyển con trỏ tiến về bên phải một từ. |
+| **Right Arrow** hoặc **Ctrl+F** | Di chuyển con trỏ sang phải một ký tự. |
+| **Ctrl+E** | Di chuyển con trỏ đến cuối dòng lệnh. |
+| **Up Arrow** hoặc **Ctrl+P** | Gọi lại lệnh trước đó trong history buffer (bộ đệm lịch sử lệnh), bắt đầu từ lệnh gần nhất. |
+| **Down Arrow** hoặc **Ctrl+N** | Chuyển đến dòng kế tiếp trong history buffer (bộ đệm lịch sử lệnh). |
+| **Ctrl+R** hoặc **Ctrl+I** hoặc **Ctrl+L** | Hiển thị lại system prompt (dấu nhắc hệ thống) và dòng lệnh sau khi nhận được một console message (thông báo từ console). |
+
+**Lưu ý:** Dù phím **Delete** thường xóa ký tự ở bên phải prompt (dấu nhắc lệnh), command structure (cấu trúc lệnh) của IOS không nhận diện phím Delete.
+
+Khi kết quả của một lệnh dài hơn lượng văn bản có thể hiển thị trong cửa sổ terminal (thiết bị đầu cuối), IOS sẽ hiển thị prompt (dấu nhắc) **“--More--”**. Bảng sau mô tả các keystroke (tổ hợp phím) có thể dùng khi prompt (dấu nhắc) này xuất hiện.
+
+| **Keystroke** (tổ hợp phím) | **Mô tả** |
+| --- | --- |
+| Phím **Enter** | Hiển thị dòng kế tiếp. |
+| Phím **Space** | Hiển thị màn hình kế tiếp. |
+| Bất kỳ phím nào khác * | Kết thúc chuỗi hiển thị, quay về prompt (dấu nhắc lệnh) trước đó.<br>* Trừ "y", dùng để trả lời "yes" cho prompt (dấu nhắc) **\--More--**, và có tác dụng như phím **Space** |
+
+Bảng này liệt kê các lệnh dùng để thoát khỏi một thao tác.
+
+| **Keystroke** (tổ hợp phím) | **Mô tả** |
+| --- | --- |
+| **Ctrl-C** | Khi đang ở bất kỳ configuration mode (chế độ cấu hình) nào, kết thúc chế độ cấu hình và quay về privileged EXEC mode (chế độ thực thi đặc quyền). Khi đang ở setup mode (chế độ cài đặt), hủy và quay về command prompt (dấu nhắc lệnh). |
+| **Ctrl-Z** | Khi đang ở bất kỳ configuration mode (chế độ cấu hình) nào, kết thúc chế độ cấu hình và quay về privileged EXEC mode (chế độ thực thi đặc quyền). |
+| **Ctrl-Shift-6** | All-purpose break sequence (chuỗi ngắt đa dụng) dùng để hủy các DNS lookup (tra cứu DNS), traceroute, ping, v.v. |
+
+## 2.3.6 Video - Hot Keys and Shortcuts (Video - Phím nóng và phím tắt)
+
+Nhấp vào Play (phát) trong hình để xem video minh họa các hotkey (phím nóng) và shortcut (phím tắt) khác nhau.
+
+[Xem video](https://players.brightcove.net/2649925992001/ZtjDPtmlF_default/index.html?videoId=90836485-9e5a-49ae-ad53-1d01eeac5a80)
+
+## 2.3.7 Packet Tracer - Navigate the IOS (Packet Tracer - Điều hướng trong IOS)
+
+Trong hoạt động này, bạn sẽ thực hành các kỹ năng cần thiết để điều hướng trong Cisco IOS, bao gồm các user access mode (chế độ truy cập của người dùng) khác nhau, nhiều configuration mode (chế độ cấu hình) khác nhau và các lệnh thường dùng hằng ngày. Bạn cũng sẽ thực hành truy cập context-sensitive help (trợ giúp theo ngữ cảnh) thông qua việc cấu hình lệnh **clock**.
+
+### Navigate the IOS (Điều hướng trong IOS)
+
+- Hướng dẫn hoạt động: `https://www.netacad.com/authoring-resources/_assets/en-US/assets/2.3.7-packet-tracer---navigate-the-ios.pdf_en-US_8029a122-8516-4c0f-9fa3-e3fd721abbf7.pdf`
+
+- Tệp Packet Tracer: `https://www.netacad.com/authoring-resources/_assets/en-US/assets/2.3.7-packet-tracer---navigate-the-ios.pka_en-US_0500e74c-196b-457a-ac57-d49faa05029b.pka`
+
+## 2.3.8 Lab - Navigate the IOS by Using Tera Term for Console Connectivity (Lab - Điều hướng trong IOS bằng Tera Term để kết nối console)
+
+##### Skills Practice Opportunity (Cơ hội thực hành kỹ năng)
+
+Bạn có cơ hội thực hành các kỹ năng sau:
+
+  * Phần 1: Truy cập một Cisco Switch (bộ chuyển mạch Cisco) thông qua Serial Console Port (cổng console nối tiếp)
+  * Phần 2: Hiển thị và cấu hình các cài đặt cơ bản của thiết bị
+  * Phần 3: (Tùy chọn) Truy cập một Cisco Router (bộ định tuyến Cisco) bằng cáp console Mini-USB
+
+Bạn có thể thực hành các kỹ năng này bằng Packet Tracer hoặc lab equipment (thiết bị thực hành), nếu có.
+
+**Packet Tracer - Physical Mode – PTPM (chế độ vật lý)**
+
+### Navigate the IOS Using a Terminal Client for Console Connectivity - Physical Mode (Điều hướng trong IOS bằng Terminal Client để kết nối console - Chế độ vật lý)
+
+- Hướng dẫn hoạt động: `https://www.netacad.com/authoring-resources/_assets/en-US/assets/2.3.8-packet-tracer---navigate-the-ios-using-a-terminal-client-for-console-connectivity---physical-mode.pdf_en-US_96c2fd50-f1c7-4c40-bcff-50f8d03780cf.pdf`
+
+- Tệp Packet Tracer: `https://www.netacad.com/authoring-resources/_assets/en-US/assets/2.3.8-packet-tracer---navigate-the-ios-using-a-terminal-client-for-console-connectivity---physical-mode.pka_en-US_34bd3227-b8b6-49cb-bf07-77189c3a0916.pka`
+
+**Lab Equipment (Thiết bị thực hành)**
+
+### Navigate the IOS by Using Tera Term for Console Connectivity (Điều hướng trong IOS bằng Tera Term để kết nối console)
+
+- Hướng dẫn hoạt động: `https://www.netacad.com/authoring-resources/_assets/en-US/assets/2.3.8-lab---navigate-the-ios-by-using-tera-term-for-console-connectivity.pdf_en-US_231d54c4-4536-4987-bf0f-ebca970b6fe6.pdf`
+
+- Tệp Packet Tracer: `https://www.netacad.com/authoring-resources/_assets/en-US/assets/2.3.8-lab---navigate-the-ios-by-using-tera-term-for-console-connectivity.pdf_en-US_231d54c4-4536-4987-bf0f-ebca970b6fe6.pdf`
+
+## 2.4 Basic Device Configuration (Cấu hình thiết bị cơ bản)
+
+## 2.4.1 Device Names (Tên thiết bị)
+
+Bạn đã học được khá nhiều về Cisco IOS, cách điều hướng trong IOS và cấu trúc lệnh. Giờ thì bạn sẵn sàng để cấu hình thiết bị rồi! Lệnh cấu hình đầu tiên trên bất kỳ thiết bị nào nên là đặt cho nó một device name (tên thiết bị) hay hostname (tên host) duy nhất. Theo mặc định, mọi thiết bị đều được gán một factory default name (tên mặc định của nhà sản xuất). Ví dụ, một switch (bộ chuyển mạch) Cisco IOS có tên là "Switch."
+
+Vấn đề là nếu mọi switch (bộ chuyển mạch) trong mạng đều giữ nguyên tên mặc định, sẽ rất khó nhận ra một thiết bị cụ thể. Chẳng hạn, làm sao bạn biết mình đang kết nối đúng thiết bị khi truy cập từ xa bằng SSH? Hostname (tên host) chính là thứ xác nhận rằng bạn đang kết nối đúng thiết bị.
+
+Tên mặc định nên được đổi thành một cái tên mang tính mô tả rõ hơn. Nếu chọn tên khéo, các network device (thiết bị mạng) sẽ dễ nhớ, dễ ghi tài liệu và dễ nhận diện hơn. Sau đây là một số naming guideline (hướng dẫn đặt tên) quan trọng cho các host (máy trạm):
+
+  * Bắt đầu bằng một chữ cái
+  * Không chứa khoảng trắng
+  * Kết thúc bằng một chữ cái hoặc chữ số
+  * Chỉ dùng chữ cái, chữ số và dấu gạch ngang
+  * Có độ dài dưới 64 ký tự
+
+Một tổ chức phải chọn một naming convention (quy ước đặt tên) giúp việc nhận diện một thiết bị cụ thể trở nên dễ dàng và trực quan. Các hostname (tên host) dùng trong IOS của thiết bị giữ nguyên cách viết hoa và viết thường. Ví dụ, hình cho thấy ba switch (bộ chuyển mạch) trải trên ba tầng khác nhau, được nối với nhau trong một mạng. Naming convention (quy ước đặt tên) được dùng ở đây bao gồm cả vị trí và mục đích của từng thiết bị. Network documentation (tài liệu mạng) nên giải thích các tên này được chọn như thế nào để các thiết bị bổ sung sau này có thể được đặt tên tương ứng.
+
+**Mô tả hình:** Sơ đồ cho thấy ba switch (bộ chuyển mạch) được nối với nhau, trải trên ba tầng. Switch trên cùng tên là Sw-Floor-3, switch ở giữa tên là Sw-Floor-2 và switch dưới cùng tên là Sw-Floor-1.  Một người dùng ngồi tại một host PC (máy tính host) đang kết nối với switch Sw-Floor-1.  Dòng chữ ở dưới cùng ghi: khi các network device (thiết bị mạng) được đặt tên, chúng dễ được nhận diện hơn cho mục đích cấu hình.
+
+**Tài nguyên hình ảnh:** `https://www.netacad.com/authoring-resources/_assets/media/2da64320-1c25-11ea-a010-eb2108469056/2da66a30-1c25-11ea-81a0-ffc2c49b96bc.svg`
+
+**Nhãn trong hình:** Sw-Floor-3 | Sw-Floor-2 | Sw-Floor-1
+
+Khi đã xác định được naming convention (quy ước đặt tên), bước tiếp theo là dùng CLI (giao diện dòng lệnh) để áp dụng các tên đó cho thiết bị. Như trong ví dụ, từ privileged EXEC mode (chế độ thực thi đặc quyền), vào global configuration mode (chế độ cấu hình toàn cục) bằng cách nhập lệnh **configure terminal**. Hãy để ý sự thay đổi của command prompt (dấu nhắc lệnh).
+
+Từ global configuration mode (chế độ cấu hình toàn cục), nhập lệnh **hostname** theo sau là tên của switch rồi nhấn **Enter**. Hãy để ý sự thay đổi ở tên trong command prompt (dấu nhắc lệnh).
+
+**Lưu ý:** Để đưa switch (bộ chuyển mạch) về prompt (dấu nhắc lệnh) mặc định, dùng lệnh **no hostname** ở global config mode (chế độ cấu hình toàn cục).
+
+Luôn đảm bảo documentation (tài liệu) được cập nhật mỗi khi có một thiết bị được thêm vào hoặc chỉnh sửa. Trong tài liệu, hãy nhận diện thiết bị theo vị trí, mục đích và địa chỉ của chúng.
+
+## 2.4.2 Password Guidelines (Hướng dẫn về mật khẩu)
+
+Việc dùng password (mật khẩu) yếu hoặc dễ đoán vẫn là mối lo ngại bảo mật lớn nhất của các tổ chức. Các network device (thiết bị mạng), kể cả home wireless router (bộ định tuyến không dây gia đình), luôn nên được cấu hình password (mật khẩu) để hạn chế quyền truy cập quản trị.
+
+Cisco IOS có thể được cấu hình để dùng hierarchical mode password (mật khẩu theo từng chế độ phân cấp), cho phép các đặc quyền truy cập khác nhau vào một network device (thiết bị mạng).
+
+Mọi networking device (thiết bị mạng) đều nên hạn chế quyền truy cập quản trị bằng cách bảo vệ privileged EXEC, user EXEC và truy cập Telnet từ xa bằng password (mật khẩu). Ngoài ra, mọi password (mật khẩu) đều nên được encrypt (mã hóa) và cần có legal notification (thông báo pháp lý).
+
+Khi chọn password (mật khẩu), hãy dùng strong password (mật khẩu mạnh), không dễ bị đoán ra. Có vài điểm chính cần cân nhắc khi chọn mật khẩu:
+
+  * Dùng password (mật khẩu) dài hơn tám ký tự.
+  * Kết hợp chữ hoa, chữ thường, chữ số, ký tự đặc biệt và/hoặc các chuỗi số.
+  * Tránh dùng cùng một password (mật khẩu) cho mọi thiết bị.
+  * Không dùng các từ thông dụng vì chúng dễ bị đoán ra.
+
+Hãy tìm trên internet một password generator (công cụ tạo mật khẩu). Nhiều công cụ cho phép bạn đặt độ dài, bộ ký tự và các tham số khác.
+
+**Lưu ý:** Hầu hết các lab (bài thực hành) trong khóa học này dùng password (mật khẩu) đơn giản như **cisco** hay **class**. Các mật khẩu này bị coi là yếu và dễ đoán, nên cần tránh dùng trong production environment (môi trường vận hành thực tế). Chúng mình chỉ dùng chúng cho tiện trong lớp học, hoặc để minh họa các ví dụ cấu hình.
+
+## 2.4.3 Configure Passwords (Cấu hình mật khẩu)
+
+Khi lần đầu kết nối vào một thiết bị, bạn đang ở user EXEC mode (chế độ thực thi dành cho người dùng). Chế độ này được bảo vệ thông qua console (cổng điều khiển).
+
+Để bảo vệ truy cập vào user EXEC mode (chế độ thực thi dành cho người dùng), vào line console configuration mode (chế độ cấu hình line console) bằng lệnh **line console 0** của global configuration mode (chế độ cấu hình toàn cục), như trong ví dụ. Số không dùng để biểu thị console interface (giao diện console) đầu tiên (và trong hầu hết trường hợp là duy nhất). Tiếp theo, chỉ định password (mật khẩu) cho user EXEC mode bằng lệnh **password** _password_. Cuối cùng, bật truy cập user EXEC bằng lệnh **login**.
+
+Từ giờ, truy cập qua console sẽ yêu cầu nhập password (mật khẩu) trước khi cho phép vào user EXEC mode (chế độ thực thi dành cho người dùng).
+
+Để có quyền quản trị với mọi IOS command (lệnh IOS), kể cả cấu hình thiết bị, bạn phải vào được privileged EXEC mode (chế độ thực thi đặc quyền). Đây là access method (phương thức truy cập) quan trọng nhất vì nó cho toàn quyền truy cập vào thiết bị.
+
+Để bảo vệ truy cập privileged EXEC, dùng lệnh **enable secret** _password_ ở global config mode (chế độ cấu hình toàn cục), như trong ví dụ.
+
+Các VTY line – virtual terminal (đường terminal ảo) cho phép truy cập từ xa vào thiết bị bằng Telnet hoặc SSH. Nhiều switch (bộ chuyển mạch) Cisco hỗ trợ tối đa 16 VTY line (đường terminal ảo), được đánh số từ 0 đến 15.
+
+Để bảo vệ các VTY line (đường terminal ảo), vào line VTY mode (chế độ line VTY) bằng lệnh **line vty 0 15** ở global config mode (chế độ cấu hình toàn cục). Tiếp theo, chỉ định VTY password (mật khẩu VTY) bằng lệnh **password** _password_. Cuối cùng, bật truy cập VTY bằng lệnh **login**.
+
+Ví dụ về cách bảo vệ các VTY line (đường terminal ảo) trên một switch (bộ chuyển mạch) được minh họa bên dưới.
+
+## 2.4.4 Encrypt Passwords (Mã hóa mật khẩu)
+
+Các tệp startup-config (cấu hình khởi động) và running-config (cấu hình đang chạy) hiển thị hầu hết password (mật khẩu) ở dạng plaintext (văn bản thuần). Đây là mối đe dọa bảo mật vì bất kỳ ai có quyền truy cập vào các tệp này đều có thể biết được mật khẩu.
+
+Để encrypt (mã hóa) mọi plaintext password (mật khẩu văn bản thuần), dùng lệnh **service password-encryption** ở global config mode (chế độ cấu hình toàn cục) như trong ví dụ.
+
+Lệnh này áp dụng weak encryption (mã hóa yếu) cho mọi password (mật khẩu) chưa được mã hóa. Việc mã hóa này chỉ áp dụng cho mật khẩu trong configuration file (tệp cấu hình), chứ không áp dụng cho mật khẩu khi chúng được gửi qua mạng. Mục đích của lệnh này là ngăn những người không có thẩm quyền xem được mật khẩu trong tệp cấu hình.
+
+Dùng lệnh **show running-config** để kiểm tra rằng các password (mật khẩu) giờ đã được mã hóa.
+
+## 2.4.5 Banner Messages (Thông báo banner)
+
+Dù yêu cầu password (mật khẩu) là một cách để ngăn những người không có thẩm quyền vào mạng, việc có một cách để tuyên bố rằng chỉ người được ủy quyền mới được thử truy cập thiết bị cũng vô cùng quan trọng. Để làm vậy, hãy thêm một banner (biểu ngữ thông báo) vào output (kết quả hiển thị) của thiết bị. Banner (biểu ngữ thông báo) có thể là một phần quan trọng trong tiến trình pháp lý nếu có ai đó bị truy tố vì đột nhập vào một thiết bị. Một số hệ thống pháp luật không cho phép truy tố, thậm chí không cho phép giám sát người dùng, trừ khi có một thông báo hiển thị rõ.
+
+Để tạo một banner message of the day (thông báo banner trong ngày) trên network device (thiết bị mạng), dùng lệnh **banner motd #** _the message of the day_ **#** ở global config mode (chế độ cấu hình toàn cục). Ký tự “#” trong command syntax (cú pháp lệnh) được gọi là delimiting character (ký tự phân cách). Nó được nhập trước và sau thông báo. Delimiting character (ký tự phân cách) có thể là bất kỳ ký tự nào, miễn là nó không xuất hiện trong nội dung thông báo. Vì lý do đó, các ký hiệu như "#" thường được dùng. Sau khi lệnh được thực thi, banner (biểu ngữ thông báo) sẽ hiển thị ở mọi lần truy cập thiết bị sau đó cho đến khi banner bị gỡ bỏ.
+
+Ví dụ sau cho thấy các bước cấu hình banner (biểu ngữ thông báo) trên Sw-Floor-1.
+
+## 2.4.6 Video - Secure Administrative Access to a Switch (Video - Bảo mật quyền truy cập quản trị vào switch)
+
+Nhấp vào Play (phát) trong hình để xem video minh họa cách bảo mật quyền truy cập quản trị vào một switch (bộ chuyển mạch).
+
+[Xem video](https://players.brightcove.net/2649925992001/ZtjDPtmlF_default/index.html?videoId=1c9af66e-1bbb-4335-9e33-5be32bd28107)
+
+## 2.4.7 Syntax Checker - Basic Device Configuration (Syntax Checker - Cấu hình thiết bị cơ bản)
+
+Bảo mật management access (truy cập quản trị) vào một switch (bộ chuyển mạch).
+
+  * Gán một device name (tên thiết bị).
+  * Bảo vệ truy cập user EXEC mode (chế độ thực thi dành cho người dùng).
+  * Bảo vệ truy cập privileged EXEC mode (chế độ thực thi đặc quyền).
+  * Bảo vệ truy cập VTY.
+  * Encrypt (mã hóa) mọi plaintext password (mật khẩu văn bản thuần).
+  * Hiển thị một login banner (biểu ngữ đăng nhập).
+
+## 2.4.8 Check Your Understanding - Basic Device Configuration (Kiểm tra hiểu bài - Cấu hình thiết bị cơ bản)
+
+Hãy kiểm tra mức độ hiểu bài về basic device configuration (cấu hình thiết bị cơ bản) bằng cách chọn đáp án ĐÚNG NHẤT cho các câu hỏi sau.
+
+## Question (Câu hỏi)
+
+Lệnh nào dùng để gán tên “Sw-Floor-2” cho một switch (bộ chuyển mạch)?
+
+Truy cập privileged EXEC mode (chế độ thực thi đặc quyền) trên một switch (bộ chuyển mạch) được bảo vệ bằng cách nào?
+
+Lệnh nào bật password authentication (xác thực bằng mật khẩu) cho truy cập user EXEC mode (chế độ thực thi dành cho người dùng) trên một switch (bộ chuyển mạch)?
+
+Lệnh nào encrypt (mã hóa) mọi plaintext password (mật khẩu văn bản thuần) trên một switch (bộ chuyển mạch)?
+
+Lệnh nào dùng để cấu hình một banner (biểu ngữ thông báo) hiển thị khi kết nối vào một switch (bộ chuyển mạch)?
+
+## 2.5 Save Configurations (Lưu cấu hình)
+
+## 2.5.1 Configuration Files (Các tệp cấu hình)
+
+Bây giờ bạn đã biết cách cấu hình cơ bản cho một switch (bộ chuyển mạch), bao gồm password (mật khẩu) và banner message (thông báo banner). Chủ đề này sẽ chỉ cho bạn cách lưu cấu hình.
+
+Có hai system file (tệp hệ thống) lưu cấu hình của thiết bị:
+
+  * **startup-config** (cấu hình khởi động) \- Đây là configuration file (tệp cấu hình) đã được lưu, nằm trong NVRAM (bộ nhớ RAM không mất dữ liệu). Nó chứa mọi lệnh mà thiết bị sẽ dùng khi khởi động hoặc khởi động lại. Flash (bộ nhớ flash) không bị mất nội dung khi thiết bị tắt nguồn.
+  * **running-config** (cấu hình đang chạy) \- Tệp này nằm trong Random Access Memory – RAM (bộ nhớ truy cập ngẫu nhiên). Nó phản ánh cấu hình hiện tại. Việc chỉnh sửa running configuration (cấu hình đang chạy) ảnh hưởng ngay lập tức đến hoạt động của thiết bị Cisco. RAM (bộ nhớ truy cập ngẫu nhiên) là volatile memory (bộ nhớ dễ mất dữ liệu). Nó mất toàn bộ nội dung khi thiết bị bị tắt nguồn hoặc khởi động lại.
+
+Lệnh **show running-config** của privileged EXEC mode (chế độ thực thi đặc quyền) dùng để xem running config (cấu hình đang chạy). Như trong ví dụ, lệnh này sẽ liệt kê toàn bộ cấu hình hiện đang lưu trong RAM (bộ nhớ truy cập ngẫu nhiên).
+
+Để xem startup configuration file (tệp cấu hình khởi động), dùng lệnh **show startup-config** của privileged EXEC (thực thi đặc quyền).
+
+Nếu thiết bị mất nguồn điện, hoặc bị khởi động lại, mọi thay đổi cấu hình sẽ bị mất trừ khi chúng đã được lưu. Để lưu các thay đổi trong running configuration (cấu hình đang chạy) vào startup configuration file (tệp cấu hình khởi động), dùng lệnh **copy running-config startup-config** của privileged EXEC mode (chế độ thực thi đặc quyền).
+
+## 2.5.2 Alter the Running Configuration (Thay đổi cấu hình đang chạy)
+
+Nếu các thay đổi trên running config (cấu hình đang chạy) không cho ra hiệu quả mong muốn và running-config chưa được lưu, bạn có thể khôi phục thiết bị về cấu hình trước đó. Hãy gỡ từng lệnh đã thay đổi, hoặc reload (khởi động lại) thiết bị bằng lệnh **reload** của privileged EXEC mode (chế độ thực thi đặc quyền) để khôi phục startup-config (cấu hình khởi động).
+
+Nhược điểm của việc dùng lệnh **reload** để loại bỏ một running config (cấu hình đang chạy) chưa lưu là thiết bị sẽ offline (ngoại tuyến) trong một thời gian ngắn, gây ra network downtime (thời gian ngừng hoạt động của mạng).
+
+Khi reload được khởi động, IOS sẽ phát hiện running config (cấu hình đang chạy) có những thay đổi chưa được lưu vào startup configuration (cấu hình khởi động). Một prompt (dấu nhắc) sẽ xuất hiện để hỏi có lưu các thay đổi hay không. Để bỏ các thay đổi, nhập **n** hoặc **no**.
+
+Ngược lại, nếu các thay đổi không mong muốn đã được lưu vào startup config (cấu hình khởi động), có thể bạn cần xóa toàn bộ cấu hình. Việc này đòi hỏi phải xóa startup config và khởi động lại thiết bị. Startup config được gỡ bằng lệnh **erase startup-config** của privileged EXEC mode (chế độ thực thi đặc quyền). Sau khi lệnh được ban hành, switch (bộ chuyển mạch) sẽ yêu cầu bạn xác nhận. Nhấn **Enter** để đồng ý.
+
+Sau khi xóa startup config (cấu hình khởi động) khỏi NVRAM (bộ nhớ RAM không mất dữ liệu), hãy reload (khởi động lại) thiết bị để xóa running config file (tệp cấu hình đang chạy) hiện tại khỏi RAM (bộ nhớ truy cập ngẫu nhiên). Khi reload, switch (bộ chuyển mạch) sẽ nạp default startup config (cấu hình khởi động mặc định) được xuất xưởng cùng thiết bị.
+
+## 2.5.3 Video - Alter the Running Configuration (Video - Thay đổi cấu hình đang chạy)
+
+Nhấp vào Play (phát) trong hình để xem video minh họa cách lưu các configuration file (tệp cấu hình) của switch (bộ chuyển mạch).
+
+[Xem video](https://players.brightcove.net/2649925992001/ZtjDPtmlF_default/index.html?videoId=dcc9a748-9d5f-4d23-a37c-5fbf780432fc)
+
+## 2.5.4 Capture Configuration to a Text File (Ghi lại cấu hình vào tệp văn bản)
+
+Configuration file (tệp cấu hình) cũng có thể được lưu và lưu trữ vào một tài liệu văn bản. Chuỗi bước này đảm bảo có sẵn một bản làm việc của tệp cấu hình để chỉnh sửa hoặc dùng lại sau này.
+
+Ví dụ, giả sử một switch (bộ chuyển mạch) đã được cấu hình và running config (cấu hình đang chạy) đã được lưu trên thiết bị.
+
+**Bước 1.** Mở terminal emulation software (phần mềm giả lập thiết bị đầu cuối), chẳng hạn PuTTY hoặc Tera Term, đã được kết nối sẵn với một switch (bộ chuyển mạch).
+
+**Tài nguyên hình ảnh:** `https://www.netacad.com/authoring-resources/_assets/en-US/assets/89111c70515e4e37986727c91755d8d3.png`
+
+**Bước 2.** Bật logging (ghi nhật ký) trong phần mềm terminal và đặt tên cùng vị trí lưu cho log file (tệp nhật ký). Hình cho thấy **All session output** (toàn bộ đầu ra của phiên) sẽ được ghi vào tệp được chỉ định (tức là MySwitchLogs).
+
+**Tài nguyên hình ảnh:** `https://www.netacad.com/authoring-resources/_assets/en-US/assets/70e2f86e8e8a4753bf3ae7682574e365.png`
+
+**Bước 3.** Thực thi lệnh **show running-config** hoặc **show startup-config** tại privileged EXEC prompt (dấu nhắc thực thi đặc quyền). Văn bản hiển thị trong cửa sổ terminal (thiết bị đầu cuối) sẽ được đưa vào tệp đã chọn.
+
+**Bước 4.** Tắt logging (ghi nhật ký) trong phần mềm terminal. Hình cho thấy cách tắt logging bằng cách chọn tùy chọn session logging (ghi nhật ký phiên) **None**.
+
+**Tài nguyên hình ảnh:** `https://www.netacad.com/authoring-resources/_assets/en-US/assets/657f9b04d3f5407b99c8172aca8fa30c.png`
+
+Tệp văn bản được tạo ra có thể dùng làm bản ghi về cách thiết bị hiện đang được triển khai. Có thể cần chỉnh sửa tệp trước khi dùng nó để khôi phục một cấu hình đã lưu vào thiết bị.
+
+Để khôi phục một tệp cấu hình vào thiết bị:
+
+**Bước 1.** Vào global configuration mode (chế độ cấu hình toàn cục) trên thiết bị.
+
+**Bước 2.** Sao chép và dán tệp văn bản vào cửa sổ terminal (thiết bị đầu cuối) đang kết nối với switch (bộ chuyển mạch).
+
+Nội dung trong tệp sẽ được áp dụng như các lệnh trong CLI (giao diện dòng lệnh) và trở thành running configuration (cấu hình đang chạy) trên thiết bị. Đây là một cách tiện lợi để cấu hình thiết bị thủ công.
+
+## 2.5.5 Packet Tracer - Configure Initial Switch Settings (Packet Tracer - Cấu hình các cài đặt ban đầu cho switch)
+
+Trong hoạt động này, bạn sẽ thực hiện các cấu hình cơ bản cho switch (bộ chuyển mạch). Bạn sẽ bảo vệ truy cập vào CLI (giao diện dòng lệnh) và các console port (cổng console) bằng encrypted password (mật khẩu đã mã hóa) và plaintext password (mật khẩu văn bản thuần). Bạn sẽ học cách cấu hình thông báo cho người dùng khi đăng nhập vào switch. Các banner (biểu ngữ thông báo) này cũng được dùng để cảnh báo những người dùng không có thẩm quyền rằng việc truy cập bị cấm.
+
+### Configure Initial Switch Settings (Cấu hình các cài đặt ban đầu cho switch)
+
+- Hướng dẫn hoạt động: `https://www.netacad.com/authoring-resources/_assets/en-US/assets/2.5.5-packet-tracer---configure-initial-switch-settings.pdf_en-US_8fac820a-fd42-4832-91bf-727f1a924eaa.pdf`
+
+- Tệp Packet Tracer: `https://www.netacad.com/authoring-resources/_assets/en-US/assets/2.5.5-packet-tracer---configure-initial-switch-settings.pka_en-US_4cc2e29d-ec58-4d34-af90-84c8adf38190.pka`
+
+## 2.6 Ports and Addresses (Cổng và địa chỉ)
+
+## 2.6.1 IP Addresses (Địa chỉ IP)
+
+Chúc mừng, bạn đã thực hiện xong một cấu hình thiết bị cơ bản! Dĩ nhiên, phần vui vẫn chưa hết đâu. Nếu muốn các end device (thiết bị đầu cuối) giao tiếp được với nhau, bạn phải đảm bảo mỗi thiết bị đều có một IP address (địa chỉ IP) phù hợp và được kết nối đúng cách. Trong chủ đề này, bạn sẽ tìm hiểu về IP address (địa chỉ IP), device port (cổng thiết bị) và media (phương tiện truyền dẫn) dùng để kết nối các thiết bị.
+
+Việc sử dụng IP address (địa chỉ IP) là phương tiện chính giúp các thiết bị tìm thấy nhau và thiết lập end-to-end communication (giao tiếp đầu-cuối) trên internet. Mỗi end device (thiết bị đầu cuối) trên mạng đều phải được cấu hình một IP address (địa chỉ IP). Các ví dụ về end device (thiết bị đầu cuối) gồm:
+
+  * Máy tính: work station (trạm làm việc), laptop (máy tính xách tay), file server (máy chủ tệp), web server (máy chủ web)
+  * Network printer (máy in mạng)
+  * VoIP phone (điện thoại VoIP)
+  * Security camera (camera an ninh)
+  * Smart phone (điện thoại thông minh)
+  * Mobile handheld device (thiết bị cầm tay di động), chẳng hạn như wireless barcode scanner (máy quét mã vạch không dây)
+
+Cấu trúc của một IPv4 address (địa chỉ IPv4) được gọi là dotted decimal notation (ký hiệu thập phân có dấu chấm) và được biểu diễn bằng bốn số thập phân trong khoảng từ 0 đến 255. IPv4 address (địa chỉ IPv4) được gán cho từng thiết bị kết nối vào mạng.
+
+**Lưu ý:** IP trong khóa học này nói đến cả hai protocol (giao thức) IPv4 và IPv6. IPv6 là phiên bản mới nhất của IP và đang dần thay thế IPv4 vốn phổ biến hơn.
+
+Đi kèm với IPv4 address (địa chỉ IPv4) còn cần có subnet mask (mặt nạ mạng con). IPv4 subnet mask (mặt nạ mạng con IPv4) là một giá trị 32 bit dùng để phân biệt network portion (phần mạng) của địa chỉ với host portion (phần host). Kết hợp với IPv4 address (địa chỉ IPv4), subnet mask (mặt nạ mạng con) xác định thiết bị thuộc subnet (mạng con) nào.
+
+Ví dụ trong hình hiển thị IPv4 address (địa chỉ IPv4) (192.168.1.10), subnet mask (mặt nạ mạng con) (255.255.255.0) và default gateway (cổng mặc định) (192.168.1.1) được gán cho một host (máy trạm). Default gateway address (địa chỉ cổng mặc định) là IP address (địa chỉ IP) của router (bộ định tuyến) mà host dùng để truy cập các remote network (mạng ở xa), bao gồm cả internet.
+
+**Tài nguyên hình ảnh:** `https://www.netacad.com/authoring-resources/_assets/en-US/assets/44781508045947daafd0273b253f6c52.jpg`
+
+IPv6 address (địa chỉ IPv6) dài 128 bit và được viết thành một chuỗi các giá trị hexadecimal (thập lục phân). Cứ mỗi bốn bit được biểu diễn bằng một hexadecimal digit (chữ số thập lục phân); tổng cộng là 32 giá trị thập lục phân. Các nhóm bốn hexadecimal digit (chữ số thập lục phân) được ngăn cách bằng dấu hai chấm (:) . IPv6 address (địa chỉ IPv6) không case-sensitive (phân biệt chữ hoa/chữ thường) và có thể viết bằng chữ thường hoặc chữ hoa.
+
+**Tài nguyên hình ảnh:** `https://www.netacad.com/authoring-resources/_assets/en-US/assets/3f506ec8c3e74dab9a4ddf9ef103eae9.png`
+
+## 2.6.2 Interfaces and Ports (Giao diện và cổng)
+
+Giao tiếp mạng phụ thuộc vào các interface (giao diện) của end user device (thiết bị người dùng cuối), interface (giao diện) của networking device (thiết bị mạng) và các cable (dây cáp) nối chúng. Mỗi physical interface (giao diện vật lý) đều có các specification (thông số kỹ thuật), hay standard (tiêu chuẩn), quy định nó. Một sợi cáp nối vào interface (giao diện) phải được thiết kế khớp với các physical standard (tiêu chuẩn vật lý) của interface đó. Các loại network media (phương tiện truyền dẫn mạng) gồm twisted-pair copper cable (cáp đồng xoắn đôi), fiber-optic cable (cáp quang), coaxial cable (cáp đồng trục) hoặc wireless (không dây), như trong hình.
+
+**Tài nguyên hình ảnh:** `https://www.netacad.com/authoring-resources/_assets/media/2daa88e0-1c25-11ea-a010-eb2108469056/2daafe12-1c25-11ea-81a0-ffc2c49b96bc.svg`
+
+**Nhãn trong hình:** Copper (Đồng) | Wireless (Không dây) | Fiber-optics (Cáp quang)
+
+Các loại network media (phương tiện truyền dẫn mạng) khác nhau có tính năng và lợi ích khác nhau. Không phải mọi network media (phương tiện truyền dẫn mạng) đều có cùng đặc tính. Không phải mọi media (phương tiện) đều phù hợp cho cùng một mục đích. Sau đây là một số điểm khác biệt giữa các loại media (phương tiện):
+
+  * Khoảng cách mà media (phương tiện) có thể truyền tín hiệu thành công
+  * Môi trường nơi media (phương tiện) được lắp đặt
+  * Lượng dữ liệu và tốc độ mà dữ liệu cần được truyền
+  * Chi phí của media (phương tiện) và chi phí lắp đặt
+
+Không chỉ mỗi link (liên kết) trên internet cần một loại network media (phương tiện truyền dẫn mạng) cụ thể, mà mỗi liên kết còn cần một network technology (công nghệ mạng) nhất định. Ví dụ, Ethernet là công nghệ local-area network – LAN (mạng cục bộ) phổ biến nhất hiện nay. Ethernet port (cổng Ethernet) có trên các end-user device (thiết bị người dùng cuối), switch device (thiết bị chuyển mạch) và các networking device (thiết bị mạng) khác có thể kết nối vật lý vào mạng bằng cáp.
+
+Các Layer 2 switch (bộ chuyển mạch Lớp 2) chạy Cisco IOS có các physical port (cổng vật lý) để thiết bị kết nối vào. Các cổng này không hỗ trợ Layer 3 IP address (địa chỉ IP Lớp 3). Vì vậy, switch có một hoặc nhiều switch virtual interface – SVI (giao diện ảo của switch). Đây là virtual interface (giao diện ảo) vì không có phần cứng vật lý nào trên thiết bị gắn với nó. SVI (giao diện ảo của switch) được tạo ra bằng phần mềm.
+
+Virtual interface (giao diện ảo) cho phép bạn quản lý switch từ xa qua mạng bằng IPv4 và IPv6. Mỗi switch đều có một SVI (giao diện ảo của switch) xuất hiện trong default configuration (cấu hình mặc định) "out-of-the-box" (ngay khi lấy ra khỏi hộp). SVI (giao diện ảo của switch) mặc định là interface VLAN1.
+
+**Lưu ý:** Một Layer 2 switch (bộ chuyển mạch Lớp 2) không cần IP address (địa chỉ IP). IP address (địa chỉ IP) gán cho SVI (giao diện ảo của switch) được dùng để truy cập switch từ xa. Switch không cần IP address (địa chỉ IP) để thực hiện các hoạt động của nó.
+
+## 2.6.3 Check Your Understanding - Ports and Addresses (Kiểm tra hiểu bài - Cổng và địa chỉ)
+
+Hãy kiểm tra mức độ hiểu bài về ports and addresses (cổng và địa chỉ) bằng cách chọn đáp án ĐÚNG NHẤT cho các câu hỏi sau.
+
+## Question (Câu hỏi)
+
+Cấu trúc của một IPv4 address (địa chỉ IPv4) được gọi là gì?
+
+Một IPv4 address (địa chỉ IPv4) được biểu diễn như thế nào?
+
+Loại interface (giao diện) nào không có physical port (cổng vật lý) gắn với nó?
+
+## 2.7 Configure IP Addressing (Cấu hình địa chỉ IP)
+
+## 2.7.1 Manual IP Address Configuration for End Devices (Cấu hình địa chỉ IP thủ công cho thiết bị đầu cuối)
+
+Giống như bạn cần số điện thoại của bạn bè để nhắn tin hay gọi cho họ, các end device (thiết bị đầu cuối) trong mạng của bạn cần một IP address (địa chỉ IP) để giao tiếp với các thiết bị khác trong mạng. Trong chủ đề này, bạn sẽ triển khai basic connectivity (kết nối cơ bản) bằng cách cấu hình IP addressing (địa chỉ hóa IP) trên các switch (bộ chuyển mạch) và PC (máy tính cá nhân).
+
+Thông tin IPv4 address (địa chỉ IPv4) có thể được nhập vào end device (thiết bị đầu cuối) thủ công, hoặc tự động bằng Dynamic Host Configuration Protocol – DHCP (giao thức cấu hình host động).
+
+Để cấu hình IPv4 address (địa chỉ IPv4) thủ công trên một Windows host (máy trạm Windows), mở **Control Panel > Network Sharing Center > Change adapter settings** rồi chọn adapter (bộ điều hợp mạng). Tiếp theo nhấp chuột phải và chọn **Properties** để hiển thị **Local Area Connection Properties** , như trong hình.
+
+**Tài nguyên hình ảnh:** `https://www.netacad.com/authoring-resources/_assets/en-US/assets/a4c0277ab538464ca26034be2ca3c37f.png`
+
+Chọn (bôi sáng) Internet Protocol Version 4 (TCP/IPv4) và nhấp **Properties** để mở cửa sổ **Internet Protocol Version 4 (TCP/IPv4) Properties** , như trong hình. Cấu hình thông tin IPv4 address (địa chỉ IPv4) và subnet mask (mặt nạ mạng con), cùng default gateway (cổng mặc định).
+
+**Lưu ý:** IPv6 addressing (địa chỉ hóa IPv6) và các tùy chọn cấu hình tương tự như IPv4.
+
+**Tài nguyên hình ảnh:** `https://www.netacad.com/authoring-resources/_assets/en-US/assets/f96fd3a201cb448ba349928a28e5e323.jpg`
+
+**Lưu ý:** DNS server address (địa chỉ máy chủ DNS) là các IPv4 và IPv6 address (địa chỉ IPv4 và IPv6) của các Domain Name System – DNS (hệ thống tên miền) server (máy chủ), dùng để dịch IP address (địa chỉ IP) thành domain name (tên miền), chẳng hạn [www.cisco.com](http://www.cisco.com).
+
+## 2.7.2 Automatic IP Address Configuration for End Devices (Cấu hình địa chỉ IP tự động cho thiết bị đầu cuối)
+
+Các end device (thiết bị đầu cuối) thường mặc định dùng DHCP để cấu hình IPv4 address (địa chỉ IPv4) tự động. DHCP là công nghệ được dùng trong hầu như mọi mạng. Cách tốt nhất để hiểu tại sao DHCP phổ biến đến vậy là hình dung tất cả công việc phát sinh thêm nếu không có nó.
+
+Trong một mạng, DHCP cho phép cấu hình IPv4 address (địa chỉ IPv4) tự động cho mọi end device (thiết bị đầu cuối) đã bật DHCP. Hãy tưởng tượng sẽ mất bao nhiêu thời gian nếu mỗi lần kết nối vào mạng bạn đều phải nhập tay IPv4 address (địa chỉ IPv4), subnet mask (mặt nạ mạng con), default gateway (cổng mặc định) và DNS server (máy chủ DNS). Nhân con số đó lên với mọi người dùng và mọi thiết bị trong một tổ chức, bạn sẽ thấy vấn đề. Cấu hình thủ công cũng làm tăng khả năng misconfiguration (cấu hình sai), chẳng hạn trùng IPv4 address (địa chỉ IPv4) của một thiết bị khác.
+
+Như trong hình, để cấu hình DHCP trên một Windows PC (máy tính Windows), bạn chỉ cần chọn **Obtain an IP address automatically** và **Obtain DNS server address automatically**. PC (máy tính cá nhân) của bạn sẽ tìm một DHCP server (máy chủ DHCP) và được gán các address setting (thiết lập địa chỉ) cần thiết để giao tiếp trong mạng.
+
+**Lưu ý:** IPv6 dùng DHCPv6 và SLAAC – Stateless Address Autoconfiguration (tự động cấu hình địa chỉ không trạng thái) để cấp phát địa chỉ động.
+
+**Tài nguyên hình ảnh:** `https://www.netacad.com/authoring-resources/_assets/en-US/assets/ca393bcf70a0494f9d99f04ba4b0f933.jpg`
+
+## 2.7.3 Syntax Checker - Verify Windows PC IP Configuration (Syntax Checker - Kiểm tra cấu hình IP trên Windows PC)
+
+Bạn có thể hiển thị các IP configuration setting (thiết lập cấu hình IP) trên một Windows PC (máy tính Windows) bằng lệnh **ipconfig** tại command prompt (dấu nhắc lệnh). Kết quả sẽ hiển thị IPv4 address (địa chỉ IPv4), subnet mask (mặt nạ mạng con) và thông tin gateway (cổng) nhận được từ DHCP server (máy chủ DHCP).
+
+Nhập lệnh để hiển thị IP configuration (cấu hình IP) trên một Windows PC (máy tính Windows).
+
+## 2.7.4 Switch Virtual Interface Configuration (Cấu hình giao diện ảo của switch)
+
+Để truy cập switch (bộ chuyển mạch) từ xa, phải cấu hình một IP address (địa chỉ IP) và một subnet mask (mặt nạ mạng con) trên SVI (giao diện ảo của switch). Để cấu hình một SVI trên switch, dùng lệnh **interface vlan 1** ở global configuration mode (chế độ cấu hình toàn cục). Vlan 1 không phải một physical interface (giao diện vật lý) thực sự mà là một virtual interface (giao diện ảo). Tiếp theo gán một IPv4 address (địa chỉ IPv4) bằng lệnh **ip address** _ip-address subnet-mask_ ở interface configuration mode (chế độ cấu hình giao diện). Cuối cùng, bật virtual interface (giao diện ảo) bằng lệnh **no shutdown** ở interface configuration mode (chế độ cấu hình giao diện).
+
+Sau khi các lệnh này được cấu hình, switch (bộ chuyển mạch) đã có đủ mọi thành phần IPv4 sẵn sàng để giao tiếp qua mạng.
+
+**Lưu ý:** Tương tự như các Windows host (máy trạm Windows), các switch (bộ chuyển mạch) được cấu hình IPv4 address (địa chỉ IPv4) thường cũng cần được gán một default gateway (cổng mặc định). Việc này có thể thực hiện bằng lệnh **ip default-gateway** _ip-address_ ở global configuration mode (chế độ cấu hình toàn cục). Tham số _ip-address_ sẽ là IPv4 address (địa chỉ IPv4) của local router (bộ định tuyến cục bộ) trên mạng, như trong ví dụ. Tuy nhiên, trong module (mô-đun) này bạn chỉ cấu hình một mạng gồm switch (bộ chuyển mạch) và host (máy trạm). Router (bộ định tuyến) sẽ được giới thiệu sau.
+
+## 2.7.6 Packet Tracer - Implement Basic Connectivity (Packet Tracer - Triển khai kết nối cơ bản)
+
+Trong hoạt động này, trước tiên bạn sẽ thực hiện các cấu hình cơ bản cho switch (bộ chuyển mạch). Sau đó bạn sẽ triển khai basic connectivity (kết nối cơ bản) bằng cách cấu hình IP addressing (địa chỉ hóa IP) trên các switch và PC (máy tính cá nhân). Khi cấu hình IP addressing (địa chỉ hóa IP) hoàn tất, bạn sẽ dùng nhiều lệnh **show** để kiểm tra cấu hình và dùng lệnh **ping** để kiểm tra basic connectivity (kết nối cơ bản) giữa các thiết bị.
+
+### Implement Basic Connectivity (Triển khai kết nối cơ bản)
+
+- Hướng dẫn hoạt động: `https://www.netacad.com/authoring-resources/_assets/en-US/assets/2.7.6-packet-tracer---implement-basic-connectivity.pdf_en-US_83dbed0f-debb-4359-84c7-15a009a299ce.pdf`
+
+- Tệp Packet Tracer: `https://www.netacad.com/authoring-resources/_assets/en-US/assets/2.7.6-packet-tracer---implement-basic-connectivity.pka_en-US_d2a28372-232d-401f-92f8-728f6fed59df.pka`
+
+## 2.8 Verify Connectivity (Kiểm tra kết nối)
+
+## 2.8.1 Video Activity - Test the Interface Assignment (Hoạt động video - Kiểm tra việc gán interface)
+
+Ở chủ đề trước, bạn đã triển khai basic connectivity (kết nối cơ bản) bằng cách cấu hình IP addressing (địa chỉ hóa IP) trên switch (bộ chuyển mạch) và PC (máy tính cá nhân). Rồi bạn đã kiểm tra các cấu hình và connectivity (khả năng kết nối) của mình, vì cấu hình thiết bị mà không kiểm tra xem nó có chạy được không thì để làm gì? Bạn sẽ tiếp tục quy trình này trong chủ đề này. Dùng CLI (giao diện dòng lệnh), bạn sẽ kiểm tra các interface (giao diện) và địa chỉ của các switch (bộ chuyển mạch) và router (bộ định tuyến) trong mạng của mình.
+
+Giống như bạn dùng các lệnh và tiện ích như **ipconfig** để kiểm tra network configuration (cấu hình mạng) của một PC host (máy trạm), bạn cũng dùng lệnh để kiểm tra interface (giao diện) và address setting (thiết lập địa chỉ) của các intermediary device (thiết bị trung gian) như switch (bộ chuyển mạch) và router (bộ định tuyến).
+
+Nhấp vào Play (phát) trong hình để xem video minh họa lệnh **show ip interface brief**. Lệnh này hữu ích để kiểm tra tình trạng của các switch interface (giao diện switch).
+
+**Làm theo trong Packet Tracer**
+
+Tải về đúng tệp PKT được dùng trong video. Thực hành dùng các lệnh **ipconfig** và **show ip interface brief**, như trong video.
+
+[Xem video](https://players.brightcove.net/2649925992001/ZtjDPtmlF_default/index.html?videoId=dbd26a61-8754-4975-89cc-85da50c74feb)
+
+### Test the Interface Assignment (Kiểm tra việc gán interface)
+
+- Tệp Packet Tracer: `https://www.netacad.com/authoring-resources/_assets/en-US/assets/2.8.1-video-activity---test-the-interface-assignment.pkt_en-US_83d80f51-c650-4002-acaf-c5a43569015a.pkt`
+
+## 2.8.2 Video Activity - Test End-to-End Connectivity (Hoạt động video - Kiểm tra kết nối đầu-cuối)
+
+Lệnh **ping** có thể dùng để kiểm tra connectivity (khả năng kết nối) tới một thiết bị khác trên mạng hoặc một website trên internet.
+
+Nhấp vào Play (phát) trong hình để xem video minh họa cách dùng lệnh **ping** để kiểm tra connectivity (khả năng kết nối) tới một switch (bộ chuyển mạch) và tới một PC (máy tính cá nhân) khác.
+
+**Làm theo trong Packet Tracer**
+
+Tải về đúng tệp PKT được dùng trong video. Thực hành dùng lệnh **ping**, như trong video.
+
+[Xem video](https://players.brightcove.net/2649925992001/ZtjDPtmlF_default/index.html?videoId=fbe48de2-1786-4fc5-88d9-60a68bd06757)
+
+### Test End-to-End Connectivity (Kiểm tra kết nối đầu-cuối)
+
+- Tệp Packet Tracer: `https://www.netacad.com/authoring-resources/_assets/en-US/assets/2.8.2-video-activity---test-end-to-end-connectivity.pkt_en-US_99a6d0cc-1148-4177-801f-a8720fa5e3d2.pkt`
+
+## 2.9 Module Practice and Quiz (Thực hành và kiểm tra của module)
+
+## 2.9.1 Packet Tracer - Basic Switch and End Device Configuration (Packet Tracer - Cấu hình cơ bản cho switch và thiết bị đầu cuối)
+
+Là một LAN technician (kỹ thuật viên mạng cục bộ) mới được tuyển, bạn được network manager (quản lý mạng) yêu cầu chứng minh khả năng cấu hình một LAN (mạng cục bộ) nhỏ. Nhiệm vụ của bạn gồm cấu hình các initial setting (cài đặt ban đầu) trên hai switch (bộ chuyển mạch) bằng Cisco IOS và cấu hình các IP address parameter (tham số địa chỉ IP) trên các host device (thiết bị host) để cung cấp end-to-end connectivity (kết nối đầu-cuối). Bạn sẽ dùng hai switch và hai host (máy trạm) trên một mạng đã được đấu cáp và cấp nguồn.
+
+### Basic Switch and End Device Configuration (Cấu hình cơ bản cho switch và thiết bị đầu cuối)
+
+- Hướng dẫn hoạt động: `https://www.netacad.com/authoring-resources/_assets/en-US/assets/2.9.1-packet-tracer---basic-switch-and-end-device-configuration.pdf_en-US_5641449d-789d-4a24-9965-800e01a67c2f.pdf`
+
+- Tệp Packet Tracer: `https://www.netacad.com/authoring-resources/_assets/en-US/assets/2.9.1-packet-tracer---basic-switch-and-end-device-configuration.pka_en-US_9c90280b-78e1-4d83-80ea-dae6a66c3990.pka`
+
+## 2.9.2 Lab - Basic Switch and End Device Configuration (Lab - Cấu hình cơ bản cho switch và thiết bị đầu cuối)
+
+##### Skills Practice Opportunity (Cơ hội thực hành kỹ năng)
+
+Bạn có cơ hội thực hành các kỹ năng sau:
+
+  * Phần 1: Thiết lập network topology (sơ đồ mạng)
+  * Phần 2: Cấu hình các PC host (máy trạm PC)
+  * Phần 3: Cấu hình và kiểm tra các cài đặt cơ bản của switch (bộ chuyển mạch)
+
+Bạn có thể thực hành các kỹ năng này bằng Packet Tracer hoặc lab equipment (thiết bị thực hành), nếu có.
+
+**Packet Tracer - Physical Mode – PTPM (chế độ vật lý)**
+
+### Basic Switch and End Device Configuration - Physical Mode (Cấu hình cơ bản cho switch và thiết bị đầu cuối - Chế độ vật lý)
+
+- Hướng dẫn hoạt động: `https://www.netacad.com/authoring-resources/_assets/en-US/assets/2.9.2-packet-tracer---basic-switch-and-end-device-configuration---physical-mode.pdf_en-US_12ae0237-4f20-4993-8e45-b88f25c41e72.pdf`
+
+- Tệp Packet Tracer: `https://www.netacad.com/authoring-resources/_assets/en-US/assets/2.9.2-packet-tracer---basic-switch-and-end-device-configuration---physical-mode.pka_en-US_a6204efe-1a04-4b9e-bc34-ec8d1679bd5a.pka`
+
+**Lab Equipment (Thiết bị thực hành)**
+
+### Basic Switch and End Device Configuration (Cấu hình cơ bản cho switch và thiết bị đầu cuối)
+
+- Hướng dẫn hoạt động: `https://www.netacad.com/authoring-resources/_assets/en-US/assets/2.9.2-lab---basic-switch-and-end-device-configuration.pdf_en-US_e39d7bb0-7b18-424d-906f-fde7213ee2eb.pdf`
+
+- Tệp Packet Tracer: `https://www.netacad.com/authoring-resources/_assets/en-US/assets/2.9.2-lab---basic-switch-and-end-device-configuration.pdf_en-US_e39d7bb0-7b18-424d-906f-fde7213ee2eb.pdf`
+
+## 2.9.3 Mình đã học được gì trong module này?
+
+Mọi end device (thiết bị đầu cuối) và network device (thiết bị mạng) đều cần một operating system – OS (hệ điều hành). Người dùng có thể tương tác với shell (lớp vỏ) bằng command-line interface – CLI (giao diện dòng lệnh) để dùng bàn phím chạy các chương trình mạng dựa trên CLI (giao diện dòng lệnh), dùng bàn phím nhập văn bản và các text-based command (lệnh dạng văn bản), và xem kết quả trên màn hình.
+
+Như một tính năng bảo mật, phần mềm Cisco IOS tách management access (quyền truy cập quản trị) thành hai command mode (chế độ lệnh) sau: User EXEC Mode (chế độ thực thi dành cho người dùng) và Privileged EXEC Mode (chế độ thực thi đặc quyền).
+
+Global configuration mode (chế độ cấu hình toàn cục) phải được vào trước các configuration mode (chế độ cấu hình) cụ thể khác. Từ global config mode (chế độ cấu hình toàn cục), người dùng có thể vào nhiều subconfiguration mode (chế độ cấu hình con) khác nhau. Mỗi chế độ cho phép cấu hình một bộ phận hoặc một chức năng cụ thể của IOS device (thiết bị IOS). Hai subconfiguration mode (chế độ cấu hình con) phổ biến gồm: Line Configuration Mode (chế độ cấu hình đường truy cập) và Interface Configuration Mode (chế độ cấu hình giao diện). Để vào và ra global configuration mode (chế độ cấu hình toàn cục), dùng lệnh **configure terminal** của privileged EXEC mode (chế độ thực thi đặc quyền). Để quay về privileged EXEC mode (chế độ thực thi đặc quyền), nhập lệnh **exit** của global config mode (chế độ cấu hình toàn cục).
+
+Mỗi IOS command (lệnh IOS) có một định dạng riêng, hay syntax (cú pháp), và chỉ chạy được ở đúng mode (chế độ) phù hợp. Cú pháp chung của một lệnh là command (lệnh) theo sau là các keyword (từ khóa) và argument (đối số) phù hợp. IOS có hai dạng trợ giúp: context-sensitive help (trợ giúp theo ngữ cảnh) và command syntax check (kiểm tra cú pháp lệnh).
+
+Lệnh cấu hình đầu tiên trên bất kỳ thiết bị nào nên là đặt cho nó một device name (tên thiết bị) hay hostname (tên host) duy nhất. Các network device (thiết bị mạng) luôn nên được cấu hình password (mật khẩu) để hạn chế quyền truy cập quản trị. Cisco IOS có thể được cấu hình để dùng hierarchical mode password (mật khẩu theo từng chế độ phân cấp), cho phép các đặc quyền truy cập khác nhau vào một network device (thiết bị mạng). Hãy cấu hình và encrypt (mã hóa) mọi password (mật khẩu). Hãy có một cách để tuyên bố rằng chỉ người được ủy quyền mới được thử truy cập thiết bị, bằng cách thêm một banner (biểu ngữ thông báo) vào output (kết quả hiển thị) của thiết bị.
+
+Có hai system file (tệp hệ thống) lưu cấu hình của thiết bị: startup-config (cấu hình khởi động) và running-config (cấu hình đang chạy). Các running configuration file (tệp cấu hình đang chạy) có thể bị thay đổi nếu chưa được lưu. Configuration file (tệp cấu hình) cũng có thể được lưu và lưu trữ vào một tài liệu văn bản.
+
+IP address (địa chỉ IP) giúp các thiết bị tìm thấy nhau và thiết lập end-to-end communication (giao tiếp đầu-cuối) trên internet. Mỗi end device (thiết bị đầu cuối) trên mạng đều phải được cấu hình một IP address (địa chỉ IP). Cấu trúc của một IPv4 address (địa chỉ IPv4) được gọi là dotted decimal notation (ký hiệu thập phân có dấu chấm) và được biểu diễn bằng bốn số thập phân trong khoảng từ 0 đến 255.
+
+Thông tin IPv4 address (địa chỉ IPv4) có thể được nhập vào end device (thiết bị đầu cuối) thủ công, hoặc tự động bằng Dynamic Host Configuration Protocol – DHCP (giao thức cấu hình host động). Trong một mạng, DHCP cho phép cấu hình IPv4 address (địa chỉ IPv4) tự động cho mọi end device (thiết bị đầu cuối) đã bật DHCP. Để truy cập switch (bộ chuyển mạch) từ xa, phải cấu hình một IP address (địa chỉ IP) và một subnet mask (mặt nạ mạng con) trên SVI (giao diện ảo của switch). Để cấu hình một SVI trên switch, dùng lệnh **interface vlan 1** ở global configuration mode (chế độ cấu hình toàn cục).
+
+Giống như bạn dùng các lệnh và tiện ích để kiểm tra cấu hình mạng của một PC host (máy trạm), bạn cũng dùng lệnh để kiểm tra interface (giao diện) và address setting (thiết lập địa chỉ) của các intermediary device (thiết bị trung gian) như switch (bộ chuyển mạch) và router (bộ định tuyến). Lệnh **show ip interface brief** kiểm tra tình trạng của các switch interface (giao diện switch). Lệnh **ping** có thể dùng để kiểm tra connectivity (khả năng kết nối) tới một thiết bị khác trên mạng hoặc một website trên internet.
+
+## Question (Câu hỏi)
+
+Phát biểu nào đúng về running configuration file (tệp cấu hình đang chạy) trên một Cisco IOS device (thiết bị Cisco IOS)?
+
+Hai phát biểu nào đúng về user EXEC mode (chế độ thực thi dành cho người dùng)? (Chọn hai đáp án.)
+
+Loại truy cập nào được bảo vệ trên một router (bộ định tuyến) hoặc switch (bộ chuyển mạch) Cisco bằng lệnh **enable secret**?
+
+SVI (giao diện ảo của switch) mặc định trên một switch (bộ chuyển mạch) Cisco là gì?
+
+Khi cấu hình một hostname (tên host) qua Cisco CLI (giao diện dòng lệnh), ba naming convention (quy ước đặt tên) nào là một phần của hướng dẫn? (Chọn ba đáp án.)
+
+Chức năng của shell (lớp vỏ) trong một OS (hệ điều hành) là gì?
+
+Một router (bộ định tuyến) có operating system (hệ điều hành) hợp lệ chứa một configuration file (tệp cấu hình) lưu trong NVRAM (bộ nhớ RAM không mất dữ liệu). Tệp cấu hình có enable secret password (mật khẩu enable secret) nhưng không có console password (mật khẩu console). Khi router (bộ định tuyến) khởi động, chế độ nào sẽ hiển thị?
+
+Một administrator (quản trị viên) vừa đổi IP address (địa chỉ IP) của một interface (giao diện) trên một IOS device (thiết bị IOS). Cần làm thêm gì để áp dụng những thay đổi đó lên thiết bị?
+
+Vùng nhớ nào trên một router (bộ định tuyến) hoặc switch (bộ chuyển mạch) Cisco sẽ mất toàn bộ nội dung khi thiết bị được khởi động lại?
+
+Tại sao một technician (kỹ thuật viên) lại nhập lệnh **copy startup-config running-config**?
+
+DHCP cung cấp chức năng nào?
+
+Hai chức năng nào được cung cấp cho người dùng bởi tính năng context-sensitive help (trợ giúp theo ngữ cảnh) của Cisco IOS CLI (giao diện dòng lệnh)? (Chọn hai đáp án.)
+
+Vùng nhớ nào trên một router (bộ định tuyến) hoặc switch (bộ chuyển mạch) Cisco lưu startup configuration file (tệp cấu hình khởi động)?
+
+Địa chỉ IP 10.1.100.50 thuộc subnet (mạng con) nào nếu dùng subnet mask (mặt nạ mạng con) 255.255.0.0?
