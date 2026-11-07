@@ -75,7 +75,15 @@
   const badge = (d, suf = '') => d == null ? '' :
     `<span class="text-[11px] font-bold px-2 py-0.5 rounded ${d >= 0 ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30' : 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30'}">${d >= 0 ? '+' : ''}${+d.toFixed(2)}${suf} ${d >= 0 ? '↗' : '↘'}</span>`;
   const note = t => `<p class="mt-3 text-xs text-gray-400">${t}</p>`;
-  const card = (label, val, icon, tone, extra) => `<div class="${BOX} p-5 rounded-2xl"><div class="w-10 h-10 rounded-xl ${tone[1]} flex items-center justify-center text-lg mb-3"><i class="fa-solid ${icon}"></i></div><p class="text-xs font-medium text-gray-500 dark:text-gray-400">${label}</p><h3 class="text-2xl font-bold mt-1 ${tone[0]}">${val}</h3>${extra}</div>`;
+  const card = (label, val, icon, tone, extra) =>
+    `<div class="${BOX} p-5 rounded-2xl">
+      <div class="flex items-start justify-between mb-4">
+        <div class="w-11 h-11 rounded-xl ${tone[1]} flex items-center justify-center text-xl"><i class="fa-solid ${icon}"></i></div>
+      </div>
+      <p class="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">${label}</p>
+      <h3 class="text-3xl font-bold mt-1.5 ${tone[0]} leading-none tracking-tight">${val}</h3>
+      ${extra}
+    </div>`;
 
   function cards() {
     const el = $('statCards'); if (!el) return;
