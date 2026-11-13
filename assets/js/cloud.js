@@ -61,7 +61,7 @@
   }
   async function fetchAll(make) {
     var out = [], from = 0, step = 1000;
-    for (;;) {
+    for (; ;) {
       var r = await make().range(from, from + step - 1);
       if (r.error) throw wrap(r.error);
       out = out.concat(r.data || []);
@@ -71,8 +71,10 @@
     return out;
   }
   function fromRow(r) {
-    return { id: r.id, ts: Date.parse(r.created_at) || Date.now(), overall: r.overall, cats: r.cats || {}, tags: r.tags || [],
-      comment: r.comment || '', reply: r.reply || '', replyTs: r.reply_at ? Date.parse(r.reply_at) : 0, hidden: !!r.hidden };
+    return {
+      id: r.id, ts: Date.parse(r.created_at) || Date.now(), overall: r.overall, cats: r.cats || {}, tags: r.tags || [],
+      comment: r.comment || '', reply: r.reply || '', replyTs: r.reply_at ? Date.parse(r.reply_at) : 0, hidden: !!r.hidden
+    };
   }
 
   var EduCloud = {
@@ -83,8 +85,10 @@
     /* ---------- Tài khoản ---------- */
     async signUp(o) {
       try {
-        var r = await client().auth.signUp({ email: o.email, password: o.password,
-          options: { data: { full_name: o.name, mssv: o.mssv }, emailRedirectTo: loginUrl() } });
+        var r = await client().auth.signUp({
+          email: o.email, password: o.password,
+          options: { data: { full_name: o.name, mssv: o.mssv }, emailRedirectTo: loginUrl() }
+        });
         if (r.error) throw r.error;
         if (r.data.user && r.data.user.identities && r.data.user.identities.length === 0) throw new Error('already registered');
         return { needsConfirm: !r.data.session };
@@ -104,7 +108,7 @@
         return await getProfile();
       } catch (e) { throw wrap(e); }
     },
-    async signOut() { try { await client().auth.signOut({ scope: 'local' }); } catch (e) {} },
+    async signOut() { try { await client().auth.signOut({ scope: 'local' }); } catch (e) { } },
     async user() { try { return await sessionUser(); } catch (e) { return null; } },
     async resetPassword(email) {
       var r = await client().auth.resetPasswordForEmail(email, { redirectTo: loginUrl() });
@@ -159,9 +163,9 @@
       if (!u) throw new Error('Phiên đăng nhập đã hết hạn. Hãy đăng nhập lại.');
       var c = client(), ch = c.channel('eduhub-sync-' + u.id)
         .on('postgres_changes', { event: '*', schema: 'public', table: 'user_data', filter: 'user_id=eq.' + u.id },
-          function (p) { try { cb(p && p.new ? p.new : null); } catch (e) {} })
+          function (p) { try { cb(p && p.new ? p.new : null); } catch (e) { } })
         .subscribe();
-      return function () { try { c.removeChannel(ch); } catch (e) {} };
+      return function () { try { c.removeChannel(ch); } catch (e) { } };
     },
 
     /* ---------- Tệp bài nộp (Supabase Storage, bucket riêng tư 'submissions', thư mục = id người dùng) ---------- */
@@ -194,7 +198,7 @@
       var u = await sessionUser();
       if (!u) throw new Error('Phiên đăng nhập đã hết hạn. Hãy đăng nhập lại.');
       var names = [], off = 0;
-      for (;;) {
+      for (; ;) {
         var r = await client().storage.from('submissions').list(u.id, { limit: 1000, offset: off });
         if (r.error) throw wrap(r.error);
         var d = r.data || [];
@@ -222,7 +226,7 @@
       async check() {
         try { var p = await getProfile('admin'); return p && p.role === 'admin' ? p : null; } catch (e) { return null; }
       },
-      async signOut() { try { await client('admin').auth.signOut({ scope: 'local' }); } catch (e) {} },
+      async signOut() { try { await client('admin').auth.signOut({ scope: 'local' }); } catch (e) { } },
       async listProfiles() {
         var rows = await fetchAll(function () { return client('admin').from('profiles').select('*').order('created_at', { ascending: false }).order('id'); });
         return rows.map(function (p) { return toProfile(p); });
@@ -245,7 +249,7 @@
         /* Hàm trả về danh sách đường dẫn tệp bài nộp của người đó; xóa khỏi Storage (quản trị chỉ có quyền XÓA, không có quyền đọc). */
         var paths = Array.isArray(r.data) ? r.data : [];
         for (var i = 0; i < paths.length; i += 100) {
-          try { await client('admin').storage.from('submissions').remove(paths.slice(i, i + 100)); } catch (e) {}
+          try { await client('admin').storage.from('submissions').remove(paths.slice(i, i + 100)); } catch (e) { }
         }
       },
       /* Số liệu TỔNG HỢP về dữ liệu học tập, không có nội dung hay thông tin từng người. */

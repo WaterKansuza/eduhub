@@ -1,0 +1,488 @@
+/* EduHub dashboard surface styles. Shared tokens live in simple.css. */
+
+html.dark {
+    --bg-deep: #0F1014;
+    --background: #17181C;
+    --surface: #232429;
+    --surface-raised: #2E3037;
+    --border: rgba(255, 255, 255, 0.08);
+    --text: #E6E7EB;
+    --muted: #8D909C;
+    --primary: #8B7CFF;
+    --secondary: #5CE1E6;
+    --star: #FFD479;
+    --success: #4ADE9A;
+    --warning: #FFC857;
+    --error: #FF6B81;
+}
+
+html:not(.dark) {
+    --bg-deep: #f4f7fc;
+    --background: #f4f7fc;
+    --surface: #ffffff;
+    --surface-raised: #f8fafc;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --muted: #64748b;
+    --primary: #2563eb;
+    --secondary: #0284c7;
+    --star: #d97706;
+    --success: #16a34a;
+    --warning: #ea580c;
+    --error: #dc2626;
+}
+
+body {
+    font-family: 'Be Vietnam Pro', sans-serif;
+}
+
+html.dark body {
+    background-color: var(--background) !important;
+    color: var(--text) !important;
+}
+
+html:not(.dark) body {
+    background-color: #f4f7fc !important;
+    color: #1e293b !important;
+}
+
+/* Custom scrollbar styling */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-deep);
+}
+
+::-webkit-scrollbar-thumb {
+    background: #2E3037;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #8B7CFF;
+}
+
+/* In bảng điểm / thời khóa biểu gọn gàng */
+@media print {
+
+    aside,
+    header,
+    .no-print {
+        display: none !important;
+    }
+
+    body {
+        background: #fff !important;
+        color: #000 !important;
+    }
+
+    main {
+        overflow: visible !important;
+    }
+}
+
+/* ══════════════════════════════════════════════════
+           CHRONO-COSMOS STYLING (Hệ Màu Chuẩn)
+           ══════════════════════════════════════════════════ */
+
+html.dark .dash-hero {
+    background: linear-gradient(135deg, #201b38 0%, #232429 55%, #18252d 100%) !important;
+    border: 0px solid rgba(139, 124, 255, 0.25) !important;
+    /* border: 2px solid var(--star) !important; */
+    /* box-shadow: 0 14px 44px -10px rgba(139, 124, 255, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important; */
+    box-shadow: 0 0px 0px -0px rgba(139, 124, 255, 0.22), inset 0 0px 0 rgba(255, 255, 255, 0.1) !important;
+
+
+}
+
+
+html.dark .border-dash-hero {
+    border: 2px solid var(--star) !important;
+    position: absolute;
+    inset: 0;
+
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 10% 100%, 0 70%);
+}
+
+html:not(.dark) .dash-hero {
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1e3a8a 100%) !important;
+    /* border: 1px solid rgba(99, 102, 241, 0.25) !important; */
+    border: 1px solid var(--star) !important;
+    box-shadow: 0 12px 36px -6px rgba(37, 99, 235, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+}
+
+html.dark .cosmic-card {
+    background: var(--surface) !important;
+    border: 1px solid var(--border) !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+html.dark .cosmic-card:hover {
+    transform: translateY(-2px);
+    background: var(--surface-raised) !important;
+    border-color: rgba(139, 124, 255, 0.35) !important;
+    box-shadow: 0 10px 24px -6px rgba(139, 124, 255, 0.2) !important;
+}
+
+html:not(.dark) .cosmic-card {
+    background: #ffffff !important;
+    border: 1px solid #e8edf5 !important;
+    color: #334155 !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+html:not(.dark) .cosmic-card:hover {
+    transform: translateY(-2px);
+    background: #f8fafc !important;
+    border-color: #cbd5e1 !important;
+    color: #0f172a !important;
+}
+
+.hero-shell {
+    position: relative;
+    overflow: visible;
+}
+
+.hero-stars,
+.hero-star {
+    position: absolute;
+    pointer-events: none;
+}
+
+.hero-stars {
+    left: -7px;
+    bottom: 8px;
+    width: 130px;
+    height: 62px;
+    z-index: 5;
+}
+
+.hero-star {
+    object-fit: contain;
+    opacity: 0.88;
+}
+
+.hero-star--accent {
+    right: 0;
+    bottom: 0;
+    width: 112px;
+    height: 64px;
+    transform: translate(-4rem, 2rem);
+}
+
+.hero-star--solo {
+    left: 8px;
+    bottom: 5px;
+    width: 34px;
+    height: 34px;
+    opacity: 0.95;
+    transform: translateX(2.5rem);
+}
+
+@media (max-width: 640px) {
+
+
+    .hero-stars {
+        left: 10px;
+        bottom: 6px;
+        width: 104px;
+        height: 48px;
+    }
+
+    .hero-star--accent {
+        width: 88px;
+        height: 50px;
+    }
+
+    .hero-star--solo {
+        left: 5px;
+        bottom: 3px;
+        width: 28px;
+        height: 28px;
+    }
+}
+
+/* Orbit Ring Animation */
+@keyframes orbit-pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
+        filter: drop-shadow(0 0 16px rgba(139, 124, 255, 0.5));
+    }
+}
+
+.animate-orbit-pulse {
+    animation: orbit-pulse 4s ease-in-out infinite;
+}
+
+@keyframes orbit-rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-orbit-spin {
+    animation: orbit-rotate 30s linear infinite;
+}
+
+/* Hero số GPA — Dùng màu star: #FFD479 (điểm đặc biệt, hiếm) */
+#heroGPA {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.04em;
+    color: #FFD479 !important;
+    text-shadow: none;
+}
+
+/* Telemetry Stat cards — số lớn, tabular */
+#statCards h3 {
+    font-family: 'JetBrains Mono', 'Be Vietnam Pro', monospace;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+}
+
+/* Dark mode overrides for dashboard cards */
+html.dark #statCards>div {
+    background: var(--surface) !important;
+    border: 1px solid var(--border) !important;
+    color: var(--text) !important;
+    box-shadow: 0 4px 20px rgba(15, 16, 20, 0.45) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease !important;
+}
+
+html.dark #statCards>div:hover {
+    transform: translateY(-3px) !important;
+    background: var(--surface-raised) !important;
+    border-color: rgba(139, 124, 255, 0.35) !important;
+    box-shadow: 0 10px 24px -4px rgba(139, 124, 255, 0.2) !important;
+}
+
+html.dark #statCards>div h3 {
+    color: var(--text) !important;
+}
+
+html.dark #statCards>div p {
+    color: var(--muted) !important;
+}
+
+html.dark #streakMiniNum {
+    font-family: 'JetBrains Mono', 'Be Vietnam Pro', monospace;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    color: #FFC857 !important;
+    text-shadow: none;
+}
+
+html.dark #tab-dashboard .cosmic-theme-container .bg-white,
+html.dark #tab-dashboard .cosmic-theme-container [class*="dark:bg-slate-800"] {
+    background: var(--surface) !important;
+    border: 1px solid var(--border) !important;
+    color: var(--text) !important;
+}
+
+html.dark #tab-dashboard .cosmic-theme-container h2,
+html.dark #tab-dashboard .cosmic-theme-container h3,
+html.dark #tab-dashboard .cosmic-theme-container h4 {
+    color: var(--text) !important;
+}
+
+/* Light mode overrides for dashboard cards */
+html:not(.dark) #statCards>div {
+    background: #ffffff !important;
+    border: 1px solid #e8edf5 !important;
+    color: #1e293b !important;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+html:not(.dark) #statCards>div:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08) !important;
+}
+
+html:not(.dark) #statCards>div h3 {
+    color: #1e293b !important;
+}
+
+html:not(.dark) #statCards>div p {
+    color: #64748b !important;
+}
+
+html:not(.dark) #streakMiniNum {
+    font-family: 'JetBrains Mono', 'Be Vietnam Pro', monospace;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    color: #c2410c !important;
+}
+
+/* Global starfield background */
+#spaceCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.72;
+    mix-blend-mode: screen;
+}
+
+html:not(.dark) #spaceCanvas {
+    display: block !important;
+    opacity: 0.62;
+    mix-blend-mode: normal;
+}
+
+body>*:not(#spaceCanvas) {
+    position: relative;
+    z-index: 1;
+}
+
+html.dark .cosmic-theme-container {
+    background:
+        radial-gradient(circle at 12% 18%, rgba(92, 225, 230, 0.04), transparent 16rem),
+        radial-gradient(circle at 88% 72%, rgba(139, 124, 255, 0.05), transparent 22rem);
+}
+
+/* Surface polish */
+html:not(.dark) body {
+    background:
+        radial-gradient(circle at 85% -10%, rgba(139, 124, 255, 0.08), transparent 32rem),
+        #f4f7fc !important;
+}
+
+html.dark body {
+    background:
+        radial-gradient(circle at 85% -10%, rgba(139, 124, 255, 0.08), transparent 32rem),
+        var(--background) !important;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+    -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 3px solid rgba(92, 225, 230, 0.55);
+    outline-offset: 3px;
+}
+
+header {
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
+.dash-hero,
+.cosmic-card {
+    isolation: isolate;
+}
+
+@media(max-width: 1023px) {
+    html.dark .border-dash-hero {
+
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 10% 100%, 0 85%);
+
+    }
+}
+
+@media (max-width: 767px) {
+    main {
+        padding-bottom: 5rem !important;
+    }
+
+    html.dark .border-dash-hero {
+
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 10% 100%, 0 90%);
+
+    }
+
+    .dash-hero {
+        border-radius: 1.5rem !important;
+        padding: 1.25rem !important;
+    }
+
+    .dash-hero::before,
+    #statCards>div::before,
+    .cosmic-card::before {
+        inset: 5px;
+    }
+
+    .dash-hero::after,
+    #statCards>div::after,
+    .cosmic-card::after {
+        top: 8px;
+        right: 14px;
+    }
+
+    #tab-dashboard .dash-hero h1 {
+        font-size: 1.75rem;
+    }
+
+    #tab-dashboard>.relative.grid {
+        gap: 1.5rem;
+    }
+
+    #tab-dashboard>.relative.grid>.space-y-6 {
+        gap: 1.5rem;
+    }
+
+    #globalSearch {
+        max-width: 11rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    #spaceCanvas {
+        display: none !important;
+    }
+}
+
+/* Hero banner fade-in animation */
+.dash-hero {
+    animation: heroFadeIn 0.4s ease-out both;
+}
+
+@keyframes heroFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

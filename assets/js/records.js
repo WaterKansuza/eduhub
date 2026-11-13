@@ -4,10 +4,10 @@
 (function () {
   const $ = id => document.getElementById(id);
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  let u = null; try { u = JSON.parse(localStorage.getItem('eduhub_session') || sessionStorage.getItem('eduhub_session')); } catch {}
+  let u = null; try { u = JSON.parse(localStorage.getItem('eduhub_session') || sessionStorage.getItem('eduhub_session')); } catch { }
   const email = (u && u.email) || 'guest', KEY = 'eduhub_records_' + email, SKEY = 'eduhub_subjects_' + email;
   let db = { total: 130, sems: [], retake: 'best' };
-  try { const d = JSON.parse(localStorage.getItem(KEY)); if (d && Array.isArray(d.sems)) db = d; } catch {}
+  try { const d = JSON.parse(localStorage.getItem(KEY)); if (d && Array.isArray(d.sems)) db = d; } catch { }
   if (!['best', 'latest', 'all'].includes(db.retake)) db.retake = 'best';
   /* Lưu qua EduHub.set: nếu trình duyệt chặn / đầy bộ nhớ sẽ hiện cảnh báo thay vì mất dữ liệu im lặng */
   const save = () => { const a = EduHub.set(KEY, db), b = EduHub.set('eduhub_total_' + email, db.total); return a && b; };
@@ -61,7 +61,7 @@
   /* ---------- Thống kê deadline thật (đọc từ assignments.js) ---------- */
   const dueStat = () => {
     let list = [];
-    try { list = JSON.parse(localStorage.getItem('eduhub_assignments_' + email)) || []; } catch {}
+    try { list = JSON.parse(localStorage.getItem('eduhub_assignments_' + email)) || []; } catch { }
     const pend = (Array.isArray(list) ? list : []).filter(a => a && a.status !== 'submitted');
     const late = pend.filter(a => new Date(a.due).getTime() < Date.now());
     const soon = pend.filter(a => { const t = new Date(a.due).getTime() - Date.now(); return t > 0 && t <= 86400e3; });
@@ -171,9 +171,13 @@
     const ds = [];
     if (P && L.subs.some(x => key(x) in pm)) ds.push({ label: 'Kỳ trước (' + P.name + ')', data: L.subs.map(x => pm[key(x)] ?? null), backgroundColor: 'rgba(156,163,175,0.6)', borderColor: 'rgba(156,163,175,1)', borderWidth: 1.5, borderRadius: 6 });
     ds.push({ label: 'Kỳ này (' + L.name + ')', data: L.subs.map(x => x.g), backgroundColor: 'rgba(37,99,235,0.85)', borderColor: '#1d4ed8', borderWidth: 1.5, borderRadius: 6 });
-    chart = new Chart(cv.getContext('2d'), { type: 'bar', data: { labels: L.subs.map(x => x.n), datasets: ds },
-      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', labels: { color: txt, font: { family: 'Be Vietnam Pro', size: 11 } } } },
-        scales: { y: { min: 0, max: 10, ticks: { color: txt }, grid: { color: grid } }, x: { ticks: { color: txt }, grid: { display: false } } } } });
+    chart = new Chart(cv.getContext('2d'), {
+      type: 'bar', data: { labels: L.subs.map(x => x.n), datasets: ds },
+      options: {
+        responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', labels: { color: txt, font: { family: 'Be Vietnam Pro', size: 11 } } } },
+        scales: { y: { min: 0, max: 10, ticks: { color: txt }, grid: { color: grid } }, x: { ticks: { color: txt }, grid: { display: false } } }
+      }
+    });
   }
   const renderAll = () => { cards(); compare(); gradesTab(); drawChart(); };
 
@@ -260,7 +264,7 @@
   window.rcAdd = () => { $('rcRows').insertAdjacentHTML('beforeend', rowHtml()); };
   window.rcDelRow = b => { b.closest('.rc-row').remove(); preview(); };
   window.rcFill = () => {
-    let list = []; try { list = JSON.parse(localStorage.getItem(SKEY)) || []; } catch {}
+    let list = []; try { list = JSON.parse(localStorage.getItem(SKEY)) || []; } catch { }
     if (!list.length) { alert('Chưa có môn học nào. Hãy thêm ở mục Môn học & TKB trước.'); return; }
     const have = new Set([...document.querySelectorAll('#rcRows .r-n')].map(i => i.value.trim().toLowerCase()));
     document.querySelectorAll('#rcRows .rc-row').forEach(r => { if (![...r.querySelectorAll('input')].some(i => i.value.trim())) r.remove(); });

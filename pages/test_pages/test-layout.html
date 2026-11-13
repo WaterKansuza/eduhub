@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduHub - Claude & Tufte Design</title>
+
+    <!-- Google Fonts: Inter (Sans-serif) & Playfair Display (Serif) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap"
+        rel="stylesheet">
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- ECharts CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        claude: {
+                            bg: '#fffff8',       // Cream/Off-white
+                            surface: '#ffffff',  // Pure white for content areas if needed, but we'll stick to bg
+                            border: '#e5e7eb',   // Thin light gray border
+                            text: '#111827',     // Dark text
+                            textLight: '#6b7280',// Muted text
+                            accent10: '#d97706', // Hệ 10 color
+                            accent4: '#666666'   // Hệ 4 color
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: theme('colors.claude.bg');
+            color: theme('colors.claude.text');
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+        }
+    </style>
+</head>
+
+<body class="font-sans antialiased h-screen flex overflow-hidden">
+
+    <!-- Sidebar (Square corners, no shadow, thin borders) -->
+    <aside class="w-64 border-r border-claude-border hidden md:flex flex-col justify-between h-full bg-claude-bg">
+        <div class="p-6">
+            <!-- Logo -->
+            <div class="flex items-center gap-3 mb-12">
+                <div
+                    class="w-8 h-8 bg-claude-text flex items-center justify-center text-claude-bg font-serif font-bold text-xl">
+                    E
+                </div>
+                <h1 class="font-serif text-2xl font-semibold tracking-tight">EduHub.</h1>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="space-y-1">
+                <a href="#"
+                    class="flex items-center gap-3 px-3 py-2 bg-gray-100 text-claude-text font-medium text-sm transition-colors border border-claude-border">
+                    <i class="ph ph-squares-four text-lg"></i> Tổng quan
+                </a>
+                <a href="#"
+                    class="flex items-center gap-3 px-3 py-2 text-claude-textLight hover:bg-gray-50 hover:text-claude-text font-medium text-sm transition-colors border border-transparent hover:border-claude-border">
+                    <i class="ph ph-calendar-blank text-lg"></i> Lịch học
+                </a>
+                <a href="#"
+                    class="flex items-center gap-3 px-3 py-2 text-claude-textLight hover:bg-gray-50 hover:text-claude-text font-medium text-sm transition-colors border border-transparent hover:border-claude-border">
+                    <i class="ph ph-book-bookmark text-lg"></i> Bài tập
+                </a>
+                <a href="#"
+                    class="flex items-center gap-3 px-3 py-2 text-claude-textLight hover:bg-gray-50 hover:text-claude-text font-medium text-sm transition-colors border border-transparent hover:border-claude-border">
+                    <i class="ph ph-exam text-lg"></i> Kỳ thi
+                </a>
+                <a href="#"
+                    class="flex items-center gap-3 px-3 py-2 text-claude-textLight hover:bg-gray-50 hover:text-claude-text font-medium text-sm transition-colors border border-transparent hover:border-claude-border">
+                    <i class="ph ph-sword text-lg"></i> Gamify
+                </a>
+            </nav>
+        </div>
+
+        <!-- User Profile -->
+        <div class="p-6 border-t border-claude-border bg-claude-bg">
+            <button
+                class="flex items-center gap-3 w-full text-left hover:bg-gray-50 p-2 border border-transparent hover:border-claude-border transition-colors">
+                <div class="w-8 h-8 bg-gray-200 flex items-center justify-center text-sm font-medium">HS</div>
+                <div>
+                    <p class="text-sm font-medium text-claude-text">Học sinh</p>
+                    <p class="text-xs text-claude-textLight">Đã đồng bộ</p>
+                </div>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 h-full overflow-y-auto bg-claude-bg">
+        <div class="max-w-5xl mx-auto px-6 py-10 lg:px-12 lg:py-14">
+
+            <!-- Header -->
+            <header class="mb-12 flex justify-between items-end border-b border-claude-border pb-4">
+                <div>
+                    <p class="text-claude-textLight text-sm font-medium mb-2 tracking-wide uppercase">EduHub Dashboard
+                    </p>
+                    <h2 class="font-serif text-3xl lg:text-4xl font-semibold text-claude-text">Hồ sơ học tập.</h2>
+                </div>
+                <div class="hidden sm:block text-right">
+                    <p class="text-sm font-serif text-claude-textLight italic" id="current-date"></p>
+                </div>
+            </header>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+
+                <!-- Left Column -->
+                <div class="lg:col-span-2 space-y-10">
+
+                    <!-- Chart Section (Tufte Design) -->
+                    <section class="border border-claude-border bg-claude-bg p-6">
+                        <div class="mb-6 flex justify-between items-baseline">
+                            <h3 class="font-serif text-xl font-semibold text-claude-text">Biến động điểm trung bình</h3>
+                            <span class="text-xs text-claude-textLight">Hệ 10 & Hệ 4</span>
+                        </div>
+
+                        <!-- ECharts Container -->
+                        <div id="tufteChart" class="w-full h-72"></div>
+
+                        <p
+                            class="mt-4 text-sm text-claude-textLight font-serif italic border-t border-claude-border pt-4">
+                            * Dữ liệu GPA qua 5 học kỳ gần nhất. Hệ 10 (cam) tương quan với Hệ 4 (xám).
+                        </p>
+                    </section>
+
+                    <!-- Assignments Section -->
+                    <section>
+                        <div class="flex justify-between items-end mb-4 border-b border-claude-border pb-2">
+                            <h3 class="font-serif text-xl font-semibold">Bài tập đang chờ</h3>
+                            <button class="text-sm text-claude-text hover:underline font-medium">Xem tất cả</button>
+                        </div>
+
+                        <div class="border border-claude-border bg-claude-bg">
+                            <div
+                                class="flex items-start gap-4 p-4 hover:bg-gray-50 transition-colors border-b border-claude-border last:border-0 cursor-pointer">
+                                <i class="ph ph-square text-claude-textLight mt-1 text-lg"></i>
+                                <div>
+                                    <h4 class="text-sm font-medium text-claude-text">Nộp báo cáo Thiết kế Dữ liệu trực
+                                        quan</h4>
+                                    <p class="text-xs text-claude-textLight mt-1">Môn học: Trực quan hóa dữ liệu</p>
+                                </div>
+                                <div class="ml-auto text-right">
+                                    <span
+                                        class="inline-flex items-center bg-gray-100 px-2 py-1 text-xs font-medium border border-claude-border">Hôm
+                                        nay</span>
+                                </div>
+                            </div>
+
+                            <div
+                                class="flex items-start gap-4 p-4 hover:bg-gray-50 transition-colors border-b border-claude-border last:border-0 cursor-pointer">
+                                <i class="ph ph-square text-claude-textLight mt-1 text-lg"></i>
+                                <div>
+                                    <h4 class="text-sm font-medium text-claude-text">Làm bài Lab SQL 04 (Supabase)</h4>
+                                    <p class="text-xs text-claude-textLight mt-1">Môn học: Cơ sở dữ liệu</p>
+                                </div>
+                                <div class="ml-auto text-right">
+                                    <span
+                                        class="inline-flex items-center bg-claude-bg px-2 py-1 text-xs font-medium border border-claude-border">Ngày
+                                        mai</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Right Column -->
+                <div class="space-y-10">
+
+                    <!-- Stats Section (Square Minimalist) -->
+                    <section class="border border-claude-border bg-claude-bg p-6">
+                        <h3 class="font-serif text-lg font-semibold mb-6 border-b border-claude-border pb-2">Thống kê
+                            nhanh</h3>
+
+                        <div class="space-y-6">
+                            <div>
+                                <p class="text-xs text-claude-textLight uppercase tracking-wider mb-1">Điểm tích lũy (Hệ
+                                    10)</p>
+                                <p class="font-serif text-3xl text-claude-text">8.5</p>
+                            </div>
+
+                            <div class="border-t border-claude-border pt-4">
+                                <p class="text-xs text-claude-textLight uppercase tracking-wider mb-1">Tín chỉ hoàn
+                                    thành</p>
+                                <p class="font-serif text-3xl text-claude-text">84<span
+                                        class="text-base text-claude-textLight ml-1">/ 120</span></p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Today's Schedule -->
+                    <section class="border border-claude-border bg-claude-bg p-6">
+                        <h3 class="font-serif text-lg font-semibold mb-6 border-b border-claude-border pb-2">Lịch hôm
+                            nay</h3>
+
+                        <div class="space-y-4">
+                            <div class="border-l-2 border-claude-accent10 pl-3">
+                                <p class="text-xs font-medium text-claude-textLight mb-1">08:00 - 10:30</p>
+                                <h4 class="text-sm font-medium text-claude-text">Xác suất thống kê</h4>
+                                <p class="text-xs text-claude-textLight mt-0.5">Phòng 201-A</p>
+                            </div>
+
+                            <div class="border-l-2 border-claude-accent4 pl-3 mt-4">
+                                <p class="text-xs font-medium text-claude-textLight mb-1">13:00 - 15:30</p>
+                                <h4 class="text-sm font-medium text-claude-text">Thiết kế Giao diện UI/UX</h4>
+                                <p class="text-xs text-claude-textLight mt-0.5">Phòng Lab 04</p>
+                            </div>
+                        </div>
+                    </section>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Set Current Date
+        const dateElement = document.getElementById('current-date');
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        dateElement.textContent = new Date().toLocaleDateString('vi-VN', options);
+
+        // Initialize ECharts with Tufte principles
+        document.addEventListener('DOMContentLoaded', function () {
+            const chartDom = document.getElementById('tufteChart');
+            const myChart = echarts.init(chartDom);
+
+            const option = {
+                backgroundColor: 'transparent',
+                // Remove Legend completely (Direct labeling used instead)
+                legend: { show: false },
+                // Simple tooltip
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: '#ffffff',
+                    borderColor: '#e5e7eb',
+                    textStyle: { color: '#111827', fontFamily: 'Inter' },
+                    axisPointer: { type: 'line', lineStyle: { color: '#e5e7eb' } }
+                },
+                grid: {
+                    top: 20,
+                    right: 60, // Space for end labels
+                    bottom: 20,
+                    left: 30,
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ['Kỳ 1', 'Kỳ 2', 'Kỳ 3', 'Kỳ 4', 'Kỳ 5'],
+                    // Tufte: No tick marks, minimal axis line
+                    axisTick: { show: false },
+                    axisLine: {
+                        show: true,
+                        lineStyle: { color: '#e5e7eb' }
+                    },
+                    axisLabel: {
+                        fontFamily: 'Playfair Display',
+                        color: '#6b7280',
+                        margin: 15
+                    },
+                    splitLine: { show: false } // No grid lines
+                },
+                yAxis: [
+                    {
+                        type: 'value',
+                        min: 'dataMin', // Tie axis strictly to data range
+                        max: 'dataMax',
+                        // Tufte: No Y axis line, no Y grid lines, rely on labels and data shape
+                        axisLine: { show: false },
+                        axisTick: { show: false },
+                        splitLine: { show: false },
+                        axisLabel: {
+                            fontFamily: 'Playfair Display',
+                            color: '#6b7280'
+                        }
+                    }
+                ],
+                series: [
+                    {
+                        name: 'Hệ 10',
+                        type: 'line',
+                        data: [7.2, 7.5, 8.1, 7.8, 8.5],
+                        color: '#d97706',
+                        symbol: 'circle',
+                        symbolSize: 6,
+                        lineStyle: { width: 1.5 },
+                        // Tufte: Direct Labeling at the end of the line
+                        endLabel: {
+                            show: true,
+                            formatter: '{a}', // Shows series name "Hệ 10"
+                            fontFamily: 'Playfair Display',
+                            fontSize: 13,
+                            color: '#d97706',
+                            offset: [5, 0]
+                        }
+                    },
+                    {
+                        name: 'Hệ 4',
+                        type: 'line',
+                        data: [2.8, 3.0, 3.4, 3.2, 3.6],
+                        color: '#666666',
+                        symbol: 'circle',
+                        symbolSize: 6,
+                        lineStyle: { width: 1.5 },
+                        // Tufte: Direct Labeling at the end of the line
+                        endLabel: {
+                            show: true,
+                            formatter: '{a}', // Shows series name "Hệ 4"
+                            fontFamily: 'Playfair Display',
+                            fontSize: 13,
+                            color: '#666666',
+                            offset: [5, 0]
+                        }
+                    }
+                ]
+            };
+
+            myChart.setOption(option);
+
+            // Responsive chart
+            window.addEventListener('resize', function () {
+                myChart.resize();
+            });
+        });
+    </script>
+</body>
+
+</html>

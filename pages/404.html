@@ -1,39 +1,315 @@
 <!DOCTYPE html>
-<html lang="vi" class="light">
+<html lang="vi">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EduHub - Không tìm thấy trang</title>
-<meta name="description" content="Trang bạn tìm không tồn tại trên EduHub.">
-<meta name="robots" content="noindex">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Ctext x='50%25' y='53%25' dy='.35em' text-anchor='middle' font-family='sans-serif' font-size='36' font-weight='700' fill='%23fff'%3EE%3C/text%3E%3C/svg%3E">
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script>tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Be Vietnam Pro','sans-serif']}}}}</script>
-<style>body{font-family:'Be Vietnam Pro',sans-serif}</style>
-<script src="../assets/js/config.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduHub - Không tìm thấy trang</title>
+    <meta name="description" content="Trang bạn tìm không tồn tại trên EduHub.">
+    <meta name="robots" content="noindex">
+    <link rel="icon"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Ctext x='50%25' y='53%25' dy='.35em' text-anchor='middle' font-family='sans-serif' font-size='36' font-weight='700' fill='%23fff'%3EE%3C/text%3E%3C/svg%3E">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['Be Vietnam Pro', 'sans-serif'] } } } }</script> -->
+
+    <style>
+        html,
+        body {
+            height: 100%;
+            min-height: 450px;
+            font-family: 'Be Vietnam Pro', sans-serif;
+            font-size: 16px;
+            font-weight: 500;
+            color: #5d7399;
+        }
+
+        .content {
+            height: 100%;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+            background-color: #d2e1ec;
+            background-image: linear-gradient(to bottom, #bbcfe1 0%, #e8f2f6 80%);
+            overflow: hidden;
+        }
+
+        .snow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 20;
+        }
+
+        .main-text {
+            display: flex;
+            justify-content: center;
+            padding: 30vh 20px 0 20px;
+            text-align: center;
+            line-height: 2em;
+            font-size: 1rem;
+        }
+
+        .home-link {
+            font-size: 0.6em;
+            font-weight: 400;
+            color: inherit;
+            text-decoration: none;
+            opacity: 0.6;
+            border-bottom: 1px dashed rgba(93, 115, 153, 0.5);
+        }
+
+        .home-link:hover {
+            opacity: 1;
+        }
+
+        .ground {
+            height: 16rem;
+            width: 100%;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            background: #f6f9fa;
+            box-shadow: 0 0 10px 10px #f6f9fa;
+        }
+
+        .ground:before,
+        .ground:after {
+            content: "";
+            display: block;
+            width: 250px;
+            height: 250px;
+            position: absolute;
+            top: -62.5px;
+            z-index: -1;
+            background: transparent;
+            transform: scaleX(0.2) rotate(45deg);
+        }
+
+        .ground:after {
+            left: 50%;
+            margin-left: -166.6666666667px;
+            box-shadow: -275px 325px 15px #8e9eba, -580px 620px 15px #b4bed1, -870px 930px 15px #a1aec6, -1160px 1240px 15px #94a3be, -1460px 1540px 15px #97a6c0, -1830px 1770px 15px #adb9cd, -2070px 2130px 15px #9aa9c2, -2380px 2420px 15px #8798b6, -2670px 2730px 15px #94a3be, -3005px 2995px 15px #9dabc4, -3275px 3325px 15px #a7b4c9, -3590px 3610px 15px #aab6cb, -3915px 3885px 15px #8798b6, -4235px 4165px 15px #97a6c0, -4465px 4535px 15px #b7c1d3, -4820px 4780px 15px #aab6cb;
+        }
+
+        .ground:before {
+            right: 50%;
+            margin-right: -166.6666666667px;
+            box-shadow: 265px -335px 15px #a1aec6, 645px -555px 15px #bac4d5, 890px -910px 15px #8798b6, 1180px -1220px 15px #a7b4c9, 1525px -1475px 15px #94a3be, 1845px -1755px 15px #97a6c0, 2110px -2090px 15px #b4bed1, 2375px -2425px 15px #b7c1d3, 2685px -2715px 15px #7e90b0, 2995px -3005px 15px #a4b1c8, 3330px -3270px 15px #a1aec6, 3610px -3590px 15px #9aa9c2, 3910px -3890px 15px #8798b6, 4210px -4190px 15px #a1aec6, 4530px -4470px 15px #8e9eba, 4805px -4795px 15px #b4bed1;
+        }
+
+        .mound {
+            margin-top: -8.5rem;
+            font-weight: 800;
+            font-size: 180px;
+            text-align: center;
+            color: #dd4040;
+            pointer-events: none;
+        }
+
+        .mound:before {
+            content: "";
+            display: block;
+            width: 600px;
+            height: 200px;
+            position: absolute;
+            left: 50%;
+            margin-left: -300px;
+            top: 50px;
+            z-index: 1;
+            border-radius: 100%;
+            background-color: #e8f2f6;
+            background-image: linear-gradient(to bottom, #dee8f1, #f6f9fa 60px);
+        }
+
+        .mound:after {
+            content: "";
+            display: block;
+            width: 28px;
+            height: 6px;
+            position: absolute;
+            left: 50%;
+            margin-left: -150px;
+            top: 68px;
+            z-index: 2;
+            background: #dd4040;
+            border-radius: 100%;
+            transform: rotate(-15deg);
+            box-shadow: -56px 12px 0 1px #dd4040, -126px 6px 0 2px #dd4040, -196px 24px 0 3px #dd4040;
+        }
+
+        .mound_text {
+            font-family: "Dosis", sans-serif;
+            transform: rotate(6deg);
+        }
+
+        .mound_spade {
+            display: block;
+            width: 35px;
+            height: 30px;
+            position: absolute;
+            right: 50%;
+            top: 25%;
+            margin-right: -250px;
+            z-index: 0;
+            transform: rotate(35deg);
+            background: #dd4040;
+        }
+
+        .mound_spade:before,
+        .mound_spade:after {
+            content: "";
+            display: block;
+            position: absolute;
+        }
+
+        .mound_spade:before {
+            width: 40%;
+            height: 30px;
+            bottom: 98%;
+            left: 50%;
+            margin-left: -20%;
+            background: #dd4040;
+        }
+
+        .mound_spade:after {
+            width: 100%;
+            height: 30px;
+            top: -55px;
+            left: 0%;
+            box-sizing: border-box;
+            border: 10px solid #dd4040;
+            border-radius: 4px 4px 20px 20px;
+        }
+    </style>
+    <script src="../assets/js/config.js"></script>
 </head>
-<body class="bg-gray-50 dark:bg-slate-900 text-gray-800 dark:text-gray-100 antialiased min-h-screen flex items-center justify-center p-6">
 
-<div class="w-full max-w-md bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl shadow-xl p-8 text-center">
-  <div class="flex items-center justify-center space-x-3 mb-6">
-    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-500/30">E</div>
-    <span class="text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">EduHub</span>
-  </div>
-  <p class="text-5xl font-bold text-blue-600 dark:text-blue-400 mb-3">404</p>
-  <h1 class="text-xl font-bold mb-2">Không tìm thấy trang này</h1>
-  <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Đường dẫn có thể đã sai hoặc trang đã được di chuyển.</p>
-  <div class="space-y-2">
-    <a href="index.html" class="block w-full py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-semibold rounded-xl transition"><i class="fa-solid fa-chart-pie mr-2"></i>Về trang chính</a>
-    <a href="login.html" class="block w-full py-2.5 bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-200 text-sm font-semibold rounded-xl transition">Đăng nhập</a>
-  </div>
-  <p class="text-[11px] text-gray-400 mt-6">
-    <a href="terms.html" class="hover:text-blue-600 dark:hover:text-blue-400">Điều khoản</a>
-    <span class="mx-1">·</span>
-    <a href="privacy.html" class="hover:text-blue-600 dark:hover:text-blue-400">Bảo mật</a>
-  </p>
-</div>
+<body>
+    <div class="content">
+        <canvas class="snow" id="snow"></canvas>
 
+        <div class="main-text">
+            <div
+                class="w-full max-w-md bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl shadow-xl p-8 text-center">
+                <div class="flex items-center justify-center space-x-3 mb-6">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-500/30">
+                        E</div>
+                    <span
+                        class="text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">EduHub</span>
+                </div>
+                <h1 class="text-xl font-bold mb-2">Không tìm thấy trang này</h1>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Đường dẫn có thể đã sai hoặc trang đã được di
+                    chuyển.</p>
+                <div class="space-y-2">
+                    <a href="index.html"
+                        class="block w-full py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-semibold rounded-xl transition"><i
+                            class="fa-solid fa-chart-pie mr-2"></i>Về trang chính</a>
+                    <!-- <a href="login.html" class="block w-full py-2.5 bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-200 text-sm font-semibold rounded-xl transition">Đăng nhập</a> -->
+                </div>
+                <p class="text-[11px] text-gray-400 mt-6">
+                    <a href="terms.html" class="hover:text-blue-600 dark:hover:text-blue-400">Điều khoản</a>
+                    <span class="mx-1">·</span>
+                    <a href="privacy.html" class="hover:text-blue-600 dark:hover:text-blue-400">Bảo mật</a>
+                </p>
+            </div>
+        </div>
+
+        <div class="ground">
+            <div class="mound">
+                <div class="mound_text">404</div>
+                <div class="mound_spade"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        (function () {
+            function ready(fn) {
+                if (document.readyState != 'loading') {
+                    fn();
+                } else {
+                    document.addEventListener('DOMContentLoaded', fn);
+                }
+            }
+
+            function makeSnow(el) {
+                var ctx = el.getContext('2d');
+                var width = 0;
+                var height = 0;
+                var particles = [];
+
+                var Particle = function () {
+                    this.x = this.y = this.dx = this.dy = 0;
+                    this.reset();
+                }
+
+                Particle.prototype.reset = function () {
+                    this.y = Math.random() * height;
+                    this.x = Math.random() * width;
+                    this.dx = (Math.random() * 1) - 0.5;
+                    this.dy = (Math.random() * 0.5) + 0.5;
+                }
+
+                function createParticles(count) {
+                    if (count != particles.length) {
+                        particles = [];
+                        for (var i = 0; i < count; i++) {
+                            particles.push(new Particle());
+                        }
+                    }
+                }
+
+                function onResize() {
+                    width = window.innerWidth;
+                    height = window.innerHeight;
+                    el.width = width;
+                    el.height = height;
+
+                    createParticles((width * height) / 10000);
+                }
+
+                function updateParticles() {
+                    ctx.clearRect(0, 0, width, height);
+                    ctx.fillStyle = '#f6f9fa';
+
+                    particles.forEach(function (particle) {
+                        particle.y += particle.dy;
+                        particle.x += particle.dx;
+
+                        if (particle.y > height) {
+                            particle.y = 0;
+                        }
+
+                        if (particle.x > width) {
+                            particle.reset();
+                            particle.y = 0;
+                        }
+
+                        ctx.beginPath();
+                        ctx.arc(particle.x, particle.y, 5, 0, Math.PI * 2, false);
+                        ctx.fill();
+                    });
+
+                    window.requestAnimationFrame(updateParticles);
+                }
+
+                onResize();
+                updateParticles();
+
+                window.addEventListener('resize', onResize);
+            }
+
+            ready(function () {
+                var canvas = document.getElementById('snow');
+                makeSnow(canvas);
+            });
+        })();
+    </script>
 </body>
+
 </html>

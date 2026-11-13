@@ -1,13 +1,7 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi" class="light">
 
 <head>
-    <script>
-        // Chưa đăng nhập -> quay về trang đăng nhập
-        if (!localStorage.getItem('eduhub_session') && !sessionStorage.getItem('eduhub_session')) {
-            window.location.replace('login.html');
-        }
-    </script>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,167 +10,36 @@
         content="EduHub - nền tảng quản lý học tập cho sinh viên: môn học, thời khóa biểu tự động, bảng điểm GPA, bài tập, lịch thi và thông báo.">
     <meta name="theme-color" content="#2563eb">
     <link rel="icon"
-        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Ctext x='50%25' y='53%25' dy='.35em' text-anchor='middle' font-family='sans-serif' font-size='36' font-weight='700' fill='%23fff'%3EE%3C/text%3E%3C/svg%3E">
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16.005 15.108a5.041 6.52 28.25 00-8.008-6.217 5.041 6.52 28.25 008.008 6.217A11.884 7.288-60.76 014.029 7.001'/%3E%3Cpath d='M17 21h.01'/%3E%3Cpath d='M7 3h.01'/%3E%3Cpath d='M7.997 8.891a11.885 7.288-60.756 0111.977 8.107'/%3E%3Ccircle cx='12' cy='12' r='1' fill='%232563eb'/%3E%3C/svg%3E">
     <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <!-- Cấu hình & tiện ích dùng chung (phải nạp trước) -->
     <script src="../assets/js/config.js"></script>
-    <script>EduHub.guardSession();</script>
+    <script src="../assets/js/session-guard.js"></script>
     <script src="../assets/js/supabase-config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
     <script src="../assets/js/cloud.js"></script>
     <script src="../assets/js/sync.js"></script>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../assets/js/tailwind-config.js"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Google Fonts: Be Vietnam Pro + thêm Inter cho số -->
+    <!-- Google Fonts: Be Vietnam Pro + JetBrains Mono + Space Grotesk -->
     <link
-        href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Inter:wght@700;800&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&family=Space+Grotesk:wght@500;700&display=swap"
         rel="stylesheet">
-
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Be Vietnam Pro', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: {
-                            50: '#eff6ff',
-                            100: '#dbeafe',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        body {
-            font-family: 'Be Vietnam Pro', sans-serif;
-        }
-
-        /* Custom scrollbar styling */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.05);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 4px;
-        }
-
-        .dark ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        /* In bảng điểm / thời khóa biểu gọn gàng */
-        @media print {
-
-            aside,
-            header,
-            .no-print {
-                display: none !important;
-            }
-
-            body {
-                background: #fff !important;
-                color: #000 !important;
-            }
-
-            main {
-                overflow: visible !important;
-            }
-        }
-
-        /* ══ Hero số GPA — dùng Inter weight 800 ══ */
-        #heroGPA {
-            font-family: 'Inter', 'Be Vietnam Pro', sans-serif;
-            font-weight: 800;
-            font-variant-numeric: tabular-nums;
-            letter-spacing: -0.04em;
-        }
-
-        /* ══ Stat cards — số lớn, tabular ══ */
-        #statCards h3 {
-            font-variant-numeric: tabular-nums;
-        }
-
-        /* ══ Streak counter ══ */
-        #streakMiniNum {
-            font-family: 'Inter', 'Be Vietnam Pro', sans-serif;
-            font-weight: 800;
-            letter-spacing: -0.04em;
-        }
-
-        /* ══ Hero banner fade-in animation ══ */
-        .dash-hero {
-            animation: heroFadeIn 0.4s ease-out both;
-        }
-
-        @keyframes heroFadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-8px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* ══ Stat cards stagger animation ══ */
-        #statCards>div {
-            animation: cardSlideUp 0.35s ease-out both;
-        }
-
-        #statCards>div:nth-child(1) {
-            animation-delay: 0.05s;
-        }
-
-        #statCards>div:nth-child(2) {
-            animation-delay: 0.10s;
-        }
-
-        #statCards>div:nth-child(3) {
-            animation-delay: 0.15s;
-        }
-
-        #statCards>div:nth-child(4) {
-            animation-delay: 0.20s;
-        }
-
-        @keyframes cardSlideUp {
-            from {
-                opacity: 0;
-                transform: translateY(12px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-    </style>
     <link rel="stylesheet" href="../assets/css/simple.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
 </head>
 
 <body
     class="bg-gray-50 dark:bg-slate-900 text-gray-800 dark:text-gray-100 antialiased min-h-screen flex flex-col transition-colors duration-200">
+
+    <canvas id="spaceCanvas" aria-hidden="true"></canvas>
 
     <!-- Lớp phủ khi mở sidebar trên mobile (bấm ra ngoài để đóng) -->
     <div id="sidebarOverlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-20 hidden md:hidden"></div>
@@ -190,8 +53,17 @@
             <div class="flex items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-slate-700">
                 <div class="flex items-center space-x-3">
                     <div
-                        class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-500/30">
-                        E
+                        class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="lucide lucide-galaxy preview-icon">
+                            <path
+                                d="M16.005 15.108a5.041 6.52 28.25 00-8.008-6.217 5.041 6.52 28.25 008.008 6.217A11.884 7.288-60.76 014.029 7.001" />
+                            <path d="M17 21h.01" />
+                            <path d="M7 3h.01" />
+                            <path d="M7.997 8.891a11.885 7.288-60.756 0111.977 8.107" />
+                            <circle cx="12" cy="12" r="1" fill="currentColor" />
+                        </svg>
                     </div>
                     <div>
                         <span
@@ -346,164 +218,247 @@
 
             <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
 
-                <!-- TAB 1: DASHBOARD OVERVIEW -->
-                <div id="tab-dashboard" class="tab-content space-y-6">
+                <!-- TAB 1: DASHBOARD OVERVIEW (CHRONO-COSMOS THEME) -->
+                <div id="tab-dashboard" class="tab-content space-y-6 cosmic-theme-container relative rounded-3xl">
 
-                    <!-- ══════════════════════════════════════════
-                         HERO BANNER — Welcome + GPA + Quick Stats
-                         ══════════════════════════════════════════ -->
-                    <div class="dash-hero relative overflow-hidden rounded-2xl text-white"
-                        style="background: linear-gradient(135deg, #1e40af 0%, #2563eb 45%, #4f46e5 100%);">
-                        <!-- Decorative circles -->
-                        <div class="absolute -top-10 -right-10 w-52 h-52 rounded-full opacity-10"
-                            style="background: radial-gradient(circle, #fff 0%, transparent 70%);"></div>
-                        <div class="absolute -bottom-16 -left-8 w-48 h-48 rounded-full opacity-10"
-                            style="background: radial-gradient(circle, #93c5fd 0%, transparent 70%);"></div>
-                        <!-- Dot pattern -->
-                        <div class="absolute inset-0 opacity-[0.04]"
-                            style="background-image: radial-gradient(circle, #fff 1px, transparent 1px); background-size: 24px 24px;">
+                    <!-- Status Bar: Trạm thời không & Đồng hồ Chrono Realtime -->
+                    <div class="relative z-10 flex flex-wrap items-center justify-between gap-3 px-1">
+                        <div class="flex items-center gap-2 text-xs font-mono text-cyan-600 dark:text-[#5CE1E6]">
+                            <i class="fa-solid fa-satellite-dish animate-pulse"></i>
+                            <!-- <span class="tracking-wider uppercase font-semibold">TRẠM QUẢN LÝ THỜI KHÔNG · EDUHUB</span> -->
+                            <span id="semesterBadge"
+                                class="hidden sm:inline-block px-2.5 py-0.5 rounded-full bg-cyan-50 dark:bg-[#5CE1E6]/10 text-cyan-700 dark:text-[#5CE1E6] border border-cyan-200 dark:border-[#5CE1E6]/25 text-[11px] font-mono"></span>
                         </div>
 
-                        <div class="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
-                            <!-- Top row: Greeting + GPA -->
-                            <div class="flex flex-wrap items-start justify-between gap-4">
-                                <div>
-                                    <p id="greetingTime"
-                                        class="text-blue-200 text-xs font-semibold tracking-wide uppercase mb-1">Chào
-                                        buổi chiều</p>
-                                    <h1 class="text-2xl sm:text-3xl font-bold leading-tight">Xin chào, <span
-                                            id="welcomeName">Sinh viên</span>!</h1>
-                                    <p id="todayDateLabel" class="text-blue-200 text-sm mt-1.5"></p>
-                                </div>
-                                <!-- GPA Hero Number -->
-                                <div class="text-right flex-shrink-0">
-                                    <p class="text-blue-300 text-[11px] font-semibold uppercase tracking-widest">GPA
-                                        tích lũy</p>
-                                    <p id="heroGPA" class="text-5xl font-bold leading-none mt-1 tracking-tight">—</p>
-                                    <p class="text-blue-300 text-sm mt-0.5">/ 4.0</p>
-                                </div>
+                        <!-- Live Chrono Clock -->
+                        <div
+                            class="px-3.5 py-1.5 rounded-xl flex items-center gap-3 border border-gray-100 dark:border-white/10 shadow-sm ml-auto">
+                            <div class="text-right">
+                                <div id="chronoTime"
+                                    class="font-mono text-sm sm:text-base font-bold text-gray-900 dark:text-[#E6E7EB] tracking-widest leading-none">
+                                    --:--:--</div>
+                                <div id="todayDateLabel"
+                                    class="text-[10px] text-gray-500 dark:text-[#8D909C] font-sans mt-0.5">...</div>
                             </div>
-
-                            <!-- Divider -->
-                            <div class="border-t border-white/20 mt-5 pt-4">
-                                <!-- Quick stats row -->
-                                <div class="flex flex-wrap gap-x-6 gap-y-3 items-center">
-                                    <div class="flex items-center gap-2">
-                                        <div
-                                            class="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center text-sm">
-                                            🔥</div>
-                                        <div>
-                                            <p id="heroStreakNum" class="text-sm font-bold leading-tight">0 ngày</p>
-                                            <p class="text-blue-300 text-[11px]">Chuỗi học</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <div
-                                            class="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center text-sm">
-                                            📚</div>
-                                        <div>
-                                            <p id="heroSubjectNum" class="text-sm font-bold leading-tight">— môn</p>
-                                            <p class="text-blue-300 text-[11px]">Học kỳ này</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <div
-                                            class="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center text-sm">
-                                            📝</div>
-                                        <div>
-                                            <p class="text-sm font-bold leading-tight"><span id="dueSoonCount">0</span>
-                                                bài tập</p>
-                                            <p class="text-blue-300 text-[11px]">Chờ nộp</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <div
-                                            class="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center text-sm">
-                                            🗓️</div>
-                                        <div>
-                                            <p class="text-sm font-bold leading-tight"><span id="todayCount">0</span>
-                                                buổi</p>
-                                            <p class="text-blue-300 text-[11px]">Hôm nay</p>
-                                        </div>
-                                    </div>
-                                    <!-- Semester badge -->
-                                    <div class="ml-auto">
-                                        <span id="semesterBadge"
-                                            class="inline-flex items-center gap-1.5 text-xs font-semibold bg-white/15 hover:bg-white/25 px-3 py-1.5 rounded-xl transition cursor-default"></span>
-                                    </div>
-                                </div>
-
-                                <!-- Action buttons -->
-                                <div class="flex flex-wrap gap-2 mt-4">
-                                    <button onclick="openRecords()"
-                                        class="inline-flex items-center gap-2 bg-white text-blue-700 hover:bg-blue-50 text-xs font-bold px-4 py-2 rounded-xl transition shadow-sm">
-                                        <i class="fa-solid fa-pen-to-square"></i>Nhập điểm
-                                    </button>
-                                    <button onclick="switchTab('courses')"
-                                        class="inline-flex items-center gap-2 bg-white/15 hover:bg-white/25 text-white text-xs font-semibold px-4 py-2 rounded-xl transition">
-                                        <i class="fa-solid fa-book-open"></i>Môn học
-                                    </button>
-                                    <button onclick="switchTab('assignments')"
-                                        class="inline-flex items-center gap-2 bg-white/15 hover:bg-white/25 text-white text-xs font-semibold px-4 py-2 rounded-xl transition">
-                                        <i class="fa-solid fa-list-check"></i>Bài tập
-                                    </button>
-                                </div>
+                            <div
+                                class="w-7 h-7 rounded-lg bg-cyan-50 dark:bg-[#5CE1E6]/10 border border-cyan-200 dark:border-[#5CE1E6]/20 flex items-center justify-center text-cyan-600 dark:text-[#5CE1E6] text-xs">
+                                <i class="fa-regular fa-clock"></i>
                             </div>
                         </div>
                     </div>
 
+                    <!-- ══════════════════════════════════════════
+                         HERO BANNER: TRẠM CHỈ HUY THỜI KHÔNG
+                         ══════════════════════════════════════════ -->
+
+                    <div class="hero-shell">
+                        <div class="dash-hero relative overflow-hidden rounded-3xl p-6 sm:p-8 text-white">
+                            <div class="border-dash-hero overflow-hidden rounded-3xl"></div>
+
+                            <!-- Background Geometric Orbit Overlay -->
+                            <div
+                                class="absolute -right-16 -top-16 w-80 h-80 rounded-full border border-indigo-500/20 animate-orbit-spin pointer-events-none">
+                                <div
+                                    class="w-3 h-3 bg-indigo-400 rounded-full absolute -top-1.5 left-1/2 shadow-lg shadow-indigo-400">
+                                </div>
+                            </div>
+
+                            <div
+                                class="absolute -right-32 -top-32 w-[420px] h-[420px] rounded-full border border-dashed border-purple-500/15 pointer-events-none">
+                            </div>
+
+                            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+
+                                <!-- Left: Greeting & Warp Progress (8 Cols) -->
+                                <div class="lg:col-span-8 space-y-5">
+                                    <div>
+                                        <p id="greetingTime"
+                                            class="text-xs font-mono text-[#5CE1E6] uppercase tracking-widest mb-2 font-semibold">
+                                            Chào
+                                            buổi chiều</p>
+                                        <h1
+                                            class="text-3xl sm:text-4xl font-extrabold text-[#E6E7EB] leading-tight tracking-tight">
+                                            Xin chào, <span id="welcomeName">Sinh viên</span>!
+                                        </h1>
+
+                                        <!-- <p class="text-[#B7BAC5] text-sm mt-2 leading-relaxed max-w-xl">
+                                        Hôm nay có <strong id="todayCount" class="text-[#5CE1E6] font-bold">0 buổi
+                                            học</strong> · Cần nộp <strong id="dueSoonCount"
+                                            class="text-[#FFC857] font-bold">0 bài tập</strong>.
+                                    </p> -->
+
+                                    </div>
+
+                                    <!-- Warp Drive Progress (Tín chỉ tích lũy) -->
+                                    <!-- <div class="space-y-1.5 pt-1 max-w-xl">
+                                    <div class="flex justify-between items-center text-xs font-mono">
+                                        <span class="text-[#8D909C] flex items-center gap-1.5">
+
+                                            <i class="fa-solid fa-shuttle-space text-[#5CE1E6]"></i> 
+
+                                            TIẾN TRÌNH TÍCH LŨY
+                                            TÍN CHỈ
+                                        </span>
+                                        <span id="heroWarpText" class="text-[#5CE1E6] font-bold text-xs">— / 130 Tín
+                                            chỉ</span>
+                                    </div>
+                                    <div
+                                        class="w-full h-2.5 bg-[#0F1014] rounded-full p-0.5 border border-white/10 overflow-hidden relative">
+                                        <div id="heroWarpBar"
+                                            class="h-full rounded-full bg-gradient-to-r from-[#8B7CFF] to-[#5CE1E6] shadow-md shadow-[#8B7CFF]/30 transition-all duration-700"
+                                            style="width: 0%"></div>
+                                    </div>
+                                    <div class="flex justify-between text-[10px] text-[#8D909C] font-mono">
+                                        <span>Khởi hành (0 TC)</span>
+                                        <span class="text-[#8B7CFF]">Đích đến: Tốt Nghiệp (130 TC)</span>
+                                    </div>
+                                </div> -->
+
+                                    <!-- Action Buttons & Telemetry Anchors -->
+                                    <div class="flex flex-wrap items-center gap-2.5">
+                                        <button onclick="openRecords()"
+                                            class="inline-flex items-center gap-2 px-4 py-2 bg-[#8B7CFF] hover:brightness-110 text-[#0F1014] text-xs font-bold rounded-xl hover:shadow-lg hover:shadow-[#8B7CFF]/25 transition active:scale-95">
+                                            <i class="fa-solid fa-pen-to-square"></i>Nhập điểm &amp; kết quả
+                                        </button>
+                                        <button onclick="switchTab('courses')"
+                                            class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#232429] hover:bg-[#2E3037] text-[#E6E7EB] hover:text-white text-xs font-semibold transition border border-white/10 hover:border-[#5CE1E6]/40">
+                                            <i class="fa-solid fa-book-open text-[#5CE1E6]"></i>Môn học &amp; TKB
+                                        </button>
+                                        <button onclick="switchTab('assignments')"
+                                            class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#232429] hover:bg-[#2E3037] text-[#E6E7EB] hover:text-white text-xs font-semibold transition border border-white/10 hover:border-[#8B7CFF]/40">
+                                            <i class="fa-solid fa-list-check text-[#8B7CFF]"></i>Bài tập
+                                        </button>
+                                        <!-- Dynamic counters (ẩn dùng làm bridge nếu cần) -->
+                                        <span id="heroStreakNum" class="hidden">0 ngày</span>
+                                        <span id="heroSubjectNum" class="hidden">— môn</span>
+                                    </div>
+                                </div>
+
+                                <!-- Right: Starlight GPA Planet (4 Cols) -->
+                                <div class="lg:col-span-4 flex justify-center lg:justify-end">
+                                    <div class="relative w-48 h-48 sm:w-56 sm:h-56 flex items-center justify-center">
+                                        <div
+                                            class="absolute inset-0 rounded-full border border-[#5CE1E6]/25 animate-orbit-spin">
+                                        </div>
+                                        <div
+                                            class="absolute inset-2.5 rounded-full border border-[#8B7CFF]/30 border-dashed animate-orbit-pulse">
+                                        </div>
+                                        <div
+                                            class="absolute inset-6 rounded-full bg-gradient-to-tr from-[#8B7CFF]/25 via-[#232429] to-[#5CE1E6]/20 blur-xl">
+                                        </div>
+
+                                        <!-- Planet Core -->
+                                        <div
+                                            class="relative w-36 h-36 sm:w-40 sm:h-40 rounded-full bg-gradient-to-br from-[#8B7CFF] via-[#2E3037] to-[#0F1014] p-[2px] shadow-2xl shadow-[#8B7CFF]/30 flex items-center justify-center">
+                                            <div
+                                                class="w-full h-full rounded-full bg-[#0F1014]/90 backdrop-blur-md flex flex-col items-center justify-center text-center p-3">
+                                                <span
+                                                    class="text-[12px] font-mono uppercase tracking-widest text-[#5CE1E6] font-semibold flex items-center gap-1">
+                                                    <i class="fa-solid fa-star text-[8px] text-[#FFD479]"></i> CPA
+                                                </span>
+                                                <div id="heroGPA"
+                                                    class="text-3xl sm:text-4xl font-bold text-[#FFD479] tracking-tighter my-0.5">
+                                                    —
+                                                </div>
+                                                <span class="text-[10px] text-[#8D909C] font-mono">/ THANG 4.0</span>
+                                                <div id="heroGpaRank"
+                                                    class="mt-1 px-2.5 py-0.5 rounded-full bg-[#FFD479]/15 border border-[#FFD479]/35 text-[9px] font-mono text-[#FFD479] font-bold truncate max-w-[130px]">
+                                                    ★ TINH TÚ ★
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hero-stars" aria-hidden="true">
+                            <img class="hero-star hero-star--solo" src="../assets/pics/StarOnly.webp" alt="">
+                            <img class="hero-star hero-star--accent" src="../assets/pics/Star.webp" alt="">
+                        </div>
+                    </div>
+
                     <!-- ══════════════════════════════════
-                         STAT CARDS
+                         STAT CARDS (TELEMETRY METRICS)
                          ══════════════════════════════════ -->
-                    <div id="statCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5"></div>
+                    <div id="statCards"
+                        class="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 "></div>
 
                     <!-- ══════════════════════════════════
                          MAIN CONTENT GRID
                          ══════════════════════════════════ -->
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-6">
 
                         <!-- Left: Courses (2/3 width) -->
                         <div class="lg:col-span-2 space-y-6">
 
                             <!-- Active Courses Widget -->
                             <div
-                                class="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-gray-100 dark:border-slate-700/60 shadow-sm">
-                                <div class="flex justify-between items-center mb-4">
-                                    <div>
-                                        <h2 class="font-bold text-base text-gray-900 dark:text-white">Môn đang học</h2>
-                                        <p id="dashCourseSub" class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                                            ...</p>
+                                class="rounded-2xl p-5 border border-gray-100 dark:border-white/10 shadow-sm space-y-4">
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center gap-2.5">
+                                        <div
+                                            class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-[#8B7CFF]/15 border border-indigo-200 dark:border-[#8B7CFF]/30 flex items-center justify-center text-indigo-600 dark:text-[#8B7CFF]">
+                                            <i class="fa-solid fa-orbit"><svg xmlns="http://www.w3.org/2000/svg"
+                                                    width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                    stroke-linejoin="round" class="lucide lucide-orbit preview-icon">
+                                                    <path d="M20.341 6.484A10 10 0 0 1 10.266 21.85" />
+                                                    <path d="M3.659 17.516A10 10 0 0 1 13.74 2.152" />
+                                                    <circle cx="12" cy="12" r="3" />
+                                                    <circle cx="19" cy="5" r="2" />
+                                                    <circle cx="5" cy="19" r="2" />
+                                                </svg></i>
+                                        </div>
+                                        <div>
+                                            <h2 class="font-bold text-base text-gray-900 dark:text-[#E6E7EB]">Trạm Quỹ
+                                                Đạo (Môn Đang Học)</h2>
+                                            <p id="dashCourseSub"
+                                                class="text-xs text-gray-500 dark:text-[#8D909C] mt-0.5">
+                                                ...</p>
+                                        </div>
                                     </div>
                                     <button onclick="switchTab('courses')"
-                                        class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1">
-                                        Xem tất cả <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                                        class="text-xs font-mono text-cyan-600 dark:text-[#5CE1E6] hover:brightness-125 flex items-center gap-1 transition">
+                                        Tất cả môn <i class="fa-solid fa-chevron-right text-[10px]"></i>
                                     </button>
                                 </div>
                                 <div id="dashCourses" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
                             </div>
 
-                            <!-- Streak Mini Widget (đưa lên khỏi "Xem thêm") -->
+                            <!-- Streak Mini Widget (Chu Kỳ Mặt Trời) -->
                             <div
-                                class="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-gray-100 dark:border-slate-700/60 shadow-sm">
-                                <div class="flex items-center justify-between mb-3">
-                                    <h2 class="font-bold text-base text-gray-900 dark:text-white">🔥 Chuỗi ngày học</h2>
-                                    <span class="text-[11px] text-gray-400">7 ngày gần nhất</span>
+                                class="rounded-2xl p-5 border border-gray-100 dark:border-white/10 shadow-sm space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <h2
+                                        class="font-bold text-base text-gray-900 dark:text-[#E6E7EB] flex items-center gap-2">
+                                        <span>🔥 Chu Kỳ Mặt Trời (Solar Streak)</span>
+                                        <span
+                                            class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-50 dark:bg-[#FFC857]/15 text-amber-600 dark:text-[#FFC857] border border-amber-200 dark:border-[#FFC857]/30 font-semibold">STREAK
+                                            ON</span>
+                                    </h2>
+                                    <span class="text-[11px] font-mono text-gray-500 dark:text-[#8D909C]">7 ngày quỹ đạo
+                                        gần nhất</span>
                                 </div>
-                                <div class="flex items-center gap-4">
-                                    <div class="text-center">
-                                        <p id="streakMiniNum" class="text-5xl font-bold text-orange-500 leading-none">0
+                                <div class="flex items-center gap-4 pt-1">
+                                    <div class="text-center shrink-0">
+                                        <p id="streakMiniNum"
+                                            class="text-4xl font-bold text-amber-600 dark:text-[#FFC857] leading-none">0
                                         </p>
-                                        <p class="text-xs text-gray-400 mt-1">ngày liên tiếp</p>
+                                        <p class="text-[11px] text-gray-500 dark:text-[#8D909C] mt-1">ngày liên tục</p>
                                     </div>
-                                    <div class="flex-1">
+                                    <div class="flex-1 min-w-0">
                                         <div id="streakMiniMap" class="flex gap-1.5 justify-end">
                                             <!-- JS sẽ render 7 ô -->
                                         </div>
-                                        <p class="text-[11px] text-gray-400 text-right mt-1.5">CN → Hôm nay</p>
+                                        <p
+                                            class="text-[10px] font-mono text-gray-500 dark:text-[#8D909C] text-right mt-1.5">
+                                            CN → Hôm nay
+                                        </p>
                                     </div>
                                 </div>
                                 <p id="streakMiniMsg"
-                                    class="text-xs text-gray-500 dark:text-gray-400 mt-3 pt-3 border-t border-gray-100 dark:border-slate-700/40">
+                                    class="text-xs text-gray-500 dark:text-[#8D909C] pt-2.5 border-t border-gray-100 dark:border-white/10">
                                 </p>
                             </div>
 
@@ -514,22 +469,31 @@
 
                             <!-- Today Schedule Widget -->
                             <div
-                                class="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-gray-100 dark:border-slate-700/60 shadow-sm">
-                                <div class="flex justify-between items-center mb-4">
-                                    <h2 class="font-bold text-base text-gray-900 dark:text-white">Lịch học hôm nay</h2>
+                                class="rounded-2xl p-5 border border-gray-100 dark:border-white/10 shadow-sm space-y-4">
+                                <div class="flex justify-between items-center">
+                                    <h2
+                                        class="font-bold text-base text-gray-900 dark:text-[#E6E7EB] flex items-center gap-2">
+                                        <i class="fa-solid fa-timeline text-cyan-600 dark:text-[#5CE1E6]"></i>
+                                        <span>Trục Thời Gian Hôm Nay</span>
+                                    </h2>
                                     <span id="todayLabel"
-                                        class="text-xs bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 font-semibold px-2.5 py-1 rounded-lg">...</span>
+                                        class="text-xs bg-cyan-50 dark:bg-[#5CE1E6]/10 text-cyan-700 dark:text-[#5CE1E6] border border-cyan-200 dark:border-[#5CE1E6]/25 font-mono font-semibold px-2.5 py-1 rounded-lg">...</span>
                                 </div>
                                 <div id="todayList" class="space-y-3"></div>
                             </div>
 
                             <!-- Deadlines Widget -->
                             <div
-                                class="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-gray-100 dark:border-slate-700/60 shadow-sm">
-                                <div class="flex justify-between items-center mb-4">
-                                    <h2 class="font-bold text-base text-gray-900 dark:text-white">Bài tập cần nộp</h2>
+                                class="rounded-2xl p-5 border border-gray-100 dark:border-white/10 shadow-sm space-y-4">
+                                <div class="flex justify-between items-center">
+                                    <h2
+                                        class="font-bold text-base text-gray-900 dark:text-[#E6E7EB] flex items-center gap-2">
+                                        <i
+                                            class="fa-solid fa-meteor text-rose-500 dark:text-[#FF6B81] animate-bounce"></i>
+                                        <span>Chân Trời Deadline</span>
+                                    </h2>
                                     <button onclick="switchTab('assignments')"
-                                        class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1">
+                                        class="text-xs font-mono text-cyan-600 dark:text-[#5CE1E6] hover:brightness-125 flex items-center gap-1">
                                         Tất cả <i class="fa-solid fa-chevron-right text-[10px]"></i>
                                     </button>
                                 </div>
@@ -540,14 +504,15 @@
 
                     </div>
 
-                    <!-- Phần nâng cao: Boss, Wrapped, Chart (giữ lại trong details) -->
-                    <details id="moreSection" class="group">
+                    <!-- Phần nâng cao: Boss, Wrapped, Chart -->
+                    <details id="moreSection"
+                        class="group rounded-2xl p-5 border border-gray-100 dark:border-white/10 relative z-10">
                         <summary
-                            class="cursor-pointer select-none list-none inline-flex items-center gap-2 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+                            class="cursor-pointer select-none list-none inline-flex items-center gap-2 text-sm font-semibold text-cyan-700 dark:text-[#5CE1E6] hover:brightness-125">
                             <i class="fa-solid fa-chevron-down text-xs transition-transform group-open:rotate-180"></i>
-                            Xem thêm: Boss môn học, Wrapped, so sánh điểm
+                            <span>🌌 Dữ liệu mở rộng: Boss môn học, Wrapped, So sánh điểm các kỳ</span>
                         </summary>
-                        <div class="space-y-6 mt-5">
+                        <div class="space-y-6 mt-5 pt-4 border-t border-gray-100 dark:border-white/10">
                             <!-- Chuỗi ngày học & huy hiệu đầy đủ (gamify.js) -->
                             <div id="gamifySection"></div>
 
@@ -556,19 +521,18 @@
                             <div id="wrappedSection"></div>
 
                             <div id="compareSection"
-                                class="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-gray-100 dark:border-slate-700/60 shadow-sm space-y-6">
+                                class="rounded-2xl p-5 border border-gray-100 dark:border-white/10 space-y-6">
                             </div>
 
                             <!-- Chart Canvas Container -->
-                            <div
-                                class="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-gray-100 dark:border-slate-700/60 shadow-sm">
+                            <div class="rounded-2xl p-5 border border-gray-100 dark:border-white/10">
                                 <div class="flex justify-between items-center mb-4 gap-2">
                                     <div>
                                         <h2 class="font-bold text-base text-gray-900 dark:text-white">Điểm từng môn qua
                                             các kỳ</h2>
                                     </div>
                                     <span id="chartMonth"
-                                        class="text-[11px] bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-semibold px-2.5 py-1 rounded-lg">Kỳ
+                                        class="text-[11px] font-mono bg-cyan-50 dark:bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-500/20 font-semibold px-2.5 py-1 rounded-lg">Kỳ
                                         này</span>
                                 </div>
                                 <div class="h-64 w-full">
@@ -760,12 +724,13 @@
                             <h2 class="font-bold text-sm"><i class="fa-solid fa-key mr-2 text-amber-500"></i>Đổi mật
                                 khẩu</h2>
                             <div><label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1"
-                                    for="pwOld">Mật khẩu hiện tại</label><input id="pwOld" type="password"
+                                    for="pwOld">Mật
+                                    khẩu hiện tại</label><input id="pwOld" type="password"
                                     class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 focus:outline-none focus:border-blue-500">
                             </div>
                             <div><label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1"
-                                    for="pwNew">Mật khẩu mới (tối thiểu 8 ký tự)</label><input id="pwNew"
-                                    type="password"
+                                    for="pwNew">Mật
+                                    khẩu mới (tối thiểu 8 ký tự)</label><input id="pwNew" type="password"
                                     class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 focus:outline-none focus:border-blue-500">
                             </div>
                             <div><label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1"
@@ -786,7 +751,8 @@
                             <p class="text-xs text-gray-500 dark:text-gray-400">Dùng để đặt lại mật khẩu. Mã mới vô hiệu
                                 mã cũ và chỉ hiện một lần.</p>
                             <div><label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1"
-                                    for="rcPw">Mật khẩu hiện tại</label><input id="rcPw" type="password"
+                                    for="rcPw">Mật
+                                    khẩu hiện tại</label><input id="rcPw" type="password"
                                     autocomplete="current-password"
                                     class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 focus:outline-none focus:border-blue-500">
                             </div>
@@ -837,437 +803,7 @@
                     class="px-4 py-2 bg-gray-200 dark:bg-slate-700 text-xs rounded-xl">Đóng</button></div>
         </div>
     </div>
-
-    <script>
-        /* ---------- Chuyển tab (hỗ trợ deep-link ?tab=... và F5 giữ nguyên tab) ---------- */
-        const TABS = ['dashboard', 'courses', 'schedule', 'assignments', 'grades', 'exams', 'notifications', 'settings'];
-        function switchTab(tabName, skipHash) {
-            if (TABS.indexOf(tabName) < 0) tabName = 'dashboard';
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
-            document.querySelectorAll('.nav-item').forEach(nav => {
-                nav.classList.remove('bg-blue-50', 'dark:bg-blue-900/30', 'text-blue-600', 'dark:text-blue-400');
-                nav.classList.add('text-gray-600', 'dark:text-gray-300');
-            });
-
-            // "Môn học" và "Thời khóa biểu" là 2 tab con của cùng mục "Môn học & TKB"
-            const merged = tabName === 'courses' || tabName === 'schedule';
-            const targetTab = document.getElementById('tab-' + (merged ? 'courses' : tabName));
-            if (targetTab) targetTab.classList.remove('hidden');
-            if (merged) {
-                ['courses', 'schedule'].forEach(s => {
-                    const on = s === tabName, b = document.getElementById('sub-' + s);
-                    document.getElementById('pane-' + s).classList.toggle('hidden', !on);
-                    b.setAttribute('aria-selected', on ? 'true' : 'false');
-                    b.classList.toggle('bg-blue-600', on); b.classList.toggle('text-white', on);
-                    b.classList.toggle('text-gray-500', !on); b.classList.toggle('dark:text-gray-400', !on);
-                });
-            }
-
-            const activeNav = document.getElementById('nav-' + (merged ? 'courses' : tabName));
-            if (activeNav) {
-                activeNav.classList.add('bg-blue-50', 'dark:bg-blue-900/30', 'text-blue-600', 'dark:text-blue-400');
-                activeNav.classList.remove('text-gray-600', 'dark:text-gray-300');
-            }
-            if (!skipHash) { try { history.replaceState(null, '', '?tab=' + tabName); } catch (e) { } }
-            closeSidebarMobile();
-            document.dispatchEvent(new CustomEvent('eduhub:tab', { detail: { tab: tabName } }));
-        }
-
-        /* ---------- Sidebar trên mobile + lớp phủ ---------- */
-        function openSidebarMobile() {
-            document.getElementById('sidebar').classList.remove('-translate-x-full');
-            document.getElementById('sidebarOverlay').classList.remove('hidden');
-            document.getElementById('openSidebarMobile').setAttribute('aria-expanded', 'true');
-        }
-        function closeSidebarMobile() {
-            document.getElementById('sidebar').classList.add('-translate-x-full');
-            document.getElementById('sidebarOverlay').classList.add('hidden');
-            const b = document.getElementById('openSidebarMobile');
-            if (b) b.setAttribute('aria-expanded', 'false');
-        }
-        document.getElementById('openSidebarMobile').addEventListener('click', openSidebarMobile);
-        document.getElementById('closeSidebarMobile').addEventListener('click', closeSidebarMobile);
-        document.getElementById('sidebarOverlay').addEventListener('click', closeSidebarMobile);
-
-        /* ---------- Dropdown thông báo ---------- */
-        function toggleNotifDropdown() {
-            document.getElementById('notifDropdown').classList.toggle('hidden');
-        }
-        document.addEventListener('click', e => {
-            const dd = document.getElementById('notifDropdown'), btn = document.getElementById('notifDropdownBtn');
-            if (dd && btn && !dd.classList.contains('hidden') && !dd.contains(e.target) && !btn.contains(e.target)) dd.classList.add('hidden');
-        });
-        document.addEventListener('keydown', e => {
-            if (e.key === 'Escape') { const dd = document.getElementById('notifDropdown'); if (dd) dd.classList.add('hidden'); }
-        });
-
-        /* ---------- Hộp thoại chi tiết môn học ---------- */
-        function openCourseDetail(courseName) {
-            document.getElementById('courseModalTitle').innerText = courseName;
-            document.getElementById('courseModal').classList.remove('hidden');
-        }
-        function closeCourseModal() {
-            document.getElementById('courseModal').classList.add('hidden');
-        }
-
-        /* ---------- Tìm kiếm toàn cục (trước đây không có xử lý nào) ---------- */
-        (function () {
-            const input = document.getElementById('globalSearch'), box = document.getElementById('searchResults');
-            if (!input || !box) return;
-            const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-            const vnd = d => { const x = new Date(d); return isNaN(x) ? '' : x.toLocaleDateString('vi-VN'); };
-            function find(q) {
-                q = q.trim().toLowerCase();
-                if (!q) return [];
-                const out = [];
-                const subs = EduHub.get(EduHub.userKey('eduhub_subjects'), []);
-                (Array.isArray(subs) ? subs : []).forEach(s => {
-                    if ((s.name + ' ' + (s.code || '') + ' ' + (s.teacher || '')).toLowerCase().indexOf(q) >= 0)
-                        out.push({ icon: 'fa-book', label: s.name, sub: (s.code || 'Môn học') + ' · ' + (s.teacher || 'chưa có giảng viên'), tab: 'courses' });
-                });
-                const as = EduHub.get(EduHub.userKey('eduhub_assignments'), []);
-                (Array.isArray(as) ? as : []).forEach(a => {
-                    if ((a.title + ' ' + (a.subject || '')).toLowerCase().indexOf(q) >= 0)
-                        out.push({ icon: 'fa-list-check', label: a.title, sub: (a.subject || 'Bài tập') + ' · hạn ' + vnd(a.due), tab: 'assignments' });
-                });
-                const ex = EduHub.get(EduHub.userKey('eduhub_exams'), []);
-                (Array.isArray(ex) ? ex : []).forEach(x => {
-                    if ((x.subject + ' ' + (x.room || '')).toLowerCase().indexOf(q) >= 0)
-                        out.push({ icon: 'fa-file-pen', label: x.subject, sub: 'Thi ' + vnd(x.date) + (x.room ? ' · ' + x.room : ''), tab: 'exams' });
-                });
-                return out.slice(0, 8);
-            }
-            function draw() {
-                if (!input.value.trim()) { box.classList.add('hidden'); return; }
-                const list = find(input.value);
-                box.innerHTML = list.length
-                    ? list.map(r => '<button type="button" data-tab="' + r.tab + '" class="w-full text-left flex items-start gap-3 px-4 py-2.5 hover:bg-gray-50 dark:hover:bg-slate-700/50"><i class="fa-solid ' + r.icon + ' text-gray-400 mt-0.5"></i><span class="min-w-0"><span class="block text-xs font-semibold truncate">' + esc(r.label) + '</span><span class="block text-[11px] text-gray-400 truncate">' + esc(r.sub) + '</span></span></button>').join('')
-                    : '<p class="px-4 py-3 text-xs text-gray-400">Không tìm thấy kết quả nào.</p>';
-                box.classList.remove('hidden');
-                box.querySelectorAll('button[data-tab]').forEach(b => b.addEventListener('click', () => {
-                    switchTab(b.dataset.tab); box.classList.add('hidden'); input.value = '';
-                }));
-            }
-            input.addEventListener('input', draw);
-            input.addEventListener('focus', draw);
-            document.addEventListener('click', e => { const w = document.getElementById('searchWrap'); if (w && !w.contains(e.target)) box.classList.add('hidden'); });
-            document.addEventListener('keydown', e => { if (e.key === 'Escape') box.classList.add('hidden'); });
-        })();
-
-        /* ---------- Cài đặt: đổi mật khẩu, khôi phục, xóa dữ liệu ---------- */
-        async function changePassword() {
-            const msg = document.getElementById('pwMsg');
-            const show = (t, ok) => {
-                msg.textContent = t;
-                msg.className = 'text-xs rounded-lg px-3 py-2 ' + (ok ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20' : 'text-red-600 bg-red-50 dark:bg-red-900/20');
-                msg.classList.remove('hidden');
-            };
-            const session = EduHub.session();
-            if (!session) return show('Bạn cần đăng nhập lại.', false);
-            if (session.provider === 'google') return show('Tài khoản Google không có mật khẩu để đổi.', false);
-            const n1 = document.getElementById('pwNew').value, n2 = document.getElementById('pwNew2').value;
-            if (n1.length < 8) return show('Mật khẩu mới phải có ít nhất 8 ký tự.', false);
-            if (n1 !== n2) return show('Mật khẩu nhập lại không khớp.', false);
-            const users = EduHub.get(EduHub.CFG.USERS_KEY, []) || [];
-            const u = users.find(x => x.email === session.email);
-            if (!u) return show('Không tìm thấy tài khoản.', false);
-            if (!await EduHub.verifyPassword(document.getElementById('pwOld').value, u)) return show('Mật khẩu hiện tại không đúng.', false);
-            u.passwordHash = await EduHub.hashPassword(n1);
-            u.passwordUpdatedAt = Date.now();
-            EduHub.set(EduHub.CFG.USERS_KEY, users);
-            document.getElementById('pwOld').value = document.getElementById('pwNew').value = document.getElementById('pwNew2').value = '';
-            show('Đã cập nhật mật khẩu thành công.', true);
-            EduHub.toast('Đã đổi mật khẩu.', 'success');
-        }
-        async function regenRecovery() {
-            const msg = document.getElementById('rcMsg');
-            const show = (t, ok) => {
-                msg.textContent = t;
-                msg.className = 'text-xs rounded-lg px-3 py-2 ' + (ok ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20' : 'text-red-600 bg-red-50 dark:bg-red-900/20');
-                msg.classList.remove('hidden');
-            };
-            const session = EduHub.session();
-            if (!session) return show('Bạn cần đăng nhập lại.', false);
-            const users = EduHub.get(EduHub.CFG.USERS_KEY, []) || [];
-            const u = users.find(x => x.email === session.email);
-            if (!u || !u.passwordHash) return show('Tài khoản này không dùng mật khẩu (đăng nhập bằng Google).', false);
-            const key = 'pw:' + session.email, lock = EduHub.attempt.remaining(key);
-            if (lock) return show('Bạn đã nhập sai quá nhiều lần. Hãy thử lại sau ' + Math.ceil(lock / 60) + ' phút.', false);
-            if (!await EduHub.verifyPassword(document.getElementById('rcPw').value, u)) {
-                EduHub.attempt.fail(key);
-                return show('Mật khẩu hiện tại không đúng.', false);
-            }
-            EduHub.attempt.ok(key);
-            const code = EduHub.newRecoveryCode();
-            u.recoveryHash = await EduHub.hashRecovery(code);
-            if (!EduHub.set(EduHub.CFG.USERS_KEY, users)) return show('Không lưu được: trình duyệt đang chặn lưu trữ.', false);
-            document.getElementById('rcPw').value = '';
-            msg.classList.add('hidden');
-            EduHub.showRecoveryCode(code, () => EduHub.toast('Đã tạo mã khôi phục mới. Mã cũ không còn hiệu lực.', 'success'));
-        }
-        function importBackup(e) {
-            const inputEl = e.target;
-            const f = e.target.files && e.target.files[0];
-            if (!f) return;
-            const m = document.getElementById('importMsg');
-            EduHub.importAll(f).then(n => {
-                m.className = 'text-xs text-emerald-600';
-                m.textContent = 'Đã khôi phục ' + n + ' nhóm dữ liệu. Đang tải lại...';
-                m.classList.remove('hidden');
-                EduHub.toast('Khôi phục dữ liệu thành công.', 'success');
-                setTimeout(() => location.reload(), 900);
-            }).catch(err => {
-                m.className = 'text-xs text-red-600';
-                m.textContent = err && err.message === 'email-mismatch' ? 'Tệp sao lưu thuộc về tài khoản khác. Hãy đăng nhập đúng tài khoản đó để khôi phục.'
-                    : err && err.message === 'too-big' ? 'Tệp quá lớn (tối đa 5 MB).'
-                        : 'Tệp không hợp lệ hoặc chứa dữ liệu sai định dạng. Hãy chọn đúng tệp sao lưu do EduHub xuất ra.';
-                m.classList.remove('hidden');
-            }).finally(() => { inputEl.value = ''; });
-        }
-        function clearMyData() {
-            if (!confirm('Xóa toàn bộ dữ liệu học tập của tài khoản này? Hành động không thể hoàn tác.')) return;
-            ['eduhub_records', 'eduhub_subjects', 'eduhub_timetable', 'eduhub_assignments', 'eduhub_submissions', 'eduhub_notifications', 'eduhub_exams', 'eduhub_boss', 'eduhub_goal']
-                .forEach(b => EduHub.del(EduHub.userKey(b)));
-            EduHub.del('eduhub_total_' + EduHub.email());
-            if (window.EduHubFiles) EduHubFiles.clearUser().catch(() => { });
-            if (window.EduSync) EduSync.fileDelAll();   // xóa cả tệp bài nộp trên máy chủ
-            EduHub.toast('Đã xóa dữ liệu học tập.', 'info');
-            setTimeout(() => location.reload(), 800);
-        }
-
-        /* ---------- Khôi phục tab đang mở + cảnh báo lưu trữ bị chặn ---------- */
-        (function () {
-            let p = new URLSearchParams(location.search).get('tab') || '';
-            if (!p && location.hash) p = location.hash.slice(1);
-            switchTab(p || 'dashboard', true);
-            if (!EduHub.storageOK) {
-                const w = document.getElementById('storageWarn');
-                w.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-1"></i>Trình duyệt đang chặn lưu trữ cục bộ (localStorage), nên dữ liệu bạn nhập sẽ KHÔNG được giữ lại. Hãy tắt chế độ ẩn danh hoặc cho phép cookie cho trang này.';
-                w.classList.remove('hidden');
-            }
-        })();
-    </script>
-    <script>
-        /* ---------- Hiển thị người dùng đang đăng nhập ---------- */
-        (function () {
-            let user = null;
-            try {
-                user = JSON.parse(localStorage.getItem('eduhub_session') || sessionStorage.getItem('eduhub_session'));
-            } catch { }
-            if (!user) return;
-
-            const name = (user.name || '').trim() || user.email || 'Sinh viên';
-            document.getElementById('userName').textContent = name;
-            document.getElementById('welcomeName').textContent = name;
-            document.getElementById('userSub').textContent = user.mssv ? 'MSSV: ' + user.mssv : (user.email || '');
-
-            const avatar = document.getElementById('userAvatar');
-            avatar.alt = 'Avatar ' + name;
-            if (user.picture) {
-                avatar.referrerPolicy = 'no-referrer';   // ảnh Google cần dòng này để tải được
-                avatar.src = user.picture;
-            } else {
-                // Không có ảnh -> tạo avatar chữ cái đầu của tên
-                const words = name.split(/\s+/).filter(Boolean);
-                const initials = (words.length > 1 ? words[0][0] + words[words.length - 1][0] : words[0].slice(0, 2)).toUpperCase();
-                const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><defs><linearGradient id="g" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#4f46e5"/></linearGradient></defs><rect width="64" height="64" fill="url(#g)"/><text x="50%" y="50%" dy=".35em" text-anchor="middle" font-family="sans-serif" font-size="26" font-weight="700" fill="#fff">' + initials.replace(/[<>&]/g, '') + '</text></svg>';
-                avatar.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
-            }
-        })();
-
-        /* ---------- Nhãn học kỳ / tháng động (thay cho giá trị viết cứng) ---------- */
-        (function () {
-            const now = new Date(), m = now.getMonth() + 1, year = now.getFullYear();
-            let sem, y1;
-            if (m >= 9) { sem = 'Học kỳ 1'; y1 = year; }
-            else if (m <= 1) { sem = 'Học kỳ 1'; y1 = year - 1; }
-            else if (m <= 6) { sem = 'Học kỳ 2'; y1 = year - 1; }
-            else { sem = 'Học kỳ hè'; y1 = year - 1; }
-            const badge = document.getElementById('semesterBadge');
-            if (badge) badge.textContent = sem + ' ' + y1 + '–' + (y1 + 1);
-        })();
-    </script>
-    <script>
-        /* ═══════════════════════════════════════════════════════════════
-           DASHBOARD HERO ENHANCEMENTS
-           - Greeting theo giờ (sáng / chiều / tối)
-           - Hiển thị ngày tiếng Việt
-           - Animated counter cho số hero
-           - Streak mini heatmap (7 ngày gần nhất)
-           - GPA bridge: đọc từ localStorage và cập nhật #heroGPA
-           ═══════════════════════════════════════════════════════════════ */
-        (function () {
-            /* Greeting */
-            function getGreeting() {
-                const h = new Date().getHours();
-                if (h < 5) return 'Chào buổi tối 🌙';
-                if (h < 12) return 'Chào buổi sáng ☀️';
-                if (h < 18) return 'Chào buổi chiều 🌤️';
-                return 'Chào buổi tối 🌙';
-            }
-            const grEl = document.getElementById('greetingTime');
-            if (grEl) grEl.textContent = getGreeting();
-
-            /* Ngày tháng tiếng Việt */
-            const DAYS_VI = ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy'];
-            const now = new Date();
-            const dateEl = document.getElementById('todayDateLabel');
-            if (dateEl) {
-                dateEl.textContent = DAYS_VI[now.getDay()] + ', ngày ' +
-                    String(now.getDate()).padStart(2, '0') + '/' +
-                    String(now.getMonth() + 1).padStart(2, '0') + '/' + now.getFullYear();
-            }
-
-            /* Animated counter helper */
-            function animateCount(el, target, decimals, suffix) {
-                if (!el || target == null || isNaN(target)) return;
-                const dur = 900, fps = 60, steps = Math.round(dur / (1000 / fps));
-                let step = 0;
-                const timer = setInterval(function () {
-                    step++;
-                    const progress = step / steps;
-                    const ease = 1 - Math.pow(1 - progress, 3);
-                    const val = target * ease;
-                    el.textContent = val.toFixed(decimals) + (suffix || '');
-                    if (step >= steps) { clearInterval(timer); el.textContent = target.toFixed(decimals) + (suffix || ''); }
-                }, 1000 / fps);
-            }
-
-            /* GPA bridge: đọc từ localStorage sau khi records.js chạy xong */
-            function updateHeroGPA() {
-                try {
-                    let u = null;
-                    try { u = JSON.parse(localStorage.getItem('eduhub_session') || sessionStorage.getItem('eduhub_session')); } catch { }
-                    const email = (u && u.email) || 'guest';
-                    const db = JSON.parse(localStorage.getItem('eduhub_records_' + email));
-                    if (!db || !Array.isArray(db.sems) || !db.sems.length) return;
-
-                    // Tính GPA tích lũy
-                    function g4(g) { return g >= 9 ? 4 : g >= 8.5 ? 3.7 : g >= 8 ? 3.5 : g >= 7 ? 3 : g >= 6.5 ? 2.5 : g >= 5.5 ? 2 : g >= 5 ? 1.5 : g >= 4 ? 1 : 0; }
-                    let c = 0, s4 = 0;
-                    db.sems.forEach(function (sem) {
-                        (sem.subs || []).forEach(function (x) {
-                            const cc = +x.c, gg = +x.g;
-                            if (cc > 0 && isFinite(gg)) { c += cc; s4 += cc * g4(gg); }
-                        });
-                    });
-                    if (!c) return;
-                    const gpa = s4 / c;
-                    const el = document.getElementById('heroGPA');
-                    if (el) animateCount(el, gpa, 2, '');
-                } catch { }
-            }
-
-            /* Số môn học hiện tại */
-            function updateHeroSubjects() {
-                try {
-                    let u = null;
-                    try { u = JSON.parse(localStorage.getItem('eduhub_session') || sessionStorage.getItem('eduhub_session')); } catch { }
-                    const email = (u && u.email) || 'guest';
-                    const subs = JSON.parse(localStorage.getItem('eduhub_subjects_' + email)) || [];
-                    const el = document.getElementById('heroSubjectNum');
-                    if (el && Array.isArray(subs)) el.textContent = subs.length + ' môn';
-                } catch { }
-            }
-
-            /* Streak mini heatmap (7 ngày gần nhất) */
-            function buildStreakMini() {
-                const container = document.getElementById('streakMiniMap');
-                const numEl = document.getElementById('streakMiniNum');
-                const msgEl = document.getElementById('streakMiniMsg');
-                if (!container) return;
-
-                let u = null;
-                try { u = JSON.parse(localStorage.getItem('eduhub_session') || sessionStorage.getItem('eduhub_session')); } catch { }
-                const email = (u && u.email) || 'guest';
-
-                let gamify = null;
-                try { gamify = JSON.parse(localStorage.getItem('eduhub_gamify_' + email)); } catch { }
-
-                const days = (gamify && Array.isArray(gamify.days)) ? gamify.days : [];
-                const frozen = (gamify && Array.isArray(gamify.frozen)) ? gamify.frozen : [];
-                const daySet = new Set(days);
-                const frozenSet = new Set(frozen);
-
-                /* Tính streak */
-                function pad(n) { return n < 10 ? '0' + n : '' + n; }
-                function fmtDate(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
-                function shift(s, n) { const p = s.split('-'); const d = new Date(+p[0], +p[1] - 1, +p[2], 12); d.setDate(d.getDate() + n); return fmtDate(d); }
-
-                const today = fmtDate(new Date());
-                let streak = 0, d = today;
-                for (let i = 0; i < 5000; i++) {
-                    if (daySet.has(d) || frozenSet.has(d)) { if (daySet.has(d)) streak++; d = shift(d, -1); }
-                    else break;
-                }
-
-                if (numEl) numEl.textContent = streak;
-                if (msgEl) {
-                    if (streak === 0) msgEl.textContent = '👋 Bắt đầu chuỗi học ngay hôm nay nhé!';
-                    else if (streak < 7) msgEl.textContent = '💪 Tiếp tục! Còn ' + (7 - streak) + ' ngày nữa là đạt huy hiệu tuần.';
-                    else if (streak < 30) msgEl.textContent = '🔥 Tuyệt vời! Đang trên đà ' + streak + ' ngày liên tiếp!';
-                    else msgEl.textContent = '🏆 Xuất sắc! ' + streak + ' ngày liên tiếp — Huyền thoại!';
-                }
-
-                /* Vẽ 7 ô ngày */
-                const WD_SHORT = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
-                container.innerHTML = '';
-                for (let i = 6; i >= 0; i--) {
-                    const dateStr = shift(today, -i);
-                    const isToday = i === 0;
-                    const hasActivity = daySet.has(dateStr);
-                    const isFrozen = frozenSet.has(dateStr);
-                    const d2 = new Date(dateStr.split('-').map(Number));
-                    d2.setFullYear(+dateStr.split('-')[0]);
-
-                    const dot = document.createElement('div');
-                    dot.className = 'streak-day-dot';
-                    dot.title = dateStr + (hasActivity ? ' ✓' : isFrozen ? ' ❄' : '');
-
-                    if (hasActivity) {
-                        dot.style.cssText = 'background: linear-gradient(135deg, #f97316, #ef4444); color: #fff;';
-                    } else if (isFrozen) {
-                        dot.style.cssText = 'background: linear-gradient(135deg, #38bdf8, #818cf8); color: #fff;';
-                    } else {
-                        dot.style.cssText = 'background: ' + (isToday ? '#eff6ff' : '#f3f4f6') + '; color: ' + (isToday ? '#2563eb' : '#9ca3af') + '; border: ' + (isToday ? '2px solid #2563eb' : '1px solid #e5e7eb') + ';';
-                    }
-
-                    // Dark mode
-                    document.addEventListener('eduhub:theme', function (e) {
-                        if (!hasActivity && !isFrozen) {
-                            dot.style.cssText = 'background: ' + (e.detail.dark ? (isToday ? '#1e3a5f' : '#1e293b') : (isToday ? '#eff6ff' : '#f3f4f6')) + '; color: ' + (e.detail.dark ? (isToday ? '#60a5fa' : '#475569') : (isToday ? '#2563eb' : '#9ca3af')) + '; border: ' + (isToday ? '2px solid ' + (e.detail.dark ? '#3b82f6' : '#2563eb') : '1px solid ' + (e.detail.dark ? '#334155' : '#e5e7eb')) + ';';
-                        }
-                    });
-
-                    const dayOfWeek = new Date(dateStr.split('-')[0], dateStr.split('-')[1] - 1, dateStr.split('-')[2]).getDay();
-                    dot.textContent = WD_SHORT[dayOfWeek];
-                    container.appendChild(dot);
-                }
-
-                /* Apply dark mode nếu đang dark */
-                if (document.documentElement.classList.contains('dark')) {
-                    container.querySelectorAll('.streak-day-dot').forEach(function (dot) {
-                        if (!dot.style.background.includes('gradient')) {
-                            const isT = dot.style.border && dot.style.border.includes('2px');
-                            dot.style.cssText = 'background: ' + (isT ? '#1e3a5f' : '#1e293b') + '; color: ' + (isT ? '#60a5fa' : '#475569') + '; border: ' + (isT ? '2px solid #3b82f6' : '1px solid #334155') + ';';
-                        }
-                    });
-                }
-            }
-
-            /* Chạy ngay khi DOM ready, và sau khi scripts khác load xong */
-            updateHeroGPA();
-            updateHeroSubjects();
-            buildStreakMini();
-
-            /* Cập nhật lại khi có thay đổi dữ liệu */
-            document.addEventListener('eduhub:data', function () {
-                updateHeroGPA();
-                updateHeroSubjects();
-                buildStreakMini();
-            });
-        })();
-    </script>
+    <script src="../assets/js/dashboard.js"></script>
     <script src="../assets/js/records.js"></script>
     <script src="../assets/js/timetable.js"></script>
     <script src="../assets/js/schedule.js"></script>
